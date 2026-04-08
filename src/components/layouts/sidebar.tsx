@@ -43,9 +43,9 @@ export function Sidebar() {
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-30 lg:hidden" onClick={() => setMobileOpen(false)}>
-          <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" />
+          <div className="animate-in fade-in fill-mode-both duration-200 absolute inset-0 bg-foreground/40 backdrop-blur-sm" />
           <aside
-            className="absolute top-0 left-0 h-full w-64 overflow-y-auto bg-sidebar sm:w-72"
+            className="animate-in slide-in-from-left fill-mode-both duration-200 absolute top-0 left-0 h-full w-64 overflow-y-auto bg-sidebar sm:w-72"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex h-full flex-col pt-16">
@@ -105,8 +105,8 @@ const SidebarContent = () => {
               to={href}
               className={() =>
                 cn(
-                  'group relative flex items-center gap-3 rounded-lg px-3 py-3 transition-colors',
-                  isActive ? 'bg-primary text-primary-foreground' : 'text-sidebar-foreground hover:bg-sidebar-accent'
+                  'group relative flex items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150',
+                  isActive ? 'bg-primary text-primary-foreground' : 'text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-0.5'
                 )
               }
             >

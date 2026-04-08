@@ -24,6 +24,13 @@ const tabsOptions = [
   },
 ];
 
+const FieldSkeleton = () => (
+  <div className="space-y-1.5">
+    <div className="h-3.5 w-20 animate-pulse rounded bg-muted" />
+    <div className="h-9 w-full animate-pulse rounded-lg bg-muted" />
+  </div>
+);
+
 export const Appointment_Initial = (props: StepProps) => {
   const { metadata } = props;
   const { data: professionals, isLoading: isLoadingProfessionals } = useGetProfessionals();
@@ -132,26 +139,34 @@ export const Appointment_Initial = (props: StepProps) => {
             onValueChange={tabChangeHandler}
           />
           {watchedFields.appointmentType === APPOINTMENT_TYPES.PROFESSIONAL && (
+            isLoadingProfessionals ? (
+              <FieldSkeleton />
+            ) : (
+              <RhfCombobox
+                control={form.control}
+                name="professional"
+                rules={{ required: true }}
+                label="Profesional"
+                placeholder="Seleccione un profesional"
+                disabled={isLoadingProfessionals}
+                options={professionals || []}
+                onValueChange={professionalChangeHandler}
+              />
+            )
+          )}
+          {isLoadingSpecialties ? (
+            <FieldSkeleton />
+          ) : (
             <RhfCombobox
               control={form.control}
-              name="professional"
+              name="speciality"
               rules={{ required: true }}
-              label="Profesional"
-              placeholder="Seleccione un profesional"
-              disabled={isLoadingProfessionals}
-              options={professionals || []}
-              onValueChange={professionalChangeHandler}
+              label="Especialidad"
+              placeholder="Seleccione una especialidad"
+              disabled={isLoadingSpecialties || isSpecialityDisabled}
+              options={specialtiesFiltered}
             />
           )}
-          <RhfCombobox
-            control={form.control}
-            name="speciality"
-            rules={{ required: true }}
-            label="Especialidad"
-            placeholder="Seleccione una especialidad"
-            disabled={isLoadingSpecialties || isSpecialityDisabled}
-            options={specialtiesFiltered}
-          />
           <RhfSelect
             control={form.control}
             name="priority"
@@ -165,15 +180,19 @@ export const Appointment_Initial = (props: StepProps) => {
               { value: PRIORITY_TYPES.AVAILABILITY, label: 'Por primera disponibilidad' },
             ]}
           />
-          <RhfSelect
-            control={form.control}
-            name="medicalCenter"
-            rules={{ required: true }}
-            label="Centro médico"
-            placeholder="Seleccione un centro médico"
-            disabled={watchedFields.priority === '' || isMedicalDisabled}
-            options={medicalCenters || []}
-          />
+          {isLoadingMedicalCenters ? (
+            <FieldSkeleton />
+          ) : (
+            <RhfSelect
+              control={form.control}
+              name="medicalCenter"
+              rules={{ required: true }}
+              label="Centro médico"
+              placeholder="Seleccione un centro médico"
+              disabled={watchedFields.priority === '' || isMedicalDisabled}
+              options={medicalCenters || []}
+            />
+          )}
         </div>
       </form>
 

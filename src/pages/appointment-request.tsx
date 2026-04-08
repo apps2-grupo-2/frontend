@@ -1,11 +1,15 @@
+import { Fragment } from 'react';
+import { Check } from 'lucide-react';
+
 import { Appointment_Initial } from '@/modules/appointment-initial';
 import { Appointment_Calendar } from '@/modules/appointment-calendar';
 import { UseAppointments } from '@/hooks/use-appointments';
 import { APPOINTMENTS_STEPS } from '@/constants';
+import { cn } from '@/lib/utils';
 
 export default function Page() {
   return (
-    <div className="flex flex-col">
+    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 flex flex-col">
       <div className="mb-6 sm:mb-8">
         <p className="mb-1 text-xs font-medium tracking-wider text-muted-foreground uppercase sm:text-sm">
           Portal del Paciente
@@ -20,16 +24,61 @@ export default function Page() {
   );
 }
 
+const STEP_CONFIG = [
+  { step: APPOINTMENTS_STEPS.APPOINTMENT_INITIAL, label: 'Preferencias' },
+  { step: APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR, label: 'Fecha y hora' },
+];
+
+const Stepper = ({ currentStep }: { currentStep: APPOINTMENTS_STEPS }) => {
+  const currentIndex = STEP_CONFIG.findIndex(s => s.step === currentStep);
+  return (
+    <div className="mb-6 flex max-w-[500px] items-center gap-3">
+      {STEP_CONFIG.map(({ step, label }, i) => (
+        <Fragment key={step}>
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200',
+                i < currentIndex
+                  ? 'bg-primary text-primary-foreground'
+                  : i === currentIndex
+                    ? 'bg-primary text-primary-foreground ring-2 ring-primary/25 ring-offset-1 ring-offset-background'
+                    : 'bg-muted text-muted-foreground'
+              )}
+            >
+              {i < currentIndex ? <Check className="h-3 w-3" /> : i + 1}
+            </div>
+            <span
+              className={cn(
+                'text-sm font-medium transition-colors duration-200',
+                i === currentIndex ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            >
+              {label}
+            </span>
+          </div>
+          {i < STEP_CONFIG.length - 1 && (
+            <div
+              className={cn('h-px flex-1 transition-colors duration-300', i < currentIndex ? 'bg-primary' : 'bg-border')}
+            />
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+};
+
 const TurnosStep = () => {
   const { metadata } = UseAppointments(APPOINTMENTS_STEPS.APPOINTMENT_INITIAL);
   const { step } = metadata.screen;
 
-  if (step === APPOINTMENTS_STEPS.APPOINTMENT_INITIAL) {
-    return <Appointment_Initial metadata={metadata} />;
-  }
-  if (step === APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR) {
-    return <Appointment_Calendar metadata={metadata} />;
-  }
-
-  return <></>;
+  return (
+    <>
+      <Stepper currentStep={step} />
+      <div key={step} className="animate-in fade-in fill-mode-both duration-200">
+        {step === APPOINTMENTS_STEPS.APPOINTMENT_INITIAL && <Appointment_Initial metadata={metadata} />}
+        {step === APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR && <Appointment_Calendar metadata={metadata} />}
+      </div>
+    </>
+  );
 };
