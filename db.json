@@ -1,0 +1,503 @@
+{
+  "professionals": [
+    {
+      "value": "1",
+      "label": "Fernandez Juan Pablo",
+      "specialties": ["328", "307"]
+    },
+    {
+      "value": "2",
+      "label": "Peralta Carlos Alberto",
+      "specialties": ["185"]
+    },
+    {
+      "value": "3",
+      "label": "Rodríguez Martín Eduardo",
+      "specialties": ["229", "267"]
+    },
+    {
+      "value": "4",
+      "label": "Vásquez Laura Beatriz",
+      "specialties": ["201", "225"]
+    },
+    {
+      "value": "5",
+      "label": "Morales Ana María",
+      "specialties": ["191"]
+    },
+    {
+      "value": "6",
+      "label": "López Diego Andrés",
+      "specialties": ["221", "335"]
+    },
+    {
+      "value": "7",
+      "label": "García Silvia Alejandra",
+      "specialties": ["193", "284"]
+    },
+    {
+      "value": "8",
+      "label": "Martínez Roberto Carlos",
+      "specialties": ["242"]
+    },
+    {
+      "value": "9",
+      "label": "Sánchez Patricia Noemí",
+      "specialties": ["226", "263"]
+    },
+    {
+      "value": "10",
+      "label": "Romero Gustavo Hernán",
+      "specialties": ["197", "282"]
+    },
+    {
+      "value": "11",
+      "label": "Torres Cecilia Inés",
+      "specialties": ["219"]
+    },
+    {
+      "value": "12",
+      "label": "Álvarez Nicolás Fernando",
+      "specialties": ["222"]
+    },
+    {
+      "value": "13",
+      "label": "Díaz Marcela Soledad",
+      "specialties": ["176", "236"]
+    },
+    {
+      "value": "14",
+      "label": "Ruiz Alejandro Daniel",
+      "specialties": ["227", "423"]
+    },
+    {
+      "value": "15",
+      "label": "Castro Gabriela Lucía",
+      "specialties": ["224", "262"]
+    },
+    {
+      "value": "16",
+      "label": "Gómez Federico Raúl",
+      "specialties": ["232"]
+    },
+    {
+      "value": "17",
+      "label": "Medina Florencia Paula",
+      "specialties": ["216", "217"]
+    },
+    {
+      "value": "18",
+      "label": "Herrera Sebastián Ignacio",
+      "specialties": ["206"]
+    },
+    {
+      "value": "19",
+      "label": "Suárez Valeria Andrea",
+      "specialties": ["378", "265"]
+    },
+    {
+      "value": "20",
+      "label": "Benítez Ramiro Esteban",
+      "specialties": ["230", "264"]
+    },
+    {
+      "value": "21",
+      "label": "Giménez Carolina Belén",
+      "specialties": ["313"]
+    }
+  ],
+  "specialties": [
+    {
+      "value": "176",
+      "label": "Alergia"
+    },
+    {
+      "value": "388",
+      "label": "Andrologia"
+    },
+    {
+      "value": "488",
+      "label": "Audiometria"
+    },
+    {
+      "value": "328",
+      "label": "Cardiologia"
+    },
+    {
+      "value": "489",
+      "label": "Cirugia cabeza y cuello pediatrica"
+    },
+    {
+      "value": "182",
+      "label": "Cirugia cardiovascular"
+    },
+    {
+      "value": "382",
+      "label": "Cirugia coloproctologica"
+    },
+    {
+      "value": "183",
+      "label": "Cirugia de cabeza y cuello"
+    },
+    {
+      "value": "331",
+      "label": "Cirugia de columna"
+    },
+    {
+      "value": "518",
+      "label": "Cirugia de estomago"
+    },
+    {
+      "value": "389",
+      "label": "Cirugia de pancreas"
+    },
+    {
+      "value": "184",
+      "label": "Cirugia de torax"
+    },
+    {
+      "value": "464",
+      "label": "Cirugia esofago"
+    },
+    {
+      "value": "501",
+      "label": "Cirugia estetica mamaria y general"
+    },
+    {
+      "value": "491",
+      "label": "Cirugia estomago"
+    },
+    {
+      "value": "391",
+      "label": "Cirugia gastroenterologica"
+    },
+    {
+      "value": "185",
+      "label": "Cirugia general"
+    },
+    {
+      "value": "379",
+      "label": "Cirugia ginecologica"
+    },
+    {
+      "value": "310",
+      "label": "Cirugia hepatica"
+    },
+    {
+      "value": "483",
+      "label": "Cirugia hepato bilio pancreatica"
+    },
+    {
+      "value": "519",
+      "label": "Cirugia hernia hiatal"
+    },
+    {
+      "value": "337",
+      "label": "Cirugia maxilofacial"
+    },
+    {
+      "value": "353",
+      "label": "Cirugia maxilofacial pediatrica"
+    },
+    {
+      "value": "404",
+      "label": "Cirugia oftalmologica"
+    },
+    {
+      "value": "462",
+      "label": "Cirugia pared abdominal"
+    },
+    {
+      "value": "187",
+      "label": "Cirugia plastica y reparadora"
+    },
+    {
+      "value": "188",
+      "label": "Cirugia vascular periferica"
+    },
+    {
+      "value": "492",
+      "label": "Cirugia vesicula"
+    },
+    {
+      "value": "189",
+      "label": "Clinica medica"
+    },
+    {
+      "value": "190",
+      "label": "Coloproctologia"
+    },
+    {
+      "value": "191",
+      "label": "Dermatologia"
+    },
+    {
+      "value": "284",
+      "label": "Diabetologia"
+    },
+    {
+      "value": "249",
+      "label": "Ecodoppler"
+    },
+    {
+      "value": "520",
+      "label": "Ecoendoscopia"
+    },
+    {
+      "value": "171",
+      "label": "Ecografia"
+    },
+    {
+      "value": "307",
+      "label": "Electrofisiologia"
+    },
+    {
+      "value": "193",
+      "label": "Endocrinologia"
+    },
+    {
+      "value": "494",
+      "label": "Ecografia gineco/obstetrica"
+    },
+    {
+      "value": "314",
+      "label": "Fertilidad"
+    },
+    {
+      "value": "254",
+      "label": "Flebologia"
+    },
+    {
+      "value": "197",
+      "label": "Gastroenterologia"
+    },
+    {
+      "value": "200",
+      "label": "Geriatria"
+    },
+    {
+      "value": "422",
+      "label": "Ginecoendocrinologia"
+    },
+    {
+      "value": "201",
+      "label": "Ginecologia"
+    },
+    {
+      "value": "202",
+      "label": "Hematologia"
+    },
+    {
+      "value": "204",
+      "label": "Hemodinamia"
+    },
+    {
+      "value": "282",
+      "label": "Hepatologia"
+    },
+    {
+      "value": "206",
+      "label": "Infectologia"
+    },
+    {
+      "value": "378",
+      "label": "Mastologia"
+    },
+    {
+      "value": "216",
+      "label": "Nefrologia"
+    },
+    {
+      "value": "217",
+      "label": "Nefrologia pediatrica"
+    },
+    {
+      "value": "218",
+      "label": "Neonatologia"
+    },
+    {
+      "value": "219",
+      "label": "Neumonologia"
+    },
+    {
+      "value": "221",
+      "label": "Neurocirugia"
+    },
+    {
+      "value": "335",
+      "label": "Neurocirugia columna"
+    },
+    {
+      "value": "297",
+      "label": "Neurocirugia pediatrica"
+    },
+    {
+      "value": "471",
+      "label": "Neuroftalmologia"
+    },
+    {
+      "value": "222",
+      "label": "Neurologia"
+    },
+    {
+      "value": "224",
+      "label": "Nutricion"
+    },
+    {
+      "value": "298",
+      "label": "Nutricion pediatrica"
+    },
+    {
+      "value": "262",
+      "label": "Nutricion y diabetes"
+    },
+    {
+      "value": "225",
+      "label": "Obstetricia"
+    },
+    {
+      "value": "226",
+      "label": "Oftalmologia"
+    },
+    {
+      "value": "263",
+      "label": "Oftalmologia pediatrico"
+    },
+    {
+      "value": "447",
+      "label": "Onco ortopedia adulto"
+    },
+    {
+      "value": "423",
+      "label": "Oncohematologia"
+    },
+    {
+      "value": "227",
+      "label": "Oncologia"
+    },
+    {
+      "value": "229",
+      "label": "Ortopedia y traumatologia"
+    },
+    {
+      "value": "267",
+      "label": "Ortopedia y traumatologia pediatrica"
+    },
+    {
+      "value": "230",
+      "label": "Otorrinolaringologia"
+    },
+    {
+      "value": "264",
+      "label": "Otorrinolaringologia pediatrico"
+    },
+    {
+      "value": "434",
+      "label": "Patologia herniaria"
+    },
+    {
+      "value": "265",
+      "label": "Patologia mamaria"
+    },
+    {
+      "value": "486",
+      "label": "Preendoscopico"
+    },
+    {
+      "value": "336",
+      "label": "Proctologia"
+    },
+    {
+      "value": "313",
+      "label": "Psicologia"
+    },
+    {
+      "value": "232",
+      "label": "Psiquiatria"
+    },
+    {
+      "value": "497",
+      "label": "Rehabilitacion vestibular"
+    },
+    {
+      "value": "236",
+      "label": "Reumatologia"
+    },
+    {
+      "value": "507",
+      "label": "Sindrome vertiginoso"
+    },
+    {
+      "value": "240",
+      "label": "Tocoginecologia"
+    },
+    {
+      "value": "460",
+      "label": "Trastornos del sueño y ventilacion"
+    },
+    {
+      "value": "334",
+      "label": "Tratamiento del dolor"
+    },
+    {
+      "value": "242",
+      "label": "Urologia"
+    },
+    {
+      "value": "530",
+      "label": "Nutricion deportiva"
+    }
+  ],
+  "medical_centers": [
+    {
+      "value": "1",
+      "label": "Hospital Central",
+      "priority": "proximity"
+    },
+    {
+      "value": "2",
+      "label": "Clínica San José",
+      "priority": "proximity"
+    },
+    {
+      "value": "3",
+      "label": "Centro Médico Santa María",
+      "priority": "availability"
+    },
+    {
+      "value": "4",
+      "label": "Hospital General",
+      "priority": "proximity"
+    },
+    {
+      "value": "5",
+      "label": "Clínica del Sol",
+      "priority": "availability"
+    },
+    {
+      "value": "6",
+      "label": "Centro de Salud La Esperanza",
+      "priority": "availability"
+    },
+    {
+      "value": "7",
+      "label": "Hospital Regional",
+      "priority": "proximity"
+    },
+    {
+      "value": "8",
+      "label": "Clínica Vida Sana",
+      "priority": "availability"
+    },
+    {
+      "value": "9",
+      "label": "Centro Médico El Buen Samaritano",
+      "priority": "proximity"
+    },
+    {
+      "value": "10",
+      "label": "Hospital de la Ciudad",
+      "priority": "availability"
+    }
+  ]
+}
