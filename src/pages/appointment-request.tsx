@@ -3,6 +3,8 @@ import { Check } from 'lucide-react';
 
 import { Appointment_Initial } from '@/modules/appointment-initial';
 import { Appointment_Calendar } from '@/modules/appointment-calendar';
+import { Appointment_Confirmation } from '@/modules/appointment-confirmation';
+import { Appointment_Success } from '@/modules/appointment-success';
 import { UseAppointments } from '@/hooks/use-appointments';
 import { APPOINTMENTS_STEPS } from '@/constants';
 import { cn } from '@/lib/utils';
@@ -24,12 +26,16 @@ export default function Page() {
   );
 }
 
+// El stepper solo muestra los 3 pasos visibles (el éxito no es un "paso" numerado)
 const STEP_CONFIG = [
   { step: APPOINTMENTS_STEPS.APPOINTMENT_INITIAL, label: 'Preferencias' },
   { step: APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR, label: 'Fecha y hora' },
+  { step: APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION, label: 'Confirmación' },
 ];
 
 const Stepper = ({ currentStep }: { currentStep: APPOINTMENTS_STEPS }) => {
+  if (currentStep === APPOINTMENTS_STEPS.APPOINTMENT_SUCCESS) return null;
+
   const currentIndex = STEP_CONFIG.findIndex(s => s.step === currentStep);
   return (
     <div className="mb-6 flex max-w-[500px] items-center gap-3">
@@ -50,7 +56,7 @@ const Stepper = ({ currentStep }: { currentStep: APPOINTMENTS_STEPS }) => {
             </div>
             <span
               className={cn(
-                'text-sm font-medium transition-colors duration-200',
+                'hidden text-sm font-medium transition-colors duration-200 sm:block',
                 i === currentIndex ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
@@ -78,6 +84,8 @@ const TurnosStep = () => {
       <div key={step} className="animate-in fade-in fill-mode-both duration-200">
         {step === APPOINTMENTS_STEPS.APPOINTMENT_INITIAL && <Appointment_Initial metadata={metadata} />}
         {step === APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR && <Appointment_Calendar metadata={metadata} />}
+        {step === APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION && <Appointment_Confirmation metadata={metadata} />}
+        {step === APPOINTMENTS_STEPS.APPOINTMENT_SUCCESS && <Appointment_Success metadata={metadata} />}
       </div>
     </>
   );

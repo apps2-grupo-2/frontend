@@ -1,4 +1,5 @@
-import { Calendar, Clock, MapPin, Video, CalendarPlus } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Clock, MapPin, Video, CalendarPlus, X, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { upcomingAppointments } from '@/lib/mock-data';
@@ -6,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
 import { cn } from '@/lib/utils';
+
+type Appointment = (typeof upcomingAppointments)[number] & { status: string };
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr + 'T00:00:00');
@@ -37,6 +40,21 @@ export default function Page() {
 
 const AppointmentsTab = () => {
   const navigate = useNavigate();
+  // Estado local para manejar cancelaciones sin backend
+  // TODO: reemplazar con mutación al endpoint DELETE /appointments/:id
+  const [appointments, setAppointments] = useState<Appointment[]>(
+    upcomingAppointments as Appointment[]
+  );
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const handleCancel = (id: string) => {
+    // TODO: llamar a DELETE /appointments/:id o PATCH /appointments/:id { status: 'cancelado' }
+    setAppointments(prev =>
+      prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a))
+    );
+    setCancellingId(null);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -51,13 +69,16 @@ const AppointmentsTab = () => {
         </Button>
       </div>
 
-      {upcomingAppointments.length === 0 ? (
+      {appointments.length === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (
-        upcomingAppointments.map(appt => (
+        appointments.map(appt => (
           <Card
             key={appt.id}
-            className="border-border shadow-none transition-all duration-200 hover:border-primary/20 hover:shadow-md"
+            className={cn(
+              'border-border shadow-none transition-all duration-200 hover:border-primary/20 hover:shadow-md',
+              appt.status === 'cancelado' && 'opacity-60'
+            )}
           >
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-col gap-3">
@@ -100,16 +121,60 @@ const AppointmentsTab = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
-                  {appt.modality === 'virtual' && (
+
+                {appt.status !== 'cancelado' && (
+                  <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
+                    {appt.modality === 'virtual' && (
+                      <Button
+                        size="sm"
+                        className="bg-accent text-xs text-accent-foreground hover:bg-accent/90"
+                      >
+                        Unirse
+                      </Button>
+                    )}
                     <Button
                       size="sm"
-                      className="w-full bg-accent text-xs text-accent-foreground hover:bg-accent/90 sm:w-auto"
+                      variant="outline"
+                      className="text-xs"
+                      onClick={() => navigate(ROUTES.SOLICITAR_TURNOS)}
                     >
-                      Unirse
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      Reprogramar
                     </Button>
-                  )}
-                </div>
+
+                    {cancellingId === appt.id ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">¿Confirmás la cancelación?</span>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="text-xs"
+                          onClick={() => handleCancel(appt.id)}
+                        >
+                          Sí, cancelar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-xs"
+                          onClick={() => setCancellingId(null)}
+                        >
+                          No
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => setCancellingId(appt.id)}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Cancelar turno
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

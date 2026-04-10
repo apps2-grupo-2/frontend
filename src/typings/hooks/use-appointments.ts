@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 
 import type { AppointmentInitialFormProps } from '@/typings/modules/appointment-initial';
+import type { AppointmentCalendarFormProps } from '@/typings/modules/appointment-calendar';
 import type { APPOINTMENTS_STEPS } from '@/constants';
 
 export type Metadata = {
@@ -18,5 +19,6 @@ export type UseAppointmentsData = {
 };
 
 export type Payload = {
-  appointment_initial: AppointmentInitialFormProps;
+  appointment_initial?: AppointmentInitialFormProps;
+  appointment_calendar?: AppointmentCalendarFormProps;
 } | null;

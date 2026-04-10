@@ -9,6 +9,9 @@ const defaultFields: AuthStoreStates = {
   email: undefined,
   logoutRequired: false,
   refreshToken: undefined,
+  role: undefined,
+  name: undefined,
+  subtitle: undefined,
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -23,10 +26,13 @@ export const useAuthStore = create<AuthStore>()(
           accessToken: a.accessToken,
           email: a.email,
           refreshToken: a.refreshToken,
+          role: a.role,
+          name: a.name,
+          subtitle: a.subtitle,
         }),
     }),
     {
-      name: 'auth', // name of the item in the storage (must be unique)
+      name: 'auth',
       storage: createJSONStorage(() => sessionStorage),
     }
   )

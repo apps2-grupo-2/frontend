@@ -121,10 +121,7 @@ export const Appointment_Initial = (props: StepProps) => {
   };
 
   const onSubmit = async (formData: AppointmentInitialFormProps) => {
-    // console.warn('>> formData');
-    // console.warn(formData);
-    //metadata.payloadRef.current = { appointment_initial: formData };
-    console.warn(metadata.payloadRef.current);
+    metadata.payloadRef.current = { ...metadata.payloadRef.current, appointment_initial: formData };
     metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR);
   };
 

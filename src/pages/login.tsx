@@ -1,9 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Eye, EyeOff, Lock, User } from 'lucide-react';
+import { Activity, Eye, EyeOff, Lock, User, Stethoscope, ClipboardList } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { authLogin } from '@/services/auth';
+import { useAuthStore } from '@/stores/auth.store';
+import { ROUTES } from '@/constants';
+import type { UserRole } from '@/typings/services/auth';
+import { MOCK_USERS } from '@/mocks/auth-mock';
+
+const ROLE_HOME: Record<UserRole, string> = {
+  paciente: ROUTES.TURNOS,
+  profesional: ROUTES.AGENDA_PROFESIONAL,
+  administrativo: ROUTES.PRESENTISMO,
+};
+
+const ROLE_QUICK_ACCESS = [
+  { role: 'paciente' as UserRole, label: 'Paciente', icon: User, color: 'text-primary' },
+  { role: 'profesional' as UserRole, label: 'Profesional', icon: Stethoscope, color: 'text-success' },
+  { role: 'administrativo' as UserRole, label: 'Administrativo', icon: ClipboardList, color: 'text-amber-600' },
+];
 
 const stats = [
   { value: '48k+', label: 'Pacientes activos' },
@@ -16,11 +33,34 @@ const statDelays = ['delay-0', 'delay-75', 'delay-150', 'delay-200'] as const;
 
 export default function Page() {
   const navigate = useNavigate();
+  const setTokens = useAuthStore(s => s.setTokens);
+
   const [dni, setDni] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const doLogin = async (identifier: string, pass: string) => {
+    setError('');
+    setLoading(true);
+    try {
+      const res = await authLogin({ identifier, password: pass });
+      setTokens({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+        email: res.email,
+        role: res.role,
+        name: res.name,
+        subtitle: res.subtitle,
+      });
+      navigate(ROLE_HOME[res.role], { replace: true });
+    } catch {
+      setError('DNI o contraseña incorrectos.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,12 +68,14 @@ export default function Page() {
       setError('Ingresá tu DNI y contraseña para continuar.');
       return;
     }
-    setError('');
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigate('/mi-salud');
-    }, 1200);
+    doLogin(dni, password);
+  };
+
+  const handleQuickAccess = (role: UserRole) => {
+    const user = MOCK_USERS.find(u => u.role === role)!;
+    setDni(user.dni);
+    setPassword(user.password);
+    doLogin(user.dni, user.password);
   };
 
   return (
@@ -84,7 +126,34 @@ export default function Page() {
           <CardContent className="p-8">
             <div className="mb-8">
               <h1 className="font-heading text-2xl font-bold text-foreground">Iniciar sesión</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Accedé al Portal del Paciente con tu DNI.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Accedé al portal con tu DNI.</p>
+            </div>
+
+            {/* Acceso rápido (solo en entorno de desarrollo/mock) */}
+            <div className="mb-6 rounded-lg border border-dashed border-border bg-muted/30 p-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Acceso rápido · Demo
+              </p>
+              <div className="flex gap-2">
+                {ROLE_QUICK_ACCESS.map(({ role, label, icon: Icon, color }) => (
+                  <button
+                    key={role}
+                    type="button"
+                    disabled={loading}
+                    onClick={() => handleQuickAccess(role)}
+                    className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-3 text-xs transition-all hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50"
+                  >
+                    <Icon className={`h-4 w-4 ${color}`} />
+                    <span className="font-medium text-foreground">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">o ingresá con tus credenciales</span>
+              <div className="h-px flex-1 bg-border" />
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5">
