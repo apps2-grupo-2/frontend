@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"npm ls lucide-react 2>&1\")",
+      "Bash(cmd /c \"cd c:\\\\Users\\\\Juan\\\\Documents\\\\Modulo2\\\\frontend && cat package.json\")",
+      "Bash(cmd /c \"cd c:\\\\Users\\\\Juan\\\\Documents\\\\Modulo2\\\\frontend && node -e \\\\\"const l = require\\('./node_modules/lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => ['ScanLine','MonitorHeart','BedDouble','FlaskConical'].includes\\(k\\)\\)\\);\\\\\"\")",
+      "Bash(cmd /c \"dir c:\\\\Users\\\\Juan\\\\Documents\\\\Modulo2\\\\frontend\\\\node_modules\\\\lucide-react\\\\dist\\\\esm\\\\icons\\\\\"\")",
+      "Bash(cmd /c \"dir \\\\\"c:\\\\Users\\\\Juan\\\\Documents\\\\Modulo2\\\\frontend\\\\node_modules\\\\lucide-react\\\\\"\")"
+    ]
+  }
+}

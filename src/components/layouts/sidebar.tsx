@@ -1,6 +1,25 @@
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, CalendarDays, ChevronRight, Menu, X, Activity, LogOut, ClipboardList } from 'lucide-react';
+import {
+  Calendar,
+  CalendarDays,
+  ChevronRight,
+  ChevronDown,
+  Menu,
+  X,
+  Activity,
+  LogOut,
+  ClipboardList,
+  FileText,
+  Pill,
+  FlaskConical,
+  ScanLine,
+  BedDouble,
+  Receipt,
+  UserRound,
+  Monitor,
+  Settings,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -8,31 +27,116 @@ import { useAuthStore } from '@/stores/auth.store';
 import { ROUTES } from '@/constants';
 import type { UserRole } from '@/typings/services/auth';
 
-type NavItem = {
+type SubNavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
   description: string;
+  roles: UserRole[];
 };
 
-const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  paciente: [
-    { href: ROUTES.TURNOS, label: 'Mis turnos', icon: Calendar, description: 'Ver y solicitar turnos' },
-  ],
-  profesional: [
-    { href: ROUTES.AGENDA_PROFESIONAL, label: 'Mi agenda', icon: CalendarDays, description: 'Tu disponibilidad semanal' },
-  ],
-  administrativo: [
-    { href: ROUTES.AGENDA_PROFESIONAL, label: 'Agenda profesional', icon: CalendarDays, description: 'Disponibilidad por médico' },
-    { href: ROUTES.PRESENTISMO, label: 'Presentismo', icon: ClipboardList, description: 'Registro de llegada' },
-  ],
+type ModuleItem = {
+  id: number;
+  label: string;
+  icon: LucideIcon;
+  /** Sub-items del módulo. Si está vacío, el botón es solo un placeholder. */
+  subItems: SubNavItem[];
+  /** URL base para detectar si el módulo está activo */
+  basePaths?: string[];
 };
 
-const PORTAL_LABEL: Record<UserRole, string> = {
-  paciente: 'Portal del Paciente',
-  profesional: 'Portal del Profesional',
-  administrativo: 'Portal Administrativo',
-};
+const MODULES: ModuleItem[] = [
+  {
+    id: 1,
+    label: 'Historia Clínica',
+    icon: FileText,
+    subItems: [],
+  },
+  {
+    id: 2,
+    label: 'Turnos y Agendas',
+    icon: Calendar,
+    basePaths: [ROUTES.TURNOS, ROUTES.SOLICITAR_TURNOS, ROUTES.AGENDA_PROFESIONAL, ROUTES.PRESENTISMO],
+    subItems: [
+      {
+        href: ROUTES.TURNOS,
+        label: 'Mis turnos',
+        icon: Calendar,
+        description: 'Ver y solicitar turnos',
+        roles: ['paciente'],
+      },
+      {
+        href: ROUTES.AGENDA_PROFESIONAL,
+        label: 'Mi agenda',
+        icon: CalendarDays,
+        description: 'Tu disponibilidad semanal',
+        roles: ['profesional'],
+      },
+      {
+        href: ROUTES.AGENDA_PROFESIONAL,
+        label: 'Agenda profesional',
+        icon: CalendarDays,
+        description: 'Disponibilidad por médico',
+        roles: ['administrativo'],
+      },
+      {
+        href: ROUTES.PRESENTISMO,
+        label: 'Presentismo',
+        icon: ClipboardList,
+        description: 'Registro de llegada',
+        roles: ['administrativo'],
+      },
+    ],
+  },
+  {
+    id: 3,
+    label: 'Farmacia e Insumos',
+    icon: Pill,
+    subItems: [],
+  },
+  {
+    id: 4,
+    label: 'Laboratorio',
+    icon: FlaskConical,
+    subItems: [],
+  },
+  {
+    id: 5,
+    label: 'Diagnóstico por Imágenes',
+    icon: ScanLine,
+    subItems: [],
+  },
+  {
+    id: 6,
+    label: 'Internación y Camas',
+    icon: BedDouble,
+    subItems: [],
+  },
+  {
+    id: 7,
+    label: 'Facturación',
+    icon: Receipt,
+    subItems: [],
+  },
+  {
+    id: 8,
+    label: 'Portal del Paciente',
+    icon: UserRound,
+    subItems: [],
+  },
+  {
+    id: 9,
+    label: 'Monitoreo',
+    icon: Monitor,
+    subItems: [],
+  },
+  {
+    id: 10,
+    label: 'Core',
+    icon: Settings,
+    subItems: [],
+  },
+];
 
 export function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -83,9 +187,6 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
   const navigate = useNavigate();
   const { role, name, subtitle, resetStore } = useAuthStore();
 
-  const navItems = role ? (NAV_BY_ROLE[role] ?? []) : [];
-  const portalLabel = role ? PORTAL_LABEL[role] : 'Health Grid';
-
   const handleLogout = () => {
     resetStore();
     navigate(ROUTES.LOGIN, { replace: true });
@@ -105,7 +206,7 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
           </div>
           <div>
             <span className="font-heading text-lg leading-none font-bold text-sidebar-foreground">Health Grid</span>
-            <p className="mt-0.5 text-xs text-sidebar-foreground/60">{portalLabel}</p>
+            <p className="mt-0.5 text-xs text-sidebar-foreground/60">Sistema hospitalario</p>
           </div>
         </div>
       </div>
@@ -125,41 +226,21 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Navegación principal">
+      {/* Modules nav */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Módulos">
+        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+          Módulos
+        </p>
         <div className="space-y-0.5">
-          {navItems.map(({ href, label, icon: Icon, description }) => {
-            const isActive = pathname.startsWith(href);
-            return (
-              <NavLink
-                key={href}
-                to={href}
-                onClick={onNavigate}
-                className={() =>
-                  cn(
-                    'group relative flex items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-sidebar-foreground hover:translate-x-0.5 hover:bg-sidebar-accent'
-                  )
-                }
-              >
-                <Icon className="h-5 w-5 flex-shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <span className="text-sm font-medium">{label}</span>
-                  <p
-                    className={cn(
-                      'truncate text-xs',
-                      isActive ? 'text-primary-foreground/70' : 'text-sidebar-foreground/50'
-                    )}
-                  >
-                    {description}
-                  </p>
-                </div>
-                {isActive && <ChevronRight className="h-4 w-4 opacity-50" />}
-              </NavLink>
-            );
-          })}
+          {MODULES.map(mod => (
+            <ModuleButton
+              key={mod.id}
+              mod={mod}
+              pathname={pathname}
+              role={role}
+              onNavigate={onNavigate}
+            />
+          ))}
         </div>
       </nav>
 
@@ -173,6 +254,103 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
           <span className="text-sm">Cerrar sesión</span>
         </button>
       </div>
+    </div>
+  );
+};
+
+type ModuleButtonProps = {
+  mod: ModuleItem;
+  pathname: string;
+  role: UserRole | undefined;
+  onNavigate: () => void;
+};
+
+const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) => {
+  const hasSubItems = mod.subItems.length > 0;
+  const isActiveModule = mod.basePaths?.some(p => pathname.startsWith(p)) ?? false;
+
+  const [open, setOpen] = useState(isActiveModule);
+
+  // Sub-items filtrados por rol
+  const visibleSubItems = role
+    ? mod.subItems.filter(item => item.roles.includes(role))
+    : [];
+
+  if (!hasSubItems) {
+    // Módulo de otro grupo: placeholder deshabilitado
+    return (
+      <div
+        className="flex items-center gap-3 rounded-lg px-3 py-2.5 opacity-40 cursor-not-allowed select-none"
+        title="Módulo en desarrollo por otro equipo"
+      >
+        <mod.icon className="h-4 w-4 flex-shrink-0 text-sidebar-foreground" />
+        <span className="text-sm text-sidebar-foreground">{mod.label}</span>
+        <span className="ml-auto rounded bg-sidebar-accent px-1.5 py-0.5 text-[9px] font-medium text-sidebar-foreground/50">
+          {mod.id}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Module header button */}
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        className={cn(
+          'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150',
+          isActiveModule
+            ? 'bg-sidebar-accent text-sidebar-foreground font-medium'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent'
+        )}
+      >
+        <mod.icon className="h-4 w-4 flex-shrink-0" />
+        <span className="flex-1 text-left text-sm">{mod.label}</span>
+        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold text-primary">
+          {mod.id}
+        </span>
+        <ChevronDown
+          className={cn('h-3.5 w-3.5 text-sidebar-foreground/50 transition-transform duration-200', open && 'rotate-180')}
+        />
+      </button>
+
+      {/* Sub-items */}
+      {open && visibleSubItems.length > 0 && (
+        <div className="mt-0.5 ml-3 space-y-0.5 border-l border-sidebar-border pl-3">
+          {visibleSubItems.map(({ href, label, icon: Icon, description }) => {
+            const isActive = pathname.startsWith(href);
+            return (
+              <NavLink
+                key={href + label}
+                to={href}
+                onClick={onNavigate}
+                className={() =>
+                  cn(
+                    'group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150',
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-sidebar-foreground hover:translate-x-0.5 hover:bg-sidebar-accent'
+                  )
+                }
+              >
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="text-sm font-medium">{label}</span>
+                  <p
+                    className={cn(
+                      'truncate text-xs',
+                      isActive ? 'text-primary-foreground/70' : 'text-sidebar-foreground/50'
+                    )}
+                  >
+                    {description}
+                  </p>
+                </div>
+                {isActive && <ChevronRight className="h-3.5 w-3.5 opacity-50" />}
+              </NavLink>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
