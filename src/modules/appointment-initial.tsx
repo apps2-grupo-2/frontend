@@ -128,7 +128,7 @@ export const Appointment_Initial = (props: StepProps) => {
   return (
     <div>
       <form onSubmit={form.handleSubmit(onSubmit)} id="form" className="mb-4">
-        <div className="flex max-w-[500px] flex-col gap-5">
+        <div className="flex flex-col gap-5">
           <RhfTabs
             control={form.control}
             name="appointmentType"

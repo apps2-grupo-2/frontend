@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 export default function Page() {
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 flex flex-col">
+    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 mx-auto flex max-w-2xl flex-col">
       <div className="mb-6 sm:mb-8">
         <p className="mb-1 text-xs font-medium tracking-wider text-muted-foreground uppercase sm:text-sm">
           Portal del Paciente
@@ -38,7 +38,7 @@ const Stepper = ({ currentStep }: { currentStep: APPOINTMENTS_STEPS }) => {
 
   const currentIndex = STEP_CONFIG.findIndex(s => s.step === currentStep);
   return (
-    <div className="mb-6 flex max-w-[500px] items-center gap-3">
+    <div className="mb-6 flex items-center gap-3">
       {STEP_CONFIG.map(({ step, label }, i) => (
         <Fragment key={step}>
           <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ const TurnosStep = () => {
   return (
     <>
       <Stepper currentStep={step} />
-      <div key={step} className="animate-in fade-in fill-mode-both duration-200">
+      <div key={step} className="animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-300">
         {step === APPOINTMENTS_STEPS.APPOINTMENT_INITIAL && <Appointment_Initial metadata={metadata} />}
         {step === APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR && <Appointment_Calendar metadata={metadata} />}
         {step === APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION && <Appointment_Confirmation metadata={metadata} />}

@@ -144,4 +144,52 @@
   html {
     @apply font-sans;
   }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Scrollbar sleek — fade suave estilo macOS */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Estado de reposo: transparente, desaparece lento con delay */
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 99px;
+    transition: background 0.6s ease 0.8s;
+  }
+
+  /* Al hacer hover en el contenedor: aparece rápido, sin delay */
+  *:hover::-webkit-scrollbar-thumb {
+    background: var(--border);
+    transition: background 0.2s ease;
+  }
+
+  /* Al hacer hover sobre la barra misma: se oscurece */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground) !important;
+    transition: background 0.15s ease !important;
+  }
+
+  /* Sidebar */
+  .bg-sidebar *:hover::-webkit-scrollbar-thumb {
+    background: var(--sidebar-border);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  *:hover {
+    scrollbar-color: var(--border) transparent;
+  }
 }

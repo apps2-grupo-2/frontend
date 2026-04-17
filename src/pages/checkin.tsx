@@ -46,7 +46,7 @@ export default function Page() {
   const arrivedCount = appointments.filter(a => a.status === 'arrived' || a.status === 'in-progress').length;
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300">
+    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 mx-auto max-w-2xl">
       <div className="mb-6 sm:mb-8">
         <p className="mb-1 text-xs font-medium tracking-wider text-muted-foreground uppercase sm:text-sm">
           Gestión de Turnos
@@ -57,7 +57,7 @@ export default function Page() {
         </p>
       </div>
 
-      <div className="flex max-w-2xl flex-col gap-5">
+      <div className="flex flex-col gap-5">
         {/* Stats */}
         <div className="flex gap-3">
           <div className="flex items-center gap-2 rounded-lg bg-amber-500/5 px-3 py-2 text-xs">
@@ -95,11 +95,12 @@ export default function Page() {
               <p className="mt-1 text-xs text-muted-foreground">Probá con otro nombre o DNI.</p>
             </div>
           ) : (
-            filtered.map(appt => (
+            filtered.map((appt, idx) => (
               <Card
                 key={appt.id}
+                style={{ animationDelay: `${idx * 40}ms` }}
                 className={cn(
-                  'border-border shadow-none transition-all duration-200',
+                  'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none transition-all',
                   appt.status === 'completed' && 'opacity-50',
                   appt.status === 'arrived' && 'border-primary/30'
                 )}

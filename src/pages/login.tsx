@@ -141,7 +141,7 @@ export default function Page() {
                     type="button"
                     disabled={loading}
                     onClick={() => handleQuickAccess(role)}
-                    className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-3 text-xs transition-all hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50"
+                    className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-3 text-xs transition-all hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm active:scale-[0.97] active:bg-primary/10 disabled:opacity-50"
                   >
                     <Icon className={`h-4 w-4 ${color}`} />
                     <span className="font-medium text-foreground">{label}</span>
@@ -229,7 +229,7 @@ export default function Page() {
               </Button>
 
               <div className="text-center">
-                <button type="button" className="text-sm text-accent transition-colors hover:text-accent/80">
+                <button type="button" className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]">
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
@@ -238,7 +238,7 @@ export default function Page() {
             <div className="mt-6 border-t border-border pt-6">
               <p className="text-center text-xs text-muted-foreground">
                 ¿Primera vez? Registrate con tu número de afiliado en la recepción o
-                <button className="ml-1 text-accent transition-colors hover:underline">solicitá acceso online</button>.
+                <button className="ml-1 text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]">solicitá acceso online</button>.
               </p>
             </div>
           </CardContent>
