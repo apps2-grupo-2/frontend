@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { BaseLayout } from '@/components/layouts/base-layout';
 import { ProtectedRoute } from '@/components/layouts/protected-route';
-import { ROUTES } from '@/constants';
+import { ROUTES, USER_TYPE } from '@/constants';
 
 const LoginPage = lazy(() => import('./pages/login'));
 const AppointmentsPage = lazy(() => import('./pages/appointments'));
@@ -22,7 +22,7 @@ export function App() {
           <Route
             path={ROUTES.TURNOS}
             element={
-              <ProtectedRoute allowedRoles={['paciente']}>
+              <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
                 <AppointmentsPage />
               </ProtectedRoute>
             }
@@ -30,7 +30,7 @@ export function App() {
           <Route
             path={ROUTES.SOLICITAR_TURNOS}
             element={
-              <ProtectedRoute allowedRoles={['paciente']}>
+              <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
                 <AppointmentRequestPage />
               </ProtectedRoute>
             }
@@ -40,7 +40,7 @@ export function App() {
           <Route
             path={ROUTES.AGENDA_PROFESIONAL}
             element={
-              <ProtectedRoute allowedRoles={['profesional', 'administrativo']}>
+              <ProtectedRoute allowedRoles={[USER_TYPE.PROFESSIONAL, USER_TYPE.ADMINISTRATIVE]}>
                 <ProfessionalCalendarPage />
               </ProtectedRoute>
             }
@@ -50,7 +50,7 @@ export function App() {
           <Route
             path={ROUTES.PRESENTISMO}
             element={
-              <ProtectedRoute allowedRoles={['administrativo']}>
+              <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
                 <CheckinPage />
               </ProtectedRoute>
             }

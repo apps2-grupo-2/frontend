@@ -35,7 +35,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
     ? MOCK_PROFESSIONALS.find(p => p.value === initial.professional)?.label
     : undefined;
   const centerLabel = allCenters.find(c => c.value === initial?.medicalCenter)?.label ?? '—';
-  const priorityLabel = initial?.priority ? PRIORITY_LABELS[initial.priority] ?? '—' : '—';
+  const priorityLabel = initial?.priority ? (PRIORITY_LABELS[initial.priority] ?? '—') : '—';
 
   const backHandler = () => {
     metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR);
@@ -53,9 +53,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
     <div>
       <form onSubmit={onSubmit} id="form" className="mb-4">
         <div className="flex max-w-[500px] flex-col gap-4">
-          <p className="text-sm text-muted-foreground">
-            Revisá los datos antes de confirmar el turno.
-          </p>
+          <p className="text-sm text-muted-foreground">Revisá los datos antes de confirmar el turno.</p>
 
           <Card className="border-border shadow-none">
             <CardContent className="flex flex-col gap-4 p-5">
@@ -69,17 +67,15 @@ export const Appointment_Confirmation = (props: StepProps) => {
                 </div>
               </div>
 
-              {initial?.appointmentType === APPOINTMENT_TYPES.PROFESSIONAL && professionalLabel && (
-                <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <User className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Profesional</p>
-                    <p className="text-sm font-semibold text-foreground">{professionalLabel}</p>
-                  </div>
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <User className="h-4 w-4 text-primary" />
                 </div>
-              )}
+                <div>
+                  <p className="text-xs text-muted-foreground">Profesional</p>
+                  <p className="text-sm font-semibold text-foreground">{professionalLabel}</p>
+                </div>
+              </div>
 
               <div className="flex items-start gap-3">
                 <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -121,10 +117,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
         </div>
       </form>
 
-      <StepNavigation
-        backBtn={{ onClick: backHandler }}
-        nextBtn={{ disabled: false }}
-      />
+      <StepNavigation backBtn={{ onClick: backHandler }} nextBtn={{ disabled: false }} />
     </div>
   );
 };

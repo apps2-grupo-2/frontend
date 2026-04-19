@@ -1,3 +1,4 @@
+import { USER_TYPE } from '@/constants';
 import type { UserRole } from '@/typings/services/auth';
 
 // TODO: reemplazar con POST /auth/sign-in del módulo Core
@@ -17,8 +18,8 @@ export type MockUser = {
 export const MOCK_USERS: MockUser[] = [
   {
     dni: '28345671',
-    password: '1234',
-    role: 'paciente',
+    password: 'patient',
+    role: USER_TYPE.PATIENT,
     name: 'González María Elena',
     email: 'maria.gonzalez@email.com',
     subtitle: 'OSDE 310',
@@ -28,7 +29,7 @@ export const MOCK_USERS: MockUser[] = [
   {
     dni: '20987654',
     password: '1234',
-    role: 'profesional',
+    role: USER_TYPE.PROFESSIONAL,
     name: 'Fernandez Juan Pablo',
     email: 'jfernandez@healthgrid.com',
     subtitle: 'Cardiología · Electrofisiología',
@@ -38,7 +39,7 @@ export const MOCK_USERS: MockUser[] = [
   {
     dni: '33112233',
     password: '1234',
-    role: 'administrativo',
+    role: USER_TYPE.ADMINISTRATIVE,
     name: 'Sosa Rodrigo',
     email: 'rsosa@healthgrid.com',
     subtitle: 'Administración',

@@ -17,14 +17,6 @@ const formatDateKey = (date: Date) => {
 const formatDateLabel = (date: Date) =>
   date.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 
-const disabledDates = (date: Date) =>
-  !MOCK_ENABLED_DATES.some(
-    d =>
-      d.getFullYear() === date.getFullYear() &&
-      d.getMonth() === date.getMonth() &&
-      d.getDate() === date.getDate()
-  );
-
 export const Appointment_Calendar = (props: StepProps) => {
   const { metadata } = props;
   const [date, setDate] = useState<Date | undefined>(MOCK_ENABLED_DATES[0]);
@@ -47,10 +39,6 @@ export const Appointment_Calendar = (props: StepProps) => {
     if (!date || !selectedTime) return;
     // TODO: reemplazar dateKey y selectedTime con respuesta de
     // POST /appointments/reserve { professionalId, specialtyId, centerId, date, time }
-    metadata.payloadRef.current = {
-      ...metadata.payloadRef.current,
-      appointment_calendar: { selectedDate: dateKey, selectedTime },
-    };
     metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION);
   };
 
@@ -65,14 +53,13 @@ export const Appointment_Calendar = (props: StepProps) => {
               mode="single"
               selected={date}
               onSelect={handleDateSelect}
-              disabled={disabledDates}
               className="p-0 [--cell-size:--spacing(12)]"
             />
           </div>
 
           {date && (
             <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium capitalize text-foreground">
+              <p className="text-sm font-medium text-foreground capitalize">
                 Horarios disponibles · <span className="text-muted-foreground">{formatDateLabel(date)}</span>
               </p>
               {availableSlots.length === 0 ? (
@@ -101,10 +88,7 @@ export const Appointment_Calendar = (props: StepProps) => {
         </div>
       </form>
 
-      <StepNavigation
-        backBtn={{ onClick: backHandler }}
-        nextBtn={{ disabled: !isValid }}
-      />
+      <StepNavigation backBtn={{ onClick: backHandler }} nextBtn={{ disabled: !isValid }} />
     </div>
   );
 };

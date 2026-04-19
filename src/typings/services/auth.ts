@@ -1,4 +1,6 @@
-export type UserRole = 'paciente' | 'profesional' | 'administrativo';
+import type { USER_TYPE } from '@/constants';
+
+export type UserRole = (typeof USER_TYPE)[keyof typeof USER_TYPE];
 
 export type AuthLoginRequest = {
   identifier: string; // DNI

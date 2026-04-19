@@ -4,6 +4,7 @@ import { useController } from 'react-hook-form';
 import type { RhfSelectProps } from '@/typings/components/rhf/rhf-select';
 import { FormControl } from '@/components/ui/form-control';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { FieldSkeleton } from '../ui/field-skeleton';
 
 export const RhfSelect = <T extends FieldValues>(props: RhfSelectProps<T>) => {
   const { name, rules, shouldUnregister, defaultValue, control, disabled, exact, onValueChange, ...rest } = props;
@@ -24,6 +25,10 @@ export const RhfSelect = <T extends FieldValues>(props: RhfSelectProps<T>) => {
     field.onChange(value);
     onValueChange?.(value);
   };
+
+  if (rest.loading) {
+    return <FieldSkeleton />;
+  }
 
   return (
     <FormControl disabled={disabled} label={rest.label} error={error}>
