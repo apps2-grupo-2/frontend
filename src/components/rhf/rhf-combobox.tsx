@@ -12,6 +12,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox';
+import { FieldSkeleton } from '../ui/field-skeleton';
 
 export const RhfCombobox = <T extends FieldValues>(props: RhfComboboxProps<T>) => {
   const { name, rules, shouldUnregister, defaultValue, control, disabled, exact, onValueChange, ...rest } = props;
@@ -37,6 +38,10 @@ export const RhfCombobox = <T extends FieldValues>(props: RhfComboboxProps<T>) =
   const value = useMemo(() => {
     return rest.options.find(a => a.value === field.value) || null;
   }, [field.value, rest.options]);
+
+  if (rest.loading) {
+    return <FieldSkeleton />;
+  }
 
   return (
     <FormControl disabled={disabled} label={rest.label} error={error}>

@@ -23,15 +23,12 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 export default function Page() {
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 mx-auto max-w-2xl">
+    <div className="animate-in duration-300 fill-mode-both fade-in slide-in-from-bottom-2">
       <div className="mb-6 sm:mb-8">
         <p className="mb-1 text-xs font-medium tracking-wider text-muted-foreground uppercase sm:text-sm">
           Portal del Paciente
         </p>
         <h1 className="font-heading text-2xl font-bold text-balance text-foreground sm:text-3xl">Turnos</h1>
-        <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-          Consigue turno con un profesional o de una especialidad
-        </p>
       </div>
       <AppointmentsTab />
     </div>
@@ -42,16 +39,12 @@ const AppointmentsTab = () => {
   const navigate = useNavigate();
   // Estado local para manejar cancelaciones sin backend
   // TODO: reemplazar con mutación al endpoint DELETE /appointments/:id
-  const [appointments, setAppointments] = useState<Appointment[]>(
-    upcomingAppointments as Appointment[]
-  );
+  const [appointments, setAppointments] = useState<Appointment[]>(upcomingAppointments as Appointment[]);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const handleCancel = (id: string) => {
     // TODO: llamar a DELETE /appointments/:id o PATCH /appointments/:id { status: 'cancelado' }
-    setAppointments(prev =>
-      prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a))
-    );
+    setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a)));
     setCancellingId(null);
   };
 
@@ -126,10 +119,7 @@ const AppointmentsTab = () => {
                 {appt.status !== 'cancelado' && (
                   <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
                     {appt.modality === 'virtual' && (
-                      <Button
-                        size="sm"
-                        className="bg-accent text-xs text-accent-foreground hover:bg-accent/90"
-                      >
+                      <Button size="sm" className="bg-accent text-xs text-accent-foreground hover:bg-accent/90">
                         Unirse
                       </Button>
                     )}
@@ -154,12 +144,7 @@ const AppointmentsTab = () => {
                         >
                           Sí, cancelar
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-xs"
-                          onClick={() => setCancellingId(null)}
-                        >
+                        <Button size="sm" variant="ghost" className="text-xs" onClick={() => setCancellingId(null)}>
                           No
                         </Button>
                       </div>

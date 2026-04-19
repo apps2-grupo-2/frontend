@@ -6,20 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
-import { ROUTES } from '@/constants';
+import { ROUTES, USER_TYPE } from '@/constants';
 import type { UserRole } from '@/typings/services/auth';
 import { MOCK_USERS } from '@/mocks/auth-mock';
 
 const ROLE_HOME: Record<UserRole, string> = {
-  paciente: ROUTES.TURNOS,
-  profesional: ROUTES.AGENDA_PROFESIONAL,
-  administrativo: ROUTES.PRESENTISMO,
+  [USER_TYPE.PATIENT]: ROUTES.TURNOS,
+  [USER_TYPE.PROFESSIONAL]: ROUTES.AGENDA_PROFESIONAL,
+  [USER_TYPE.ADMINISTRATIVE]: ROUTES.PRESENTISMO,
 };
 
 const ROLE_QUICK_ACCESS = [
-  { role: 'paciente' as UserRole, label: 'Paciente', icon: User, color: 'text-primary' },
-  { role: 'profesional' as UserRole, label: 'Profesional', icon: Stethoscope, color: 'text-success' },
-  { role: 'administrativo' as UserRole, label: 'Administrativo', icon: ClipboardList, color: 'text-amber-600' },
+  { role: USER_TYPE.PATIENT, label: 'Paciente', icon: User, color: 'text-primary' },
+  { role: USER_TYPE.PROFESSIONAL, label: 'Profesional', icon: Stethoscope, color: 'text-success' },
+  { role: USER_TYPE.ADMINISTRATIVE, label: 'Administrativo', icon: ClipboardList, color: 'text-amber-600' },
 ];
 
 const stats = [
@@ -101,7 +101,7 @@ export default function Page() {
             {stats.map(({ value, label }, i) => (
               <div
                 key={label}
-                className={`animate-in fade-in fill-mode-both duration-300 ${statDelays[i]} rounded-xl bg-sidebar-accent p-4`}
+                className={`animate-in duration-300 fill-mode-both fade-in ${statDelays[i]} rounded-xl bg-sidebar-accent p-4`}
               >
                 <p className="font-heading text-xl font-bold text-sidebar-foreground">{value}</p>
                 <p className="mt-0.5 text-xs text-sidebar-foreground/60">{label}</p>
@@ -122,7 +122,7 @@ export default function Page() {
           <span className="font-heading text-xl font-bold text-foreground">Health Grid</span>
         </div>
 
-        <Card className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-300 w-full max-w-md border-border shadow-none">
+        <Card className="w-full max-w-md animate-in border-border shadow-none duration-300 fill-mode-both fade-in slide-in-from-bottom-4">
           <CardContent className="p-8">
             <div className="mb-8">
               <h1 className="font-heading text-2xl font-bold text-foreground">Iniciar sesión</h1>
@@ -131,7 +131,7 @@ export default function Page() {
 
             {/* Acceso rápido (solo en entorno de desarrollo/mock) */}
             <div className="mb-6 rounded-lg border border-dashed border-border bg-muted/30 p-4">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Acceso rápido · Demo
               </p>
               <div className="flex gap-2">
@@ -208,7 +208,7 @@ export default function Page() {
               </div>
 
               {error && (
-                <p className="animate-in fade-in fill-mode-both duration-200 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <p className="animate-in rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive duration-200 fill-mode-both fade-in">
                   {error}
                 </p>
               )}

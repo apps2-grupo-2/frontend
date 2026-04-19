@@ -20,30 +20,11 @@ import {
   Monitor,
   Settings,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth.store';
-import { ROUTES } from '@/constants';
-import type { UserRole } from '@/typings/services/auth';
-
-type SubNavItem = {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-  description: string;
-  roles: UserRole[];
-};
-
-type ModuleItem = {
-  id: number;
-  label: string;
-  icon: LucideIcon;
-  /** Sub-items del módulo. Si está vacío, el botón es solo un placeholder. */
-  subItems: SubNavItem[];
-  /** URL base para detectar si el módulo está activo */
-  basePaths?: string[];
-};
+import { ROUTES, USER_TYPE } from '@/constants';
+import type { ModuleItem, ModuleButtonProps } from '@/typings/components/layouts/sidebar';
 
 const MODULES: ModuleItem[] = [
   {
@@ -63,28 +44,28 @@ const MODULES: ModuleItem[] = [
         label: 'Mis turnos',
         icon: Calendar,
         description: 'Ver y solicitar turnos',
-        roles: ['paciente'],
+        roles: [USER_TYPE.PATIENT],
       },
       {
         href: ROUTES.AGENDA_PROFESIONAL,
         label: 'Mi agenda',
         icon: CalendarDays,
         description: 'Tu disponibilidad semanal',
-        roles: ['profesional'],
+        roles: [USER_TYPE.PROFESSIONAL],
       },
       {
         href: ROUTES.AGENDA_PROFESIONAL,
         label: 'Agenda profesional',
         icon: CalendarDays,
         description: 'Disponibilidad por médico',
-        roles: ['administrativo'],
+        roles: [USER_TYPE.ADMINISTRATIVE],
       },
       {
         href: ROUTES.PRESENTISMO,
         label: 'Presentismo',
         icon: ClipboardList,
         description: 'Registro de llegada',
-        roles: ['administrativo'],
+        roles: [USER_TYPE.ADMINISTRATIVE],
       },
     ],
   },
@@ -167,9 +148,9 @@ export function Sidebar() {
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-30 lg:hidden" onClick={() => setMobileOpen(false)}>
-          <div className="animate-in fade-in fill-mode-both duration-200 absolute inset-0 bg-foreground/40 backdrop-blur-sm" />
+          <div className="absolute inset-0 animate-in bg-foreground/40 backdrop-blur-sm duration-200 fill-mode-both fade-in" />
           <aside
-            className="animate-in slide-in-from-left fill-mode-both duration-200 absolute top-0 left-0 h-full w-64 overflow-y-auto bg-sidebar sm:w-72"
+            className="absolute top-0 left-0 h-full w-64 animate-in overflow-y-auto bg-sidebar duration-200 fill-mode-both slide-in-from-left sm:w-72"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex h-full flex-col pt-16">
@@ -193,7 +174,11 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
   };
 
   const userInitials = name
-    ? name.split(' ').slice(0, 2).map(n => n[0]).join('')
+    ? name
+        .split(' ')
+        .slice(0, 2)
+        .map(n => n[0])
+        .join('')
     : '?';
 
   return (
@@ -218,9 +203,7 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
             {userInitials}
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-sidebar-foreground">
-              {name ?? '—'}
-            </p>
+            <p className="truncate text-sm font-semibold text-sidebar-foreground">{name ?? '—'}</p>
             <p className="truncate text-xs text-sidebar-foreground/60">{subtitle ?? '—'}</p>
           </div>
         </div>
@@ -228,18 +211,12 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
 
       {/* Modules nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Módulos">
-        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+        <p className="mb-2 px-3 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40 uppercase">
           Módulos
         </p>
         <div className="space-y-0.5">
           {MODULES.map(mod => (
-            <ModuleButton
-              key={mod.id}
-              mod={mod}
-              pathname={pathname}
-              role={role}
-              onNavigate={onNavigate}
-            />
+            <ModuleButton key={mod.id} mod={mod} pathname={pathname} role={role} onNavigate={onNavigate} />
           ))}
         </div>
       </nav>
@@ -258,13 +235,6 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
   );
 };
 
-type ModuleButtonProps = {
-  mod: ModuleItem;
-  pathname: string;
-  role: UserRole | undefined;
-  onNavigate: () => void;
-};
-
 const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) => {
   const hasSubItems = mod.subItems.length > 0;
   const isActiveModule = mod.basePaths?.some(p => pathname.startsWith(p)) ?? false;
@@ -272,15 +242,13 @@ const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) =>
   const [open, setOpen] = useState(isActiveModule);
 
   // Sub-items filtrados por rol
-  const visibleSubItems = role
-    ? mod.subItems.filter(item => item.roles.includes(role))
-    : [];
+  const visibleSubItems = role ? mod.subItems.filter(item => item.roles.includes(role)) : [];
 
   if (!hasSubItems) {
     // Módulo de otro grupo: placeholder deshabilitado
     return (
       <div
-        className="flex items-center gap-3 rounded-lg px-3 py-2.5 opacity-40 cursor-not-allowed select-none"
+        className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 opacity-40 select-none"
         title="Módulo en desarrollo por otro equipo"
       >
         <mod.icon className="h-4 w-4 flex-shrink-0 text-sidebar-foreground" />
@@ -300,17 +268,18 @@ const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) =>
         className={cn(
           'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 active:scale-[0.98]',
           isActiveModule
-            ? 'bg-sidebar-accent text-sidebar-foreground font-medium'
+            ? 'bg-sidebar-accent font-medium text-sidebar-foreground'
             : 'text-sidebar-foreground hover:bg-sidebar-accent'
         )}
       >
         <mod.icon className="h-4 w-4 flex-shrink-0" />
         <span className="flex-1 text-left text-sm">{mod.label}</span>
-        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold text-primary">
-          {mod.id}
-        </span>
+        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold text-primary">{mod.id}</span>
         <ChevronDown
-          className={cn('h-3.5 w-3.5 text-sidebar-foreground/50 transition-transform duration-200', open && 'rotate-180')}
+          className={cn(
+            'h-3.5 w-3.5 text-sidebar-foreground/50 transition-transform duration-200',
+            open && 'rotate-180'
+          )}
         />
       </button>
 

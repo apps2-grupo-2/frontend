@@ -4,6 +4,7 @@ export type SelectProps = Select.SelectProps & CustomProps;
 
 type CustomProps = {
   label?: string;
+  loading?: boolean;
   options: Options[];
   placeholder: string;
 };
