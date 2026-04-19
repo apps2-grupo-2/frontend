@@ -6,7 +6,7 @@ import { Button } from './button';
 export const StepNavigation = (props: StepNavigationProps) => {
   const { backBtn, nextBtn } = props;
   return (
-    <div className="flex w-full max-w-[500px] justify-between">
+    <div className="flex w-full justify-between">
       {!backBtn?.hidden && (
         <Button variant="outline" size="lg" disabled={backBtn?.disabled} onClick={backBtn?.onClick}>
           <ChevronLeft />

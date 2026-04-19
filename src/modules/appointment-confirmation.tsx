@@ -38,7 +38,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
   const priorityLabel = initial?.priority ? (PRIORITY_LABELS[initial.priority] ?? '—') : '—';
 
   const backHandler = () => {
-    metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR);
+    //metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CALENDAR);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -52,7 +52,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
   return (
     <div>
       <form onSubmit={onSubmit} id="form" className="mb-4">
-        <div className="flex max-w-[500px] flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">Revisá los datos antes de confirmar el turno.</p>
 
           <Card className="border-border shadow-none">

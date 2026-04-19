@@ -51,13 +51,13 @@ const Stepper = ({ currentStep }: { currentStep: APPOINTMENTS_STEPS }) => {
 
   const currentIndex = STEP_CONFIG.findIndex(s => s.step === currentStep);
   return (
-    <div className="mb-6 flex max-w-[500px] items-center gap-3">
+    <div className="mb-6 flex items-center gap-3">
       {STEP_CONFIG.map(({ step, label }, i) => (
         <Fragment key={step}>
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200',
+                'flex h-6 w-6 flex-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200',
                 i < currentIndex
                   ? 'bg-primary text-primary-foreground'
                   : i === currentIndex

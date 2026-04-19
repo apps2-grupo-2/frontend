@@ -8,6 +8,7 @@ import {
   MOCK_WEEK_SCHEDULE,
   type ScheduleSlot,
 } from '@/mocks/professional-calendar-mock';
+import { useAuthStore } from '@/stores/auth.store';
 import { cn } from '@/lib/utils';
 
 // Semana: 7-11 abr 2026
@@ -79,7 +80,18 @@ const SlotCard = ({ slot }: { slot: ScheduleSlot }) => {
 };
 
 export default function Page() {
-  const [selectedProfessional, setSelectedProfessional] = useState(MOCK_CALENDAR_PROFESSIONALS[0].value);
+  const { role, name } = useAuthStore();
+  const isProfessional = role === 'profesional';
+
+  // Para el rol profesional, la agenda siempre es la propia (primer ítem del mock cuyo nombre coincide).
+  // TODO: cuando haya backend, usar el ID del profesional del JWT en lugar de buscar por nombre.
+  const ownEntry = MOCK_CALENDAR_PROFESSIONALS.find(p =>
+    name ? p.label.toLowerCase().includes(name.split(' ')[0].toLowerCase()) : false
+  ) ?? MOCK_CALENDAR_PROFESSIONALS[0];
+
+  const [selectedProfessional, setSelectedProfessional] = useState(
+    isProfessional ? ownEntry.value : MOCK_CALENDAR_PROFESSIONALS[0].value
+  );
   const [selectedDayIndex, setSelectedDayIndex] = useState(0); // 0=Lun ... 4=Vie
 
   // TODO: reemplazar con GET /professionals/:id/schedule?weekStart=YYYY-MM-DD
@@ -92,37 +104,43 @@ export default function Page() {
   const totalAppointments = slots.filter(s => s.type === 'appointment').length;
   const totalAvailable = slots.filter(s => s.type === 'available').length;
 
+  const selectedLabel = MOCK_CALENDAR_PROFESSIONALS.find(p => p.value === selectedProfessional)?.label ?? '';
+
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300">
+    <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 mx-auto max-w-2xl">
       <div className="mb-6 sm:mb-8">
         <p className="mb-1 text-xs font-medium tracking-wider text-muted-foreground uppercase sm:text-sm">
           Gestión de Turnos
         </p>
         <h1 className="font-heading text-2xl font-bold text-balance text-foreground sm:text-3xl">
-          Agenda Profesional
+          {isProfessional ? 'Mi agenda' : 'Agenda Profesional'}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-          Disponibilidad horaria por médico y sede
+          {isProfessional
+            ? `${selectedLabel} · Semana ${formatWeekRange(WEEK_START)}`
+            : 'Disponibilidad horaria por médico y sede'}
         </p>
       </div>
 
-      <div className="flex max-w-2xl flex-col gap-5">
-        {/* Selector de profesional */}
-        {/* TODO: reemplazar con GET /professionals del módulo Core */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-foreground">Profesional</label>
-          <select
-            value={selectedProfessional}
-            onChange={e => setSelectedProfessional(e.target.value)}
-            className="h-9 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/25 sm:max-w-xs"
-          >
-            {MOCK_CALENDAR_PROFESSIONALS.map(p => (
-              <option key={p.value} value={p.value}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="flex flex-col gap-5">
+        {/* Selector de profesional — solo visible para administrativos */}
+        {!isProfessional && (
+          /* TODO: reemplazar con GET /professionals del módulo Core */
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-foreground">Profesional</label>
+            <select
+              value={selectedProfessional}
+              onChange={e => setSelectedProfessional(e.target.value)}
+              className="h-9 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/25 sm:max-w-xs"
+            >
+              {MOCK_CALENDAR_PROFESSIONALS.map(p => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Navegación de semana */}
         <div className="flex items-center justify-between">
@@ -152,10 +170,10 @@ export default function Page() {
                 key={i}
                 onClick={() => setSelectedDayIndex(i)}
                 className={cn(
-                  'flex flex-1 flex-col items-center gap-0.5 rounded-md px-2 py-2 text-xs transition-colors duration-150',
+                  'flex flex-1 flex-col items-center gap-0.5 rounded-md px-2 py-2 text-xs transition-all duration-150 active:scale-[0.95]',
                   selectedDayIndex === i
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground hover:shadow-sm'
                 )}
               >
                 <span className="font-medium">{label}</span>

@@ -65,11 +65,12 @@ const AppointmentsTab = () => {
       {appointments.length === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (
-        appointments.map(appt => (
+        appointments.map((appt, idx) => (
           <Card
             key={appt.id}
+            style={{ animationDelay: `${idx * 60}ms` }}
             className={cn(
-              'border-border shadow-none transition-all duration-200 hover:border-primary/20 hover:shadow-md',
+              'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none transition-all hover:border-primary/20 hover:shadow-md',
               appt.status === 'cancelado' && 'opacity-60'
             )}
           >
