@@ -25,8 +25,13 @@ export const Appointment_Initial = (props: StepProps) => {
   const isFormValid = form.formState.isValid && Object.keys(form.formState.errors).length === 0;
 
   const onSubmit = async (formData: AppointmentInitialFormProps) => {
-    // metadata.payloadRef.current = { ...metadata.payloadRef.current, appointment_initial: formData };
-    metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_SUCCESS);
+    console.warn('formData');
+    console.warn(formData);
+    metadata.setPayload({
+      ...formData,
+      date: formData?.date?.toISOString() || '',
+    });
+    metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION);
   };
 
   return (

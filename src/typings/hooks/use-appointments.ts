@@ -1,7 +1,4 @@
-import type { RefObject } from 'react';
-
 import type { AppointmentInitialFormProps } from '@/typings/modules/appointment-initial';
-import type { AppointmentCalendarFormProps } from '@/typings/modules/appointment-calendar';
 import type { APPOINTMENTS_STEPS } from '@/constants';
 
 export type Metadata = {
@@ -12,13 +9,15 @@ export type Metadata = {
 export type UseAppointmentsData = {
   metadata: {
     screen: Metadata;
-    payloadRef: RefObject<Payload>;
+    payload: Payload;
+    setPayload: (payload: Payload) => void;
     navigateTo: (step: APPOINTMENTS_STEPS) => void;
     goBack: () => void;
   };
 };
 
-export type Payload = {
-  appointment_initial?: AppointmentInitialFormProps;
-  appointment_calendar?: AppointmentCalendarFormProps;
-} | null;
+export type Payload =
+  | null
+  | (Omit<AppointmentInitialFormProps, 'date'> & {
+      date: string;
+    });

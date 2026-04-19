@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Calendar, Clock, MapPin, CalendarPlus } from 'lucide-react';
 
@@ -6,47 +5,28 @@ import type { StepProps } from '@/typings/modules/appointment-confirmation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
-import {
-  MOCK_SPECIALTIES,
-  MOCK_MEDICAL_CENTERS,
-  MOCK_MEDICAL_CENTERS_AVAILABILITY,
-} from '@/mocks/appointments-mock';
 
-const formatDate = (dateStr: string) =>
-  new Date(dateStr + 'T00:00:00').toLocaleDateString('es-AR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+const appointmentId = `TUR-${Math.floor(1000 + Math.random() * 9000)}`;
 
 export const Appointment_Success = (props: StepProps) => {
   const { metadata } = props;
   const navigate = useNavigate();
   // TODO: este ID vendrá de la respuesta del POST /appointments
-  const [appointmentId] = useState(
-    `TUR-${Math.floor(1000 + Math.random() * 9000)}`
-  );
 
-  const payload = metadata.payloadRef.current;
-  const initial = payload?.appointment_initial;
-  const calendar = payload?.appointment_calendar;
-
-  const allCenters = [...MOCK_MEDICAL_CENTERS, ...MOCK_MEDICAL_CENTERS_AVAILABILITY];
-  const specialtyLabel = MOCK_SPECIALTIES.find(s => s.value === initial?.speciality)?.label ?? '—';
-  const centerLabel = allCenters.find(c => c.value === initial?.medicalCenter)?.label ?? '—';
+  const specialtyLabel = 'Clinica Médica';
+  const centerLabel = 'Centro de Salud German Urquiza';
+  const dateLabel = '24/05/2026';
+  const rangeTimeLabel = '9:00 hs';
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-[650px]">
       <div className="flex flex-col items-center gap-3 py-4 text-center">
         <div className="animate-in zoom-in-50 fill-mode-both duration-400 flex h-16 w-16 items-center justify-center rounded-full bg-success/10">
-          <CheckCircle className="animate-in zoom-in-75 fill-mode-both delay-150 duration-300 h-8 w-8 text-success" />
+          <CheckCircle className="animate-in zoom-in-75 fill-mode-both delay-150 duration-300 h-12 w-12 text-green-700" />
         </div>
         <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both delay-200 duration-300">
           <h2 className="text-lg font-bold text-foreground">¡Turno confirmado!</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Recibirás un recordatorio 24 hs antes de tu turno.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Recibirás un recordatorio 24 hs antes de tu turno.</p>
         </div>
         <span className="animate-in fade-in fill-mode-both delay-300 duration-300 rounded-full bg-muted px-3 py-1 text-xs font-mono font-semibold text-muted-foreground">
           {appointmentId}
@@ -56,25 +36,21 @@ export const Appointment_Success = (props: StepProps) => {
       <Card className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both delay-350 duration-300 border-border shadow-none">
         <CardContent className="flex flex-col gap-3 p-5">
           <div className="flex items-center gap-3">
-            <Calendar className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            <Calendar className="h-4 w-4  text-muted-foreground" />
             <div>
               <p className="text-xs text-muted-foreground">Fecha</p>
-              <p className="text-sm font-semibold capitalize text-foreground">
-                {calendar?.selectedDate ? formatDate(calendar.selectedDate) : '—'}
-              </p>
+              <p className="text-sm font-semibold capitalize text-foreground">{dateLabel}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Clock className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            <Clock className="h-4 w-4  text-muted-foreground" />
             <div>
               <p className="text-xs text-muted-foreground">Horario</p>
-              <p className="text-sm font-semibold text-foreground">
-                {calendar?.selectedTime ? `${calendar.selectedTime} hs` : '—'}
-              </p>
+              <p className="text-sm font-semibold text-foreground">{rangeTimeLabel}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <MapPin className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            <MapPin className="h-4 w-4  text-muted-foreground" />
             <div>
               <p className="text-xs text-muted-foreground">Centro médico · {specialtyLabel}</p>
               <p className="text-sm font-semibold text-foreground">{centerLabel}</p>
