@@ -7,7 +7,7 @@ import { APPOINTMENTS_STEPS } from '@/constants';
 import { Stepper } from '@/modules/components/stepper';
 
 export default function Page() {
-  const { metadata } = UseAppointments(APPOINTMENTS_STEPS.APPOINTMENT_SUCCESS);
+  const { metadata } = UseAppointments(APPOINTMENTS_STEPS.APPOINTMENT_INITIAL);
   const { step } = metadata.screen;
   return (
     <div className="flex animate-in flex-col duration-300 fill-mode-both fade-in slide-in-from-bottom-2">
