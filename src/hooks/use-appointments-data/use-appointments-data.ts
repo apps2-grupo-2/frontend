@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getMedicalCenters, getProfessionals, getSpecialties } from '@/services/appointments';
+import { getMedicalCenters, getProfessionals } from '@/services/appointments';
+import { getSpecialities } from '@/services/specialties';
 
 const staleTime = 5 * 60 * 1000; // Los datos expiran después de 5 minutos
 
@@ -14,7 +15,7 @@ export const useGetProfessionals = () =>
 export const useGetSpecialties = () =>
   useQuery({
     queryKey: ['useGetSpecialties'],
-    queryFn: getSpecialties,
+    queryFn: getSpecialities,
     staleTime,
   });
 

@@ -24,7 +24,7 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
   }
 
   try {
-    const url = `${ENV.BASE_URL}/sign-in`;
+    const url = `${ENV.MOCK_BASE_URL}/sign-in`;
     const response = await axios.post<AuthLoginResponse>(url, body);
     return response.data;
   } catch (err) {

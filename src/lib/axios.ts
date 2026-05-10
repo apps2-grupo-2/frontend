@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ENV } from '@/constants';
 import { useAuthStore } from '@/stores/auth.store';
 
-const baseURL = ENV.BASE_URL;
+const baseURL = '';
 
 const instance = axios.create({
   baseURL,
