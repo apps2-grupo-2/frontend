@@ -1,13 +1,13 @@
-import { Calendar, Clock, MapPin, User, Stethoscope } from 'lucide-react';
+import { Calendar, Clock, MapPin, Stethoscope, User } from 'lucide-react';
 
 import type { StepProps } from '@/typings/modules/appointment-confirmation';
-import { StepNavigation } from '@/components/ui/step-navigation';
 import { Card, CardContent } from '@/components/ui/card';
+import { StepNavigation } from '@/components/ui/step-navigation';
 import { APPOINTMENTS_STEPS } from '@/constants';
 
 export const Appointment_Confirmation = (props: StepProps) => {
   const { metadata } = props;
-  const payload = metadata.payload;
+  const _payload = metadata.payload;
 
   // TODO: cuando se integre con el backend real, estos labels
   // vendrán directamente en la respuesta de GET /appointments/preview

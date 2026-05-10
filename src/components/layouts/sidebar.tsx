@@ -1,30 +1,30 @@
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
+  Activity,
+  BedDouble,
   Calendar,
   CalendarDays,
-  ChevronRight,
   ChevronDown,
-  Menu,
-  X,
-  Activity,
-  LogOut,
+  ChevronRight,
   ClipboardList,
   FileText,
-  Pill,
   FlaskConical,
-  ScanLine,
-  BedDouble,
-  Receipt,
-  UserRound,
+  LogOut,
+  Menu,
   Monitor,
+  Pill,
+  Receipt,
+  ScanLine,
   Settings,
+  UserRound,
+  X,
 } from 'lucide-react';
 
+import type { ModuleButtonProps, ModuleItem } from '@/typings/components/layouts/sidebar';
+import { ROUTES, USER_TYPE } from '@/constants';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth.store';
-import { ROUTES, USER_TYPE } from '@/constants';
-import type { ModuleItem, ModuleButtonProps } from '@/typings/components/layouts/sidebar';
 
 const MODULES: ModuleItem[] = [
   {
@@ -124,7 +124,7 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden h-screen w-64 flex-shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
+      <aside className="hidden w-64 h-screen flex-col shrink-0 border-r border-sidebar-border bg-sidebar lg:flex">
         <SidebarContent onNavigate={() => {}} />
       </aside>
 
@@ -199,7 +199,7 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
       {/* User info */}
       <div className="border-b border-sidebar-border px-4 py-4">
         <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent px-2 py-2.5">
-          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
             {userInitials}
           </div>
           <div className="min-w-0">
@@ -251,7 +251,7 @@ const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) =>
         className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 opacity-40 select-none"
         title="Módulo en desarrollo por otro equipo"
       >
-        <mod.icon className="h-4 w-4 flex-shrink-0 text-sidebar-foreground" />
+        <mod.icon className="h-4 w-4 shrink-0 text-sidebar-foreground" />
         <span className="text-sm text-sidebar-foreground">{mod.label}</span>
         <span className="ml-auto rounded bg-sidebar-accent px-1.5 py-0.5 text-[9px] font-medium text-sidebar-foreground/50">
           {mod.id}
@@ -272,7 +272,7 @@ const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) =>
             : 'text-sidebar-foreground hover:bg-sidebar-accent'
         )}
       >
-        <mod.icon className="h-4 w-4 flex-shrink-0" />
+        <mod.icon className="h-4 w-4 shrink-0" />
         <span className="flex-1 text-left text-sm">{mod.label}</span>
         <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold text-primary">{mod.id}</span>
         <ChevronDown
@@ -303,16 +303,14 @@ const ModuleButton = ({ mod, pathname, role, onNavigate }: ModuleButtonProps) =>
                   className={() =>
                     cn(
                       'group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 active:scale-[0.98]',
-                      open
-                        ? 'animate-in fade-in slide-in-from-left-2 fill-mode-both duration-200'
-                        : '',
+                      open ? 'animate-in fade-in slide-in-from-left-2 fill-mode-both duration-200' : '',
                       isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'text-sidebar-foreground hover:translate-x-0.5 hover:bg-sidebar-accent'
                     )
                   }
                 >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  <Icon className="h-4 w-4 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <span className="text-sm font-medium">{label}</span>
                     <p

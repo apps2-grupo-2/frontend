@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Calendar, Clock, MapPin, CalendarPlus } from 'lucide-react';
+import { Calendar, CalendarPlus, CheckCircle, Clock, MapPin } from 'lucide-react';
 
 import type { StepProps } from '@/typings/modules/appointment-confirmation';
 import { Button } from '@/components/ui/button';

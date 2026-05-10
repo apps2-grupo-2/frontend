@@ -1,0 +1,66 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "files": {
+    "includes": ["**", "!**/dist", "!**/node_modules", "!**/*.css"]
+  },
+  "formatter": {
+    "lineWidth": 120,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "trailingNewline": false
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "arrowParentheses": "asNeeded",
+      "trailingCommas": "es5"
+    }
+  },
+  "linter": {
+    "rules": {
+      "correctness": {
+        "useExhaustiveDependencies": "off",
+        "noUnusedVariables": "warn"
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noArrayIndexKey": "off"
+      },
+      "style": {
+        "useImportType": "warn",
+        "useSelfClosingElements": "error",
+        "noNonNullAssertion": "off"
+      },
+      "a11y": {
+        "useButtonType": "off",
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off",
+        "noLabelWithoutControl": "off"
+      }
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              { "source": ["react", "react-*"], "type": true },
+              { "source": ["react", "react-*"], "type": false },
+              { "source": ":PACKAGE:", "type": true },
+              { "source": ":PACKAGE:", "type": false },
+              ":BLANK_LINE:",
+              { "source": ":NODE:", "type": true },
+              { "source": ":NODE:", "type": false },
+              ":BLANK_LINE:",
+              { "source": [":ALIAS:", ":PATH:"], "type": true },
+              { "source": [":ALIAS:", ":PATH:"], "type": false }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

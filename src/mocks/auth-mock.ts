@@ -1,5 +1,5 @@
-import { USER_TYPE } from '@/constants';
 import type { UserRole } from '@/typings/services/auth';
+import { USER_TYPE } from '@/constants';
 
 // TODO: reemplazar con POST /auth/sign-in del módulo Core
 // El módulo Core devolverá un JWT con el rol codificado en el payload

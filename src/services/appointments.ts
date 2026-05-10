@@ -3,10 +3,10 @@ import axios from 'axios';
 import type { OptionsResponse, ProfessionalsResponse } from '@/typings/services/appointments';
 import { ENV } from '@/constants';
 import {
-  MOCK_PROFESSIONALS,
-  MOCK_SPECIALTIES,
   MOCK_MEDICAL_CENTERS,
   MOCK_MEDICAL_CENTERS_AVAILABILITY,
+  MOCK_PROFESSIONALS,
+  MOCK_SPECIALTIES,
 } from '@/mocks/appointments-mock';
 
 const USE_MOCK = true; // Cambiar a false para usar el servidor real (npm run local-server)

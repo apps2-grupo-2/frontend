@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Eye, EyeOff, Lock, User, Stethoscope, ClipboardList } from 'lucide-react';
+import { Activity, ClipboardList, Eye, EyeOff, Lock, Stethoscope, User } from 'lucide-react';
 
+import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ROUTES, USER_TYPE } from '@/constants';
+import { MOCK_USERS } from '@/mocks/auth-mock';
 import { authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
-import { ROUTES, USER_TYPE } from '@/constants';
-import type { UserRole } from '@/typings/services/auth';
-import { MOCK_USERS } from '@/mocks/auth-mock';
 
 const ROLE_HOME: Record<UserRole, string> = {
   [USER_TYPE.PATIENT]: ROUTES.TURNOS,
@@ -229,7 +229,10 @@ export default function Page() {
               </Button>
 
               <div className="text-center">
-                <button type="button" className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]">
+                <button
+                  type="button"
+                  className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]"
+                >
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
@@ -238,7 +241,10 @@ export default function Page() {
             <div className="mt-6 border-t border-border pt-6">
               <p className="text-center text-xs text-muted-foreground">
                 ¿Primera vez? Registrate con tu número de afiliado en la recepción o
-                <button className="ml-1 text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]">solicitá acceso online</button>.
+                <button className="ml-1 text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]">
+                  solicitá acceso online
+                </button>
+                .
               </p>
             </div>
           </CardContent>

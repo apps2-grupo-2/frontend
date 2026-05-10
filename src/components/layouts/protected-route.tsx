@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
 
 import type { UserRole } from '@/typings/services/auth';
-import { useAuthStore } from '@/stores/auth.store';
 import { ROUTES } from '@/constants';
+import { useAuthStore } from '@/stores/auth.store';
 
 // Ruta de inicio para cada rol — a donde se redirige si el usuario no tiene acceso
 const ROLE_HOME: Record<UserRole, string> = {

@@ -1,5 +1,5 @@
-import type { AppointmentInitialFormProps } from '@/typings/modules/appointment-initial';
 import type { APPOINTMENTS_STEPS } from '@/constants';
+import type { AppointmentInitialFormProps } from '@/typings/modules/appointment-initial';
 
 export type Metadata = {
   previousStep: APPOINTMENTS_STEPS;

@@ -3,13 +3,9 @@ import { ChevronLeft, ChevronRight, Clock, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  MOCK_CALENDAR_PROFESSIONALS,
-  MOCK_WEEK_SCHEDULE,
-  type ScheduleSlot,
-} from '@/mocks/professional-calendar-mock';
-import { useAuthStore } from '@/stores/auth.store';
 import { cn } from '@/lib/utils';
+import { MOCK_CALENDAR_PROFESSIONALS, MOCK_WEEK_SCHEDULE, type ScheduleSlot } from '@/mocks/professional-calendar-mock';
+import { useAuthStore } from '@/stores/auth.store';
 
 // Semana: 7-11 abr 2026
 const WEEK_START = new Date('2026-04-07T00:00:00');
@@ -22,7 +18,7 @@ const formatWeekRange = (start: Date) => {
   return `${start.getDate()} – ${end.getDate()} ${end.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}`;
 };
 
-const formatDateKey = (date: Date) => {
+const _formatDateKey = (date: Date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -43,7 +39,7 @@ const SlotCard = ({ slot }: { slot: ScheduleSlot }) => {
   if (slot.type === 'available') {
     return (
       <div className={cn('flex items-center gap-2 rounded-lg border px-3 py-2 text-xs', slotStatusConfig.available)}>
-        <Clock className="h-3 w-3 flex-shrink-0" />
+        <Clock className="h-3 w-3 shrink-0" />
         <span className="font-medium">{slot.time}</span>
         <span className="text-success/70">Disponible</span>
       </div>
@@ -53,7 +49,7 @@ const SlotCard = ({ slot }: { slot: ScheduleSlot }) => {
   if (slot.type === 'blocked') {
     return (
       <div className={cn('flex items-center gap-2 rounded-lg border px-3 py-2 text-xs', slotStatusConfig.blocked)}>
-        <Clock className="h-3 w-3 flex-shrink-0" />
+        <Clock className="h-3 w-3 shrink-0" />
         <span className="font-medium">{slot.time}</span>
         <span>Bloqueado</span>
       </div>
@@ -66,15 +62,17 @@ const SlotCard = ({ slot }: { slot: ScheduleSlot }) => {
   return (
     <div className={cn('flex flex-col gap-0.5 rounded-lg border px-3 py-2 text-xs', colorClass)}>
       <div className="flex items-center gap-2">
-        <Clock className="h-3 w-3 flex-shrink-0" />
+        <Clock className="h-3 w-3 shrink-0" />
         <span className="font-semibold">{slot.time}</span>
         <span className="ml-auto font-mono opacity-60">{appt.id}</span>
       </div>
       <div className="flex items-center gap-1.5 pl-5">
-        <User className="h-3 w-3 flex-shrink-0 opacity-70" />
+        <User className="h-3 w-3 shrink-0 opacity-70" />
         <span className="font-medium">{appt.patientName}</span>
       </div>
-      <p className="pl-5 opacity-70">{appt.specialty} · DNI {appt.patientDni}</p>
+      <p className="pl-5 opacity-70">
+        {appt.specialty} · DNI {appt.patientDni}
+      </p>
     </div>
   );
 };
@@ -85,9 +83,10 @@ export default function Page() {
 
   // Para el rol profesional, la agenda siempre es la propia (primer ítem del mock cuyo nombre coincide).
   // TODO: cuando haya backend, usar el ID del profesional del JWT en lugar de buscar por nombre.
-  const ownEntry = MOCK_CALENDAR_PROFESSIONALS.find(p =>
-    name ? p.label.toLowerCase().includes(name.split(' ')[0].toLowerCase()) : false
-  ) ?? MOCK_CALENDAR_PROFESSIONALS[0];
+  const ownEntry =
+    MOCK_CALENDAR_PROFESSIONALS.find(p =>
+      name ? p.label.toLowerCase().includes(name.split(' ')[0].toLowerCase()) : false
+    ) ?? MOCK_CALENDAR_PROFESSIONALS[0];
 
   const [selectedProfessional, setSelectedProfessional] = useState(
     isProfessional ? ownEntry.value : MOCK_CALENDAR_PROFESSIONALS[0].value
@@ -144,9 +143,7 @@ export default function Page() {
 
         {/* Navegación de semana */}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-foreground capitalize">
-            Semana {formatWeekRange(WEEK_START)}
-          </span>
+          <span className="text-sm font-medium text-foreground capitalize">Semana {formatWeekRange(WEEK_START)}</span>
           <div className="flex gap-1">
             <Button variant="outline" size="sm" disabled>
               <ChevronLeft className="h-4 w-4" />

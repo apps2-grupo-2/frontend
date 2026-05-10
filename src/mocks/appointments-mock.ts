@@ -9,7 +9,7 @@ export const MOCK_TIME_SLOTS_BY_DATE: Record<string, string[]> = {
   '2026-04-22': ['09:00', '09:30', '10:00', '10:30', '15:00', '15:30', '16:00'],
 };
 
-export const MOCK_ENABLED_DATES = Object.keys(MOCK_TIME_SLOTS_BY_DATE).map(d => new Date(d + 'T00:00:00'));
+export const MOCK_ENABLED_DATES = Object.keys(MOCK_TIME_SLOTS_BY_DATE).map(d => new Date(`${d}T00:00:00`));
 
 export const MOCK_PROFESSIONALS: ProfessionalsResponse = [
   { value: '1', label: 'Fernandez Juan Pablo', specialties: ['328', '307'] },
