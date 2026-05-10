@@ -2,10 +2,10 @@ import { useForm } from 'react-hook-form';
 import { CalendarPlus } from 'lucide-react';
 
 import type { AppointmentInitialFormProps, StepProps } from '@/typings/modules/appointment-initial';
-import { FormContent } from './components/form-content';
 import { Button } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
 import { APPOINTMENTS_STEPS } from '@/constants';
+import { FormContent } from './components/form-content';
 
 export const Appointment_Initial = (props: StepProps) => {
   const { metadata } = props;

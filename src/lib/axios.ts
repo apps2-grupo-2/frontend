@@ -1,10 +1,10 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 
-import { useAuthStore } from '@/stores/auth.store';
 import { ENV } from '@/constants';
+import { useAuthStore } from '@/stores/auth.store';
 
-const baseURL = ENV.BASE_URL;
+const baseURL = '';
 
 const instance = axios.create({
   baseURL,
@@ -66,7 +66,7 @@ const createAxiosResponseInterceptor = (axiosInstance: AxiosInstance) => {
             accessToken: newAccessToken,
             refreshToken: newRefreshToken,
           });
-          error.response.config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          error.response.config.headers.Authorization = `Bearer ${newAccessToken}`;
           return axiosInstance(error.response.config);
         })
         .catch(error => {

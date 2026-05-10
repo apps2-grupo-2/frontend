@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { useController } from 'react-hook-form';
 
 import type { RhfComboboxProps } from '@/typings/components/rhf/rhf-combobox';
-import { FormControl } from '@/components/ui/form-control';
 import {
   Combobox,
   ComboboxContent,
@@ -12,6 +11,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox';
+import { FormControl } from '@/components/ui/form-control';
 import { FieldSkeleton } from '../ui/field-skeleton';
 
 export const RhfCombobox = <T extends FieldValues>(props: RhfComboboxProps<T>) => {

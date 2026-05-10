@@ -19,7 +19,7 @@ export const Stepper = ({ currentStep }: { currentStep: APPOINTMENTS_STEPS }) =>
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200',
+                'flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200',
                 i < currentIndex
                   ? 'bg-primary text-primary-foreground'
                   : i === currentIndex

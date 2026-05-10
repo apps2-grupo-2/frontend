@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Search, Clock, User, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2, Clock, Loader2, MapPin, Search, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MOCK_TODAY_APPOINTMENTS, type CheckinAppointment } from '@/mocks/checkin-mock';
 import { cn } from '@/lib/utils';
+import { type CheckinAppointment, MOCK_TODAY_APPOINTMENTS } from '@/mocks/checkin-mock';
 
 const statusConfig: Record<CheckinAppointment['status'], { label: string; className: string }> = {
   pending: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-700' },
@@ -26,20 +26,14 @@ export default function Page() {
     // Simular latencia de red
     await new Promise(r => setTimeout(r, 800));
     // TODO: reemplazar con: await checkinAppointment(id)
-    setAppointments(prev =>
-      prev.map(a => (a.id === id ? { ...a, status: 'arrived' as const } : a))
-    );
+    setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'arrived' as const } : a)));
     setCheckingInId(null);
   };
 
   const filtered = appointments.filter(a => {
     const q = search.toLowerCase().trim();
     if (!q) return true;
-    return (
-      a.patientName.toLowerCase().includes(q) ||
-      a.patientDni.includes(q) ||
-      a.id.toLowerCase().includes(q)
-    );
+    return a.patientName.toLowerCase().includes(q) || a.patientDni.includes(q) || a.id.toLowerCase().includes(q);
   });
 
   const pendingCount = appointments.filter(a => a.status === 'pending').length;
@@ -109,8 +103,12 @@ export default function Page() {
                   <div className="flex flex-col gap-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-muted text-sm font-bold text-muted-foreground">
-                          {appt.patientName.split(' ').slice(0, 2).map(n => n[0]).join('')}
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-bold text-muted-foreground">
+                          {appt.patientName
+                            .split(' ')
+                            .slice(0, 2)
+                            .map(n => n[0])
+                            .join('')}
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-foreground">{appt.patientName}</p>
@@ -119,7 +117,7 @@ export default function Page() {
                       </div>
                       <span
                         className={cn(
-                          'flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
+                          'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
                           statusConfig[appt.status].className
                         )}
                       >
@@ -129,15 +127,15 @@ export default function Page() {
 
                     <div className="flex flex-wrap gap-x-4 gap-y-1 pl-12">
                       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                        <Clock className="h-3.5 w-3.5 shrink-0" />
                         {appt.time} hs · <span className="font-mono">{appt.id}</span>
                       </span>
                       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <User className="h-3.5 w-3.5 flex-shrink-0" />
+                        <User className="h-3.5 w-3.5 shrink-0" />
                         {appt.doctor}
                       </span>
                       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
                         {appt.specialty} · {appt.medicalCenter}
                       </span>
                     </div>

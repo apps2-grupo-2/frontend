@@ -1,4 +1,4 @@
-import type { OptionsResponse, ProfessionalsResponse } from '@/typings/services/appointments';
+import type { OptionsResponse, ProfessionalsResponse } from '@/typings/services';
 
 // Slots disponibles por fecha (key: 'YYYY-MM-DD')
 // TODO: reemplazar con GET /appointments/availability?date=YYYY-MM-DD&professionalId=X&centerId=Y
@@ -9,7 +9,7 @@ export const MOCK_TIME_SLOTS_BY_DATE: Record<string, string[]> = {
   '2026-04-22': ['09:00', '09:30', '10:00', '10:30', '15:00', '15:30', '16:00'],
 };
 
-export const MOCK_ENABLED_DATES = Object.keys(MOCK_TIME_SLOTS_BY_DATE).map(d => new Date(d + 'T00:00:00'));
+export const MOCK_ENABLED_DATES = Object.keys(MOCK_TIME_SLOTS_BY_DATE).map(d => new Date(`${d}T00:00:00`));
 
 export const MOCK_PROFESSIONALS: ProfessionalsResponse = [
   { value: '1', label: 'Fernandez Juan Pablo', specialties: ['328', '307'] },
@@ -20,29 +20,6 @@ export const MOCK_PROFESSIONALS: ProfessionalsResponse = [
   { value: '7', label: 'García Silvia Alejandra', specialties: ['193', '284'] },
   { value: '9', label: 'Sánchez Patricia Noemí', specialties: ['226', '263'] },
   { value: '13', label: 'Díaz Marcela Soledad', specialties: ['176', '236'] },
-];
-
-export const MOCK_SPECIALTIES: OptionsResponse = [
-  { value: '176', label: 'Alergia' },
-  { value: '328', label: 'Cardiologia' },
-  { value: '307', label: 'Electrofisiologia' },
-  { value: '185', label: 'Cirugia general' },
-  { value: '191', label: 'Dermatologia' },
-  { value: '193', label: 'Endocrinologia' },
-  { value: '284', label: 'Diabetologia' },
-  { value: '197', label: 'Gastroenterologia' },
-  { value: '201', label: 'Ginecologia' },
-  { value: '225', label: 'Obstetricia' },
-  { value: '226', label: 'Oftalmologia' },
-  { value: '263', label: 'Oftalmologia pediatrico' },
-  { value: '222', label: 'Neurologia' },
-  { value: '219', label: 'Neumonologia' },
-  { value: '229', label: 'Ortopedia y traumatologia' },
-  { value: '267', label: 'Ortopedia y traumatologia pediatrica' },
-  { value: '232', label: 'Psiquiatria' },
-  { value: '313', label: 'Psicologia' },
-  { value: '242', label: 'Urologia' },
-  { value: '236', label: 'Reumatologia' },
 ];
 
 export const MOCK_MEDICAL_CENTERS: OptionsResponse = [

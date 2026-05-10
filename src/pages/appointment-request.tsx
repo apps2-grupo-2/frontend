@@ -1,9 +1,9 @@
 import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
-import { Appointment_Initial } from '@/modules/appointment-initial/appointment-initial';
-import { Appointment_Confirmation } from '@/modules/appointment-confirmation';
-import { Appointment_Success } from '@/modules/appointment-success';
-import { UseAppointments } from '@/hooks/use-appointments';
 import { APPOINTMENTS_STEPS } from '@/constants';
+import { UseAppointments } from '@/hooks/use-appointments';
+import { Appointment_Confirmation } from '@/modules/appointment-confirmation';
+import { Appointment_Initial } from '@/modules/appointment-initial/appointment-initial';
+import { Appointment_Success } from '@/modules/appointment-success';
 import { Stepper } from '@/modules/components/stepper';
 
 export default function Page() {

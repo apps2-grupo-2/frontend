@@ -11,9 +11,7 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
     // TODO: reemplazar con POST /auth/sign-in del módulo Core
     // El módulo Core validará credenciales y devolverá un JWT con rol codificado
     await new Promise(r => setTimeout(r, 800)); // simular latencia
-    const user = MOCK_USERS.find(
-      u => u.dni === body.identifier && u.password === body.password
-    );
+    const user = MOCK_USERS.find(u => u.dni === body.identifier && u.password === body.password);
     if (!user) throw new Error('Credenciales incorrectas');
     return {
       access_token: user.accessToken,
@@ -26,7 +24,7 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
   }
 
   try {
-    const url = `${ENV.BASE_URL}/sign-in`;
+    const url = `${ENV.MOCK_BASE_URL}/sign-in`;
     const response = await axios.post<AuthLoginResponse>(url, body);
     return response.data;
   } catch (err) {

@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form';
 
-import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
 import type { PRIORITY_TYPES } from '@/constants';
+import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
 
 export type StepProps = UseAppointmentsData;
 

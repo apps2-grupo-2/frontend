@@ -2,8 +2,8 @@ import type { FieldValues } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
 import type { RhfChipProps } from '@/typings/components/rhf/rhf-chips';
-import { cn } from '@/lib/utils';
 import { FormControl } from '@/components/ui/form-control';
+import { cn } from '@/lib/utils';
 import { Chip } from '../ui/chip';
 
 export const RhfChips = <T extends FieldValues>(props: RhfChipProps<T>) => {

@@ -15,7 +15,9 @@ type AuthStoreActions = {
   logout: () => void;
   resetStore: () => void;
   enableAutoLogin: () => void;
-  setTokens: (states: Pick<AuthStoreStates, 'accessToken' | 'refreshToken' | 'email' | 'role' | 'name' | 'subtitle'>) => void;
+  setTokens: (
+    states: Pick<AuthStoreStates, 'accessToken' | 'refreshToken' | 'email' | 'role' | 'name' | 'subtitle'>
+  ) => void;
 };
 
 export type AuthStore = AuthStoreStates & AuthStoreActions;

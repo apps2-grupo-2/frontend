@@ -1,8 +1,8 @@
 import type { FieldValues } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { RhfTabsProps } from '@/typings/components/rhf/rhf-tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const RhfTabs = <T extends FieldValues>(props: RhfTabsProps<T>) => {
   const { name, rules, shouldUnregister, defaultValue, control, disabled, exact, options, onValueChange, ...rest } =

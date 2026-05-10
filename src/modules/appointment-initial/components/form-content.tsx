@@ -1,13 +1,13 @@
 import { useWatch } from 'react-hook-form';
 
 import type { FormContentProps } from '@/typings/modules/appointment-initial';
-import { useMedicalCenters, useGetSpecialties } from '@/hooks/use-appointments-data';
-import { Grid } from '@/components/ui/grid';
+import { RhfCalendar } from '@/components/rhf/rhf-calendar';
 import { RhfChips } from '@/components/rhf/rhf-chips';
 import { RhfCombobox } from '@/components/rhf/rhf-combobox';
 import { RhfSelect } from '@/components/rhf/rhf-select';
-import { RhfCalendar } from '@/components/rhf/rhf-calendar';
+import { Grid } from '@/components/ui/grid';
 import { PRIORITY_TYPES } from '@/constants';
+import { useGetSpecialties, useMedicalCenters } from '@/hooks/use-appointments-data';
 import { MOCK_ENABLED_DATES } from '@/mocks/appointments-mock';
 
 const professionalOptions = [
@@ -30,7 +30,7 @@ export const FormContent = (props: FormContentProps) => {
 
   const { data: medicalCenters, isLoading: isLoadingMedicalCenters } = useMedicalCenters(watchedFields.priority || '');
 
-  const priorityChangeHandler = (value: string) => {
+  const priorityChangeHandler = (_value: string) => {
     form.setValue('medicalCenter', '');
   };
 

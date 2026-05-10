@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { Calendar, Clock, MapPin, Video, CalendarPlus, X, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Calendar, CalendarPlus, Clock, MapPin, RefreshCw, Video, X } from 'lucide-react';
 
-import { upcomingAppointments } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
+import { upcomingAppointments } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
 
 type Appointment = (typeof upcomingAppointments)[number] & { status: string };
 
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr + 'T00:00:00');
+  const date = new Date(`${dateStr}T00:00:00`);
   return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
@@ -77,7 +77,7 @@ const AppointmentsTab = () => {
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-col gap-3">
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors duration-200 sm:h-12 sm:w-12">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors duration-200 sm:h-12 sm:w-12">
                     {appt.modality === 'virtual' ? (
                       <Video className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                     ) : (
@@ -93,7 +93,7 @@ const AppointmentsTab = () => {
                       {statusConfig[appt.status] && (
                         <span
                           className={cn(
-                            'flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
+                            'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
                             statusConfig[appt.status].className
                           )}
                         >
@@ -103,13 +103,13 @@ const AppointmentsTab = () => {
                     </div>
                     <div className="mt-2 flex flex-col gap-1.5">
                       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                        <Clock className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">
                           {formatDate(appt.date)} · {appt.time} hs
                         </span>
                       </span>
                       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{appt.location}</span>
                       </span>
                     </div>
