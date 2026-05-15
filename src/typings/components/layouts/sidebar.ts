@@ -23,6 +23,4 @@ export type ModuleItem = {
 export type ModuleButtonProps = {
   mod: ModuleItem;
   pathname: string;
-  role: UserRole | undefined;
-  onNavigate: () => void;
 };

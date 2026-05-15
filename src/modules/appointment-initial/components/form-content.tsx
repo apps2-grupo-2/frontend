@@ -7,7 +7,8 @@ import { RhfCombobox } from '@/components/rhf/rhf-combobox';
 import { RhfSelect } from '@/components/rhf/rhf-select';
 import { Grid } from '@/components/ui/grid';
 import { PRIORITY_TYPES } from '@/constants';
-import { useGetSpecialties, useMedicalCenters } from '@/hooks/use-appointments-data';
+import { useMedicalCenters } from '@/hooks/use-medical-centers-data';
+import { useGetSpecialties } from '@/hooks/use-specialties-data';
 import { MOCK_ENABLED_DATES } from '@/mocks/appointments-mock';
 
 const professionalOptions = [
@@ -23,11 +24,8 @@ const rangeTimeOptions = [
 
 export const FormContent = (props: FormContentProps) => {
   const { form } = props;
-
-  const { data: specialties = [], isLoading: isLoadingSpecialties } = useGetSpecialties();
-
   const watchedFields = useWatch({ control: form.control });
-
+  const { data: specialties = [], isLoading: isLoadingSpecialties } = useGetSpecialties();
   const { data: medicalCenters, isLoading: isLoadingMedicalCenters } = useMedicalCenters(watchedFields.priority || '');
 
   const priorityChangeHandler = (_value: string) => {

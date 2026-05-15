@@ -1,28 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getMedicalCenters, getProfessionals } from '@/services/appointments';
-import { getSpecialities } from '@/services/specialties';
+import type { AppointmentsRequest } from '@/typings/services';
+import { getAppointments } from '@/services/appointments';
 
 const staleTime = 5 * 60 * 1000; // Los datos expiran después de 5 minutos
 
-export const useGetProfessionals = () =>
+export const useGetAppointments = (req: AppointmentsRequest, enabled: boolean) =>
   useQuery({
-    queryKey: ['useGetProfessionals'],
-    queryFn: getProfessionals,
+    queryKey: ['useGetAppointments', req],
+    queryFn: () => getAppointments(req),
     staleTime,
-  });
-
-export const useGetSpecialties = () =>
-  useQuery({
-    queryKey: ['useGetSpecialties'],
-    queryFn: getSpecialities,
-    staleTime,
-  });
-
-export const useMedicalCenters = (priority: string) =>
-  useQuery({
-    queryKey: ['MedicalCenters', priority],
-    queryFn: () => getMedicalCenters(priority),
-    staleTime,
-    enabled: priority !== '', // Ejecuta la consulta si se seleccionó una prioridad
+    enabled,
   });

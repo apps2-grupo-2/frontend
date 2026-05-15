@@ -1,25 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, CalendarPlus, Clock, MapPin, RefreshCw, Video, X } from 'lucide-react';
+import { addDays, format } from 'date-fns';
+import { CalendarPlus } from 'lucide-react';
 
+import type { Appointment } from '@/typings/components/ui/appointments-card';
+import type { AppointmentsRequest } from '@/typings/services';
+import { AppointmentCard, EmptyState } from '@/components/ui/appointments-card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
-import { upcomingAppointments } from '@/lib/mock-data';
-import { cn } from '@/lib/utils';
-
-type Appointment = (typeof upcomingAppointments)[number] & { status: string };
-
-const formatDate = (dateStr: string) => {
-  const date = new Date(`${dateStr}T00:00:00`);
-  return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
-};
-
-const statusConfig: Record<string, { label: string; className: string }> = {
-  confirmado: { label: 'Confirmado', className: 'bg-success/10 text-success' },
-  pendiente: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-600' },
-  cancelado: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
-};
+import { useGetAppointments } from '@/hooks/use-appointments-data';
 
 export default function Page() {
   return (
@@ -30,21 +19,44 @@ export default function Page() {
         </p>
         <h1 className="font-heading text-2xl font-bold text-balance text-foreground sm:text-3xl">Turnos</h1>
       </div>
-      <AppointmentsTab />
+      <Appointments />
     </div>
   );
 }
 
-const AppointmentsTab = () => {
+const apptExample = {
+  id: 'TUR-8821',
+  doctor: 'Dr. Carlos Peralta',
+  specialty: 'Cardiología',
+  date: '2026-03-24',
+  time: '09:30',
+  location: 'Consultorio 4B',
+  modality: 'presencial',
+  status: 'confirmado',
+};
+
+const appointmentsDefaultParams: AppointmentsRequest = {
+  since: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+  until: format(addDays(new Date(), 30), 'yyyy-MM-dd HH:mm:ss'), // Próximos 30 días
+};
+
+const Appointments = () => {
   const navigate = useNavigate();
+  const [appointmentsParams, setAppointmentsParams] = useState<AppointmentsRequest>(appointmentsDefaultParams);
+  const [patientId, setPatientId] = useState<number>(2);
+  const { data: appointments, isLoading: isLoadingAppointments } = useGetAppointments(appointmentsParams, !!patientId);
+
+  console.warn('appointments');
+  console.warn(appointments);
+
   // Estado local para manejar cancelaciones sin backend
   // TODO: reemplazar con mutación al endpoint DELETE /appointments/:id
-  const [appointments, setAppointments] = useState<Appointment[]>(upcomingAppointments as Appointment[]);
+  //const [appointments, setAppointments] = useState<Appointment[]>(upcomingAppointments as Appointment[]);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const handleCancel = (id: string) => {
     // TODO: llamar a DELETE /appointments/:id o PATCH /appointments/:id { status: 'cancelado' }
-    setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a)));
+    //setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a)));
     setCancellingId(null);
   };
 
@@ -62,124 +74,32 @@ const AppointmentsTab = () => {
         </Button>
       </div>
 
-      {appointments.length === 0 ? (
+      {appointments?.length === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (
-        appointments.map((appt, idx) => (
-          <Card
-            key={appt.id}
-            style={{ animationDelay: `${idx * 60}ms` }}
-            className={cn(
-              'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none transition-all hover:border-primary/20 hover:shadow-md',
-              appt.status === 'cancelado' && 'opacity-60'
-            )}
-          >
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex flex-col gap-3">
-                <div className="flex gap-3 sm:gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors duration-200 sm:h-12 sm:w-12">
-                    {appt.modality === 'virtual' ? (
-                      <Video className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-                    ) : (
-                      <Calendar className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground sm:text-base">{appt.doctor}</p>
-                        <p className="truncate text-xs text-muted-foreground sm:text-sm">{appt.specialty}</p>
-                      </div>
-                      {statusConfig[appt.status] && (
-                        <span
-                          className={cn(
-                            'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-                            statusConfig[appt.status].className
-                          )}
-                        >
-                          {statusConfig[appt.status].label}
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-2 flex flex-col gap-1.5">
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">
-                          {formatDate(appt.date)} · {appt.time} hs
-                        </span>
-                      </span>
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">{appt.location}</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {appt.status !== 'cancelado' && (
-                  <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-                    {appt.modality === 'virtual' && (
-                      <Button size="sm" className="bg-accent text-xs text-accent-foreground hover:bg-accent/90">
-                        Unirse
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-xs"
-                      onClick={() => navigate(ROUTES.SOLICITAR_TURNOS)}
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" />
-                      Reprogramar
-                    </Button>
-
-                    {cancellingId === appt.id ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">¿Confirmás la cancelación?</span>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="text-xs"
-                          onClick={() => handleCancel(appt.id)}
-                        >
-                          Sí, cancelar
-                        </Button>
-                        <Button size="sm" variant="ghost" className="text-xs" onClick={() => setCancellingId(null)}>
-                          No
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => setCancellingId(appt.id)}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                        Cancelar turno
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+        appointments?.map((appt, idx) => (
+          <b key={appt.id}>hola</b>
+          // <AppointmentCard
+          //   key={appt.id}
+          //   appointment={appt}
+          //   index={idx}
+          //   isCancelling={cancellingId === appt.id}
+          //   onCancel={() => handleCancel(appt.id)}
+          //   onCancelRequest={() => setCancellingId(appt.id)}
+          //   onCancelDismiss={() => setCancellingId(null)}
+          //   onReschedule={() => navigate(ROUTES.SOLICITAR_TURNOS)}
+          // />
         ))
       )}
+      <AppointmentCard
+        index={2}
+        appointment={apptExample}
+        isCancelling={false}
+        onCancel={() => {}}
+        onCancelRequest={() => {}}
+        onCancelDismiss={() => {}}
+        onReschedule={() => {}}
+      />
     </div>
   );
 };
-
-const EmptyState = ({ onRequest }: { onRequest: () => void }) => (
-  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-      <Calendar className="h-7 w-7 text-muted-foreground" />
-    </div>
-    <p className="mt-4 font-semibold text-foreground">Sin turnos próximos</p>
-    <p className="mt-1 text-sm text-muted-foreground">No tenés turnos agendados por el momento.</p>
-    <Button className="mt-6" onClick={onRequest}>
-      <CalendarPlus className="h-4 w-4" />
-      Solicitar turno
-    </Button>
-  </div>
-);
