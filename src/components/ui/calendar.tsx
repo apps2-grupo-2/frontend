@@ -1,5 +1,6 @@
+import type { DayButton, Locale } from 'react-day-picker';
 import * as React from 'react';
-import { type DayButton, DayPicker, getDefaultClassNames, type Locale } from 'react-day-picker';
+import { DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -63,8 +64,8 @@ function Calendar({
         caption_label: cn(
           'font-medium select-none',
           captionLayout === 'label'
-            ? 'text-[clamp(0.75rem,4cqi,0.95rem)]'
-            : 'flex items-center gap-1 rounded-(--cell-radius) text-[clamp(0.75rem,4cqi,0.95rem)] [&>svg]:size-3.5 [&>svg]:text-muted-foreground',
+            ? 'text-[clamp(0.8rem,4cqi,0.95rem)]'
+            : 'flex items-center gap-1 rounded-(--cell-radius) text-[clamp(0.8rem,4cqi,0.95rem)] [&>svg]:size-3.5 [&>svg]:text-muted-foreground',
           defaultClassNames.caption_label
         ),
         table: 'w-full border-collapse',
@@ -75,7 +76,7 @@ function Calendar({
         ),
         week: cn('mt-2 flex w-full', defaultClassNames.week),
         week_number_header: cn('w-(--cell-size) select-none', defaultClassNames.week_number_header),
-        week_number: cn('text-[0.8rem] text-muted-foreground select-none', defaultClassNames.week_number),
+        week_number: cn('text-base text-muted-foreground select-none', defaultClassNames.week_number),
         day: cn(
           'group/day relative flex-1 aspect-square rounded-(--cell-radius) p-0 text-center select-none [&:last-child[data-selected=true]_button]:rounded-r-(--cell-radius)',
           props.showWeekNumber

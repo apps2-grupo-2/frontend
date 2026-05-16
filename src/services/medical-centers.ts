@@ -1,7 +1,4 @@
-import axios from 'axios';
-
 import type { OptionsResponse } from '@/typings/services';
-import { ENV } from '@/constants';
 import { MOCK_MEDICAL_CENTERS, MOCK_MEDICAL_CENTERS_AVAILABILITY } from '@/mocks/appointments-mock';
 
 export const getMedicalCenters = async (priority: 'availability' | string): Promise<OptionsResponse> => {

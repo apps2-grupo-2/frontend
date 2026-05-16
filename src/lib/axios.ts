@@ -1,7 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 
-import { ENV } from '@/constants';
 import { useAuthStore } from '@/stores/auth.store';
 
 const baseURL = '';

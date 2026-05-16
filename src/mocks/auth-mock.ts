@@ -1,9 +1,6 @@
 import type { UserRole } from '@/typings/services/auth';
 import { USER_TYPE } from '@/constants';
 
-// TODO: reemplazar con POST /auth/sign-in del módulo Core
-// El módulo Core devolverá un JWT con el rol codificado en el payload
-
 export type MockUser = {
   dni: string;
   password: string;
@@ -18,7 +15,7 @@ export type MockUser = {
 export const MOCK_USERS: MockUser[] = [
   {
     dni: '28345671',
-    password: 'patient',
+    password: '1234',
     role: USER_TYPE.PATIENT,
     name: 'González María Elena',
     email: 'maria.gonzalez@email.com',

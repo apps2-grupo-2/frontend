@@ -1,5 +1,6 @@
 import type { FieldValues } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import { es } from 'react-day-picker/locale';
 
 import type { RhfCalendarProps } from '@/typings/components/rhf/rhf-calendar';
 import { FormControl } from '@/components/ui/form-control';
@@ -21,6 +22,14 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
     shouldUnregister,
   });
 
+  const disabledMatcher = rest.enabledDates
+    ? (date: Date) =>
+        !rest.enabledDates!.some(
+          d =>
+            d.getFullYear() === date.getFullYear() && d.getMonth() === date.getMonth() && d.getDate() === date.getDate()
+        )
+    : undefined;
+
   return (
     <FormControl label={rest.label} disabled={disabled} error={error}>
       <div
@@ -33,8 +42,9 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
           mode="single"
           selected={value}
           onSelect={onChange}
-          disabled={rest.disabledDates}
+          disabled={disabledMatcher}
           startMonth={rest.startMonth}
+          locale={es}
           className="bg-white p-0"
         />
       </div>

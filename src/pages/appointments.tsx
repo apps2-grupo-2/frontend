@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { addDays, format } from 'date-fns';
 import { CalendarPlus } from 'lucide-react';
 
-import type { Appointment } from '@/typings/components/ui/appointments-card';
 import type { AppointmentsRequest } from '@/typings/services';
 import { AppointmentCard, EmptyState } from '@/components/ui/appointments-card';
 import { Button } from '@/components/ui/button';
@@ -42,8 +41,8 @@ const appointmentsDefaultParams: AppointmentsRequest = {
 
 const Appointments = () => {
   const navigate = useNavigate();
-  const [appointmentsParams, setAppointmentsParams] = useState<AppointmentsRequest>(appointmentsDefaultParams);
-  const [patientId, setPatientId] = useState<number>(2);
+  const [appointmentsParams, _setAppointmentsParams] = useState<AppointmentsRequest>(appointmentsDefaultParams);
+  const [patientId, _setPatientId] = useState<number>(2);
   const { data: appointments, isLoading: isLoadingAppointments } = useGetAppointments(appointmentsParams, !!patientId);
 
   console.warn('appointments');
@@ -52,9 +51,9 @@ const Appointments = () => {
   // Estado local para manejar cancelaciones sin backend
   // TODO: reemplazar con mutación al endpoint DELETE /appointments/:id
   //const [appointments, setAppointments] = useState<Appointment[]>(upcomingAppointments as Appointment[]);
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [_cancellingId, setCancellingId] = useState<string | null>(null);
 
-  const handleCancel = (id: string) => {
+  const _handleCancel = (_id: string) => {
     // TODO: llamar a DELETE /appointments/:id o PATCH /appointments/:id { status: 'cancelado' }
     //setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a)));
     setCancellingId(null);
@@ -77,7 +76,7 @@ const Appointments = () => {
       {appointments?.length === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (
-        appointments?.map((appt, idx) => (
+        appointments?.map((appt, _idx) => (
           <b key={appt.id}>hola</b>
           // <AppointmentCard
           //   key={appt.id}

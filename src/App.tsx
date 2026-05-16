@@ -7,7 +7,7 @@ import { ROUTES, USER_TYPE } from '@/constants';
 
 const LoginPage = lazy(() => import('./pages/login'));
 const AppointmentsPage = lazy(() => import('./pages/appointments'));
-const AppointmentRequestPage = lazy(() => import('./pages/appointment-request'));
+const AppointmentSchedulePage = lazy(() => import('./pages/appointment-schedule'));
 const ProfessionalCalendarPage = lazy(() => import('./pages/professional-calendar'));
 const CheckinPage = lazy(() => import('./pages/checkin'));
 
@@ -31,16 +31,16 @@ export function App() {
             path={ROUTES.SOLICITAR_TURNOS}
             element={
               <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
-                <AppointmentRequestPage />
+                <AppointmentSchedulePage />
               </ProtectedRoute>
             }
           />
 
-          {/* Profesionales y administrativos */}
+          {/* Profesionales */}
           <Route
             path={ROUTES.AGENDA_PROFESIONAL}
             element={
-              <ProtectedRoute allowedRoles={[USER_TYPE.PROFESSIONAL, USER_TYPE.ADMINISTRATIVE]}>
+              <ProtectedRoute allowedRoles={[USER_TYPE.PROFESSIONAL]}>
                 <ProfessionalCalendarPage />
               </ProtectedRoute>
             }

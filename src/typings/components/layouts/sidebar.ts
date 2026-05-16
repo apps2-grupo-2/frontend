@@ -10,17 +10,13 @@ export type SubNavItem = {
   roles: UserRole[];
 };
 
-export type ModuleItem = {
-  id: number;
+export type Module = {
+  id: string;
   label: string;
   icon: LucideIcon;
-  /** Sub-items del módulo. Si está vacío, el botón es solo un placeholder. */
-  subItems: SubNavItem[];
-  /** URL base para detectar si el módulo está activo */
-  basePaths?: string[];
+  url: string;
 };
 
 export type ModuleButtonProps = {
-  mod: ModuleItem;
-  pathname: string;
+  mod: Module;
 };

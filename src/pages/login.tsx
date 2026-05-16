@@ -1,3 +1,4 @@
+import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, ClipboardList, Eye, EyeOff, Lock, Stethoscope, User } from 'lucide-react';
@@ -33,7 +34,7 @@ const statDelays = ['delay-0', 'delay-75', 'delay-150', 'delay-200'] as const;
 
 export default function Page() {
   const navigate = useNavigate();
-  const setTokens = useAuthStore(s => s.setTokens);
+  const authStore = useAuthStore();
 
   const [dni, setDni] = useState('');
   const [password, setPassword] = useState('');
@@ -41,18 +42,28 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const handleLogin = (e: SyntheticEvent) => {
+    e.preventDefault();
+    if (!dni.trim() || !password.trim()) {
+      setError('Ingresá tu DNI y contraseña para continuar.');
+      return;
+    }
+    doLogin(dni, password);
+  };
+
   const doLogin = async (identifier: string, pass: string) => {
     setError('');
     setLoading(true);
     try {
       const res = await authLogin({ identifier, password: pass });
-      setTokens({
+      authStore.setAuth({
         accessToken: res.access_token,
         refreshToken: res.refresh_token,
         email: res.email,
         role: res.role,
         name: res.name,
         subtitle: res.subtitle,
+        dni: res.dni,
       });
       navigate(ROLE_HOME[res.role], { replace: true });
     } catch {
@@ -60,15 +71,6 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!dni.trim() || !password.trim()) {
-      setError('Ingresá tu DNI y contraseña para continuar.');
-      return;
-    }
-    doLogin(dni, password);
   };
 
   const handleQuickAccess = (role: UserRole) => {
@@ -170,7 +172,7 @@ export default function Page() {
                     id="dni"
                     type="text"
                     className="w-full rounded-lg border border-input bg-background py-3 pr-4 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
-                    placeholder="28345671"
+                    placeholder="DNI o CUIL"
                     value={dni}
                     onChange={e => setDni(e.target.value.replace(/\D/g, ''))}
                     autoComplete="username"
@@ -191,7 +193,7 @@ export default function Page() {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     className="w-full rounded-lg border border-input bg-background py-3 pr-10 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
-                    placeholder="••••••••"
+                    placeholder="Contraseña"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     autoComplete="current-password"

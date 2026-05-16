@@ -8,6 +8,7 @@ export type AuthLoginRequest = {
 };
 
 export type AuthLoginResponse = {
+  dni: string;
   access_token: string;
   refresh_token: string;
   email: string;

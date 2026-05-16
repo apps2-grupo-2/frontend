@@ -27,7 +27,12 @@
         "noArrayIndexKey": "off"
       },
       "style": {
-        "useImportType": "warn",
+        "useImportType": {
+          "level": "warn",
+          "options": {
+            "style": "separatedType"
+          }
+        },
         "useSelfClosingElements": "error",
         "noNonNullAssertion": "off"
       },

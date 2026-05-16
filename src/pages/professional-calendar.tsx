@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Clock, User } from 'lucide-react';
 
+import type { ScheduleSlot } from '@/mocks/professional-calendar-mock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { MOCK_CALENDAR_PROFESSIONALS, MOCK_WEEK_SCHEDULE, type ScheduleSlot } from '@/mocks/professional-calendar-mock';
+import { MOCK_CALENDAR_PROFESSIONALS, MOCK_WEEK_SCHEDULE } from '@/mocks/professional-calendar-mock';
 import { useAuthStore } from '@/stores/auth.store';
 
 // Semana: 7-11 abr 2026

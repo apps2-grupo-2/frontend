@@ -12,6 +12,7 @@ const defaultFields: AuthStoreStates = {
   role: undefined,
   name: undefined,
   subtitle: undefined,
+  dni: undefined,
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -21,7 +22,7 @@ export const useAuthStore = create<AuthStore>()(
       logout: () => set({ logoutRequired: true }),
       enableAutoLogin: () => set({ autoLogin: true }),
       resetStore: () => set(defaultFields),
-      setTokens: a =>
+      setAuth: a =>
         set({
           accessToken: a.accessToken,
           email: a.email,
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthStore>()(
           role: a.role,
           name: a.name,
           subtitle: a.subtitle,
+          dni: a.dni,
         }),
     }),
     {

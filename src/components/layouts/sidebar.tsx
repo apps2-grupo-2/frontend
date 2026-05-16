@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   BedDouble,
   Calendar,
-  CalendarDays,
-  ChevronDown,
-  ChevronRight,
-  ClipboardList,
   FileText,
   FlaskConical,
   LogOut,
@@ -21,112 +17,33 @@ import {
   X,
 } from 'lucide-react';
 
-import type { ModuleButtonProps, ModuleItem } from '@/typings/components/layouts/sidebar';
-import { ROUTES, USER_TYPE } from '@/constants';
+import type { Module, ModuleButtonProps } from '@/typings/components/layouts/sidebar';
+import { ROUTES } from '@/constants';
+import { getUserInitials } from '@/helpers/helpers';
 import { useGetModules } from '@/hooks/use-others-data';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth.store';
 
-const MODULES: ModuleItem[] = [
-  {
-    id: 1,
-    label: 'Historia Clínica',
-    icon: FileText,
-    subItems: [],
-  },
-  {
-    id: 2,
-    label: 'Turnos y Agendas',
-    icon: Calendar,
-    basePaths: [ROUTES.TURNOS, ROUTES.SOLICITAR_TURNOS, ROUTES.AGENDA_PROFESIONAL, ROUTES.PRESENTISMO],
-    subItems: [
-      {
-        href: ROUTES.TURNOS,
-        label: 'Mis turnos',
-        icon: Calendar,
-        description: 'Ver y solicitar turnos',
-        roles: [USER_TYPE.PATIENT],
-      },
-      {
-        href: ROUTES.AGENDA_PROFESIONAL,
-        label: 'Mi agenda',
-        icon: CalendarDays,
-        description: 'Tu disponibilidad semanal',
-        roles: [USER_TYPE.PROFESSIONAL],
-      },
-      {
-        href: ROUTES.AGENDA_PROFESIONAL,
-        label: 'Agenda profesional',
-        icon: CalendarDays,
-        description: 'Disponibilidad por médico',
-        roles: [USER_TYPE.ADMINISTRATIVE],
-      },
-      {
-        href: ROUTES.PRESENTISMO,
-        label: 'Presentismo',
-        icon: ClipboardList,
-        description: 'Registro de llegada',
-        roles: [USER_TYPE.ADMINISTRATIVE],
-      },
-    ],
-  },
-  {
-    id: 3,
-    label: 'Farmacia e Insumos',
-    icon: Pill,
-    subItems: [],
-  },
-  {
-    id: 4,
-    label: 'Laboratorio',
-    icon: FlaskConical,
-    subItems: [],
-  },
-  {
-    id: 5,
-    label: 'Diagnóstico por Imágenes',
-    icon: ScanLine,
-    subItems: [],
-  },
-  {
-    id: 6,
-    label: 'Internación y Camas',
-    icon: BedDouble,
-    subItems: [],
-  },
-  {
-    id: 7,
-    label: 'Facturación',
-    icon: Receipt,
-    subItems: [],
-  },
-  {
-    id: 8,
-    label: 'Portal del Paciente',
-    icon: UserRound,
-    subItems: [],
-  },
-  {
-    id: 9,
-    label: 'Monitoreo',
-    icon: Monitor,
-    subItems: [],
-  },
-  {
-    id: 10,
-    label: 'Core',
-    icon: Settings,
-    subItems: [],
-  },
-];
+const icons = {
+  1: FileText,
+  2: Calendar,
+  3: Pill,
+  4: FlaskConical,
+  5: ScanLine,
+  6: BedDouble,
+  7: Receipt,
+  8: UserRound,
+  9: Monitor,
+  10: Settings,
+};
 
-export function Sidebar() {
+export const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <>
       {/* Desktop sidebar */}
       <aside className="hidden w-64 h-screen flex-col shrink-0 border-r border-sidebar-border bg-sidebar lg:flex">
-        <SidebarContent onNavigate={() => {}} />
+        <SidebarContent />
       </aside>
 
       {/* Mobile top bar */}
@@ -155,36 +72,34 @@ export function Sidebar() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex h-full flex-col pt-16">
-              <SidebarContent onNavigate={() => setMobileOpen(false)} />
+              <SidebarContent />
             </div>
           </aside>
         </div>
       )}
     </>
   );
-}
+};
 
-const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
-  const { pathname } = useLocation();
+const SidebarContent = () => {
   const navigate = useNavigate();
   const { role, name, subtitle, resetStore } = useAuthStore();
   const { data: modules } = useGetModules();
-
-  console.warn('modules list');
-  console.warn(modules);
 
   const handleLogout = () => {
     resetStore();
     navigate(ROUTES.LOGIN, { replace: true });
   };
 
-  const userInitials = name
-    ? name
-        .split(' ')
-        .slice(0, 2)
-        .map(n => n[0])
-        .join('')
-    : '?';
+  const modulesParsed: Module[] =
+    modules?.map(a => ({
+      id: a.modulo,
+      label: a.titulo,
+      icon: icons[Number(a.modulo) as keyof typeof icons],
+      url: a.url,
+    })) ?? [];
+
+  const userInitials = getUserInitials(name);
 
   return (
     <div className="flex h-full flex-col">
@@ -220,8 +135,8 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
           Módulos
         </p>
         <div className="space-y-0.5">
-          {MODULES.map(mod => (
-            <ModuleButton key={mod.id} mod={mod} pathname={pathname} />
+          {modulesParsed.map(a => (
+            <ModuleButton key={a.id} mod={a} />
           ))}
         </div>
       </nav>
@@ -241,20 +156,26 @@ const SidebarContent = ({ onNavigate }: { onNavigate: () => void }) => {
 };
 
 const ModuleButton = (props: ModuleButtonProps) => {
-  const { mod, pathname } = props;
-  const isActiveModule = mod.basePaths?.some(p => pathname.startsWith(p)) ?? false;
+  const { mod } = props;
+  const isActiveModule = mod.id === '2';
+
+  const goTo = (m: Module) => {
+    if (isActiveModule) return;
+    window.location.href = m.url;
+  };
 
   return (
     <div
+      onClick={() => goTo(mod)}
       className={cn(
-        'flex w-full items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150 active:scale-[0.98]',
+        'flex w-full items-center gap-3 rounded-lg px-3 py-3',
         isActiveModule
           ? 'bg-sidebar-accent font-medium text-sidebar-foreground'
-          : 'text-sidebar-foreground hover:bg-sidebar-accent'
+          : 'text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer'
       )}
     >
       <mod.icon className="h-4 w-4 shrink-0 text-sidebar-foreground" />
-      <span className="text-sm text-sidebar-foreground">{mod.label}</span>
+      <span className="text-sm text-sidebar-foreground select-none">{mod.label}</span>
     </div>
   );
 };

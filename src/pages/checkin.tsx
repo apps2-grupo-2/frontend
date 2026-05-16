@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { CheckCircle2, Clock, Loader2, MapPin, Search, User } from 'lucide-react';
 
+import type { CheckinAppointment } from '@/mocks/checkin-mock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { type CheckinAppointment, MOCK_TODAY_APPOINTMENTS } from '@/mocks/checkin-mock';
+import { MOCK_TODAY_APPOINTMENTS } from '@/mocks/checkin-mock';
 
 const statusConfig: Record<CheckinAppointment['status'], { label: string; className: string }> = {
   pending: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-700' },
