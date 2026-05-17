@@ -1,14 +1,16 @@
 import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
 import { APPOINTMENTS_STEPS } from '@/constants';
-import { UseAppointments } from '@/hooks/use-appointments';
-import { Appointment_Confirmation } from '@/modules/appointment-confirmation';
-import { Appointment_Initial } from '@/modules/appointment-initial/appointment-initial';
-import { Appointment_Success } from '@/modules/appointment-success';
-import { Stepper } from '@/modules/components/stepper';
+import { useAppointments } from '@/hooks/use-appointments';
+import { Appointment_Confirmation } from '@/modules/appointment-schedule/appointment-confirmation';
+//import { Appointment_Confirmation, Appointment_Initial, Appointment_Success } from '@/modules/appointment-schedule';
+import { Appointment_Initial } from '@/modules/appointment-schedule/appointment-initial';
+import { Appointment_Success } from '@/modules/appointment-schedule/appointment-success';
+import { Stepper } from '@/modules/appointment-schedule/components/stepper';
 
 export default function Page() {
-  const { metadata } = UseAppointments(APPOINTMENTS_STEPS.APPOINTMENT_INITIAL);
-  const { step } = metadata.screen;
+  const { metadata } = useAppointments(APPOINTMENTS_STEPS.APPOINTMENT_INITIAL);
+  const { step } = metadata;
+
   return (
     <div className="flex animate-in flex-col duration-300 fill-mode-both fade-in slide-in-from-bottom-2">
       <div className="mb-6 sm:mb-8">
@@ -26,9 +28,9 @@ export default function Page() {
   );
 }
 
-const TurnosStep = (props: { metadata: UseAppointmentsData['metadata'] }) => {
+const TurnosStep = (props: UseAppointmentsData) => {
   const { metadata } = props;
-  const { step } = metadata.screen;
+  const { step } = metadata;
 
   if (step === APPOINTMENTS_STEPS.APPOINTMENT_INITIAL) {
     return <Appointment_Initial metadata={metadata} />;

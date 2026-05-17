@@ -1,16 +1,18 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { AuthStore, AuthStoreStates } from '@/typings/stores/auth';
+import type { AuthStore, AuthStoreOptionsStates, AuthStoreStates } from '@/typings/stores/auth';
 
-const defaultFields: AuthStoreStates = {
-  autoLogin: false,
+const defaultFields: AuthStoreStates & AuthStoreOptionsStates = {
   accessToken: undefined,
+  autoLogin: false,
+  dni: undefined,
   email: undefined,
+  id: undefined,
   logoutRequired: false,
+  name: undefined,
   refreshToken: undefined,
   role: undefined,
-  name: undefined,
   subtitle: undefined,
 };
 
@@ -21,15 +23,7 @@ export const useAuthStore = create<AuthStore>()(
       logout: () => set({ logoutRequired: true }),
       enableAutoLogin: () => set({ autoLogin: true }),
       resetStore: () => set(defaultFields),
-      setTokens: a =>
-        set({
-          accessToken: a.accessToken,
-          email: a.email,
-          refreshToken: a.refreshToken,
-          role: a.role,
-          name: a.name,
-          subtitle: a.subtitle,
-        }),
+      setAuth: a => set(a),
     }),
     {
       name: 'auth',

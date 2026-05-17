@@ -5,8 +5,8 @@ import { APPOINTMENTS_STEPS } from '@/constants';
 import { cn } from '@/lib/utils';
 
 const STEP_CONFIG = [
-  { step: APPOINTMENTS_STEPS.APPOINTMENT_INITIAL, label: 'Preferencias' },
-  { step: APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION, label: 'Fecha y hora' },
+  { step: APPOINTMENTS_STEPS.APPOINTMENT_INITIAL, label: 'Agenda' },
+  { step: APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION, label: 'Verificación' },
   { step: APPOINTMENTS_STEPS.APPOINTMENT_SUCCESS, label: 'Confirmación' },
 ];
 

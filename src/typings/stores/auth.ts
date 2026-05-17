@@ -2,22 +2,25 @@ import type { UserRole } from '@/typings/services/auth';
 
 export type AuthStoreStates = {
   accessToken: string | undefined;
-  autoLogin: boolean;
+  id: string | undefined;
+  dni: string | undefined;
   email: string | undefined;
-  logoutRequired: boolean;
+  name: string | undefined;
   refreshToken: string | undefined;
   role: UserRole | undefined;
-  name: string | undefined;
   subtitle: string | undefined;
+};
+
+export type AuthStoreOptionsStates = {
+  autoLogin: boolean;
+  logoutRequired: boolean;
 };
 
 type AuthStoreActions = {
   logout: () => void;
   resetStore: () => void;
   enableAutoLogin: () => void;
-  setTokens: (
-    states: Pick<AuthStoreStates, 'accessToken' | 'refreshToken' | 'email' | 'role' | 'name' | 'subtitle'>
-  ) => void;
+  setAuth: (states: AuthStoreStates) => void;
 };
 
-export type AuthStore = AuthStoreStates & AuthStoreActions;
+export type AuthStore = AuthStoreStates & AuthStoreOptionsStates & AuthStoreActions;

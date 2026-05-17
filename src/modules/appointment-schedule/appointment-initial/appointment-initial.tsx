@@ -13,26 +13,22 @@ export const Appointment_Initial = (props: StepProps) => {
   const form = useForm<AppointmentInitialFormProps>({
     mode: 'onChange',
     defaultValues: {
-      professional: '',
-      speciality: '',
+      professional_id: '',
+      speciality_id: '',
       priority: '',
-      medicalCenter: '',
-      date: undefined,
-      rangeTime: '',
+      medical_center_id: '',
+      date: '',
+      starts_at: '',
     },
   });
 
-  const isFormValid = form.formState.isValid && Object.keys(form.formState.errors).length === 0;
-
   const onSubmit = async (formData: AppointmentInitialFormProps) => {
-    console.warn('formData');
-    console.warn(formData);
-    metadata.setPayload({
-      ...formData,
-      date: formData?.date?.toISOString() || '',
-    });
+    const { date, ...rest } = formData;
+    metadata.setPayload(rest);
     metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION);
   };
+
+  const isFormValid = form.formState.isValid;
 
   return (
     <div>

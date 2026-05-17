@@ -1,23 +1,15 @@
 import type { APPOINTMENTS_STEPS } from '@/constants';
-import type { AppointmentInitialFormProps } from '@/typings/modules/appointment-initial';
-
-export type Metadata = {
-  previousStep: APPOINTMENTS_STEPS;
-  step: APPOINTMENTS_STEPS;
-};
+import type { AppointmentInitialFormProps } from '../modules/appointment-initial';
 
 export type UseAppointmentsData = {
   metadata: {
-    screen: Metadata;
+    step: APPOINTMENTS_STEPS;
     payload: Payload;
     setPayload: (payload: Payload) => void;
     navigateTo: (step: APPOINTMENTS_STEPS) => void;
-    goBack: () => void;
   };
 };
 
-export type Payload =
-  | null
-  | (Omit<AppointmentInitialFormProps, 'date'> & {
-      date: string;
-    });
+export type Payload = Omit<AppointmentInitialFormProps, 'date'> & {
+  appointment_id?: string;
+};

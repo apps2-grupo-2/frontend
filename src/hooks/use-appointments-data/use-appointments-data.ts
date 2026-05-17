@@ -1,28 +1,24 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { getMedicalCenters, getProfessionals } from '@/services/appointments';
-import { getSpecialities } from '@/services/specialties';
+import type { CreateAppointmentRequest, GetAppointmentsRequest } from '@/typings/services';
+import { cancelAppointment, createAppointment, getAppointments } from '@/services/appointments';
 
 const staleTime = 5 * 60 * 1000; // Los datos expiran después de 5 minutos
 
-export const useGetProfessionals = () =>
+export const useGetAppointments = (req: GetAppointmentsRequest, enabled: boolean = true) =>
   useQuery({
-    queryKey: ['useGetProfessionals'],
-    queryFn: getProfessionals,
+    queryKey: ['useGetAppointments', req],
+    queryFn: () => getAppointments(req),
     staleTime,
+    enabled,
   });
 
-export const useGetSpecialties = () =>
-  useQuery({
-    queryKey: ['useGetSpecialties'],
-    queryFn: getSpecialities,
-    staleTime,
+export const useCreateAppointment = () =>
+  useMutation({
+    mutationFn: (data: CreateAppointmentRequest) => createAppointment(data),
   });
 
-export const useMedicalCenters = (priority: string) =>
-  useQuery({
-    queryKey: ['MedicalCenters', priority],
-    queryFn: () => getMedicalCenters(priority),
-    staleTime,
-    enabled: priority !== '', // Ejecuta la consulta si se seleccionó una prioridad
+export const useCancelAppointment = () =>
+  useMutation({
+    mutationFn: (id: number) => cancelAppointment(id),
   });

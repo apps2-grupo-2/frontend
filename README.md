@@ -20,6 +20,5 @@ pnpm install
 ## Iniciar en desarrollo
 
 ```bash
-pnpm run local-server   '>> Inicia servidor local simulando endpoints'
 pnpm run dev            '>> Inicia el proyecto'
 ```
