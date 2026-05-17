@@ -6,7 +6,7 @@ export const Chip = (props: ChipProps) => {
   return (
     <div
       className={cn(
-        'cursor-pointer rounded-sm border px-3 py-2 shadow-sm text-sm transition-colors duration-200 ease-in-out select-none',
+        'cursor-pointer rounded-md border px-3 py-2 shadow-sm text-sm transition-colors duration-200 ease-in-out select-none',
         selected ? 'bg-primary text-white' : 'bg-white text-black'
       )}
       onClick={() => !disabled && onClick?.()}

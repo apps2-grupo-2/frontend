@@ -1,112 +1,110 @@
-import { Calendar, CalendarPlus, Clock, MapPin, RefreshCw, Video, X } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, CalendarPlus, Clock, MapPin, RefreshCw, X } from 'lucide-react';
 
-import type { AppointmentCardProps, EmptyStateProps } from '@/typings/components/ui/appointments-card';
+import type { Appointment, AppointmentCardProps, EmptyStateProps } from '@/typings/components/ui/appointments-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { APPOINTMENT_STATUSES } from '@/constants';
+import { formatDate } from '@/helpers/helpers';
 import { cn } from '@/lib/utils';
+import { ConfirmDialog } from './confirm-dialog';
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(`${dateStr}T00:00:00`);
-  return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
-};
-
-const statusConfig: Record<string, { label: string; className: string }> = {
-  confirmado: { label: 'Confirmado', className: 'bg-success/10 text-success' },
-  pendiente: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-600' },
-  cancelado: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
+const statusConfig: Record<Appointment['status'], { label: string; className: string }> = {
+  [APPOINTMENT_STATUSES.ABSENT]: { label: 'Ausente', className: 'bg-orange-500/10 text-orange-600' },
+  [APPOINTMENT_STATUSES.CANCELLED]: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
+  [APPOINTMENT_STATUSES.CHECKED_IN]: { label: 'En consulta', className: 'bg-primary/10 text-primary' },
+  [APPOINTMENT_STATUSES.COMPLETED]: { label: 'Completado', className: 'bg-emerald-500/10 text-emerald-600' },
+  [APPOINTMENT_STATUSES.CONFIRMED]: { label: 'Confirmado', className: 'bg-success/10 text-success' },
+  [APPOINTMENT_STATUSES.EXPIRED]: { label: 'Vencido', className: 'bg-muted text-muted-foreground' },
+  [APPOINTMENT_STATUSES.PENDING_CONFIRMATION]: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-600' },
 };
 
 export const AppointmentCard = (props: AppointmentCardProps) => {
-  const { appointment, index, isCancelling, onCancel, onCancelRequest, onCancelDismiss, onReschedule } = props;
+  const { appointment, isLoading, onCancel, onReschedule } = props;
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+  const confirmCancelDialog = () => {
+    //
+  };
+
+  const isEditable = appointment.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION;
 
   return (
-    <Card
-      style={{ animationDelay: `${index * 60}ms` }}
-      className={cn(
-        'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none transition-all hover:border-primary/20 hover:shadow-md',
-        appointment.status === 'cancelado' && 'opacity-60'
-      )}
-    >
-      <CardContent className="p-4 sm:p-5">
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-3 sm:gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors duration-200 sm:h-12 sm:w-12">
-              {appointment.modality === 'virtual' ? (
-                <Video className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-              ) : (
+    <>
+      <Card
+        className={cn(
+          'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none overflow-hidden transition-all hover:border-primary/20 hover:shadow-md',
+          appointment.status === APPOINTMENT_STATUSES.CANCELLED && 'opacity-60'
+        )}
+      >
+        <CardContent>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors duration-200 sm:h-12 sm:w-12">
                 <Calendar className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground sm:text-base">{appointment.doctor}</p>
-                  <p className="truncate text-xs text-muted-foreground sm:text-sm">{appointment.specialty}</p>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground sm:text-base">{appointment.doctor}</p>
+                    <p className="truncate text-xs text-muted-foreground sm:text-sm">{appointment.specialty}</p>
+                  </div>
+                  {statusConfig[appointment.status] && (
+                    <span
+                      className={cn(
+                        'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
+                        statusConfig[appointment.status].className
+                      )}
+                    >
+                      {statusConfig[appointment.status].label}
+                    </span>
+                  )}
                 </div>
-                {statusConfig[appointment.status] && (
-                  <span
-                    className={cn(
-                      'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-                      statusConfig[appointment.status].className
-                    )}
-                  >
-                    {statusConfig[appointment.status].label}
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      {formatDate(appointment.date)} a las {appointment.time} hs
+                    </span>
                   </span>
-                )}
-              </div>
-              <div className="mt-2 flex flex-col gap-1.5">
-                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Clock className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">
-                    {formatDate(appointment.date)} · {appointment.time} hs
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{appointment.location}</span>
                   </span>
-                </span>
-                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <MapPin className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{appointment.location}</span>
-                </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {appointment.status !== 'cancelado' && (
-            <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-              {appointment.modality === 'virtual' && (
-                <Button size="sm" className="bg-accent text-xs text-accent-foreground hover:bg-accent/90">
-                  Unirse
+            {isEditable && (
+              <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
+                <Button size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Reprogramar
                 </Button>
-              )}
-              <Button size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
-                <RefreshCw className="h-3.5 w-3.5" />
-                Reprogramar
-              </Button>
 
-              {isCancelling ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">¿Confirmás la cancelación?</span>
-                  <Button size="sm" variant="destructive" className="text-xs" onClick={onCancel}>
-                    Sí, cancelar
-                  </Button>
-                  <Button size="sm" variant="ghost" className="text-xs" onClick={onCancelDismiss}>
-                    No
-                  </Button>
-                </div>
-              ) : (
                 <Button
                   size="sm"
                   variant="ghost"
                   className="text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  onClick={onCancelRequest}
+                  onClick={() => setIsConfirmDialogOpen(true)}
                 >
                   <X className="h-3.5 w-3.5" />
                   Cancelar turno
                 </Button>
-              )}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      <ConfirmDialog
+        title="Cancelar turno"
+        description="¿Querés cancelar este turno? Esta acción no se puede deshacer."
+        ctaTitle="Cancelar"
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        onConfirm={confirmCancelDialog}
+      />
+    </>
   );
 };
 

@@ -44,9 +44,9 @@ describe('getRangeTimeAvailability', () => {
     expect(slots).toHaveLength(18);
   });
 
-  it('should start at 9:00 - 9:30', () => {
+  it('should start at 09:00 - 09:30', () => {
     const slots = getRangeTimeAvailability(date);
-    expect(slots[0].label).toBe('9:00 - 9:30');
+    expect(slots[0].label).toBe('09:00 - 09:30');
   });
 
   it('should end at 17:30 - 18:00', () => {
@@ -54,19 +54,19 @@ describe('getRangeTimeAvailability', () => {
     expect(slots[slots.length - 1].label).toBe('17:30 - 18:00');
   });
 
-  it('should have value in yyyy-MM-dd H:mm:ss format', () => {
+  it('should have value in yyyy-MM-dd HH:mm:ss format', () => {
     const slots = getRangeTimeAvailability(date);
-    expect(slots[0].value).toBe('2026-05-16 9:00:00');
-    expect(slots[1].value).toBe('2026-05-16 9:30:00');
+    expect(slots[0].value).toBe('2026-05-16 09:00:00');
+    expect(slots[1].value).toBe('2026-05-16 09:30:00');
   });
 
   it('should exclude occupied slots', () => {
-    const occupied = ['2026-05-16 11:30:00', '2026-05-16 15:00:00'];
+    const occupied = ['2026-05-16 09:00:00', '2026-05-16 15:30:00'];
     const slots = getRangeTimeAvailability(date, occupied);
 
     expect(slots).toHaveLength(16);
-    expect(slots.find(s => s.value === '2026-05-16 11:30:00')).toBeUndefined();
-    expect(slots.find(s => s.value === '2026-05-16 15:00:00')).toBeUndefined();
+    expect(slots.find(s => s.value === occupied[0])).toBeUndefined();
+    expect(slots.find(s => s.value === occupied[1])).toBeUndefined();
   });
 
   it('should return all slots when no occupied slots are provided', () => {

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { addMonths } from 'date-fns';
+import { addDays, addMonths, format } from 'date-fns';
 
 import type { FormContentProps } from '@/typings/modules/appointment-initial';
-import type { AppointmentsRequest } from '@/typings/services';
+import type { GetAppointmentsRequest } from '@/typings/services';
 import { RhfCalendar } from '@/components/rhf/rhf-calendar';
 import { RhfChips } from '@/components/rhf/rhf-chips';
 import { RhfCombobox } from '@/components/rhf/rhf-combobox';
@@ -12,49 +12,41 @@ import { Grid } from '@/components/ui/grid';
 import { PRIORITY_TYPES } from '@/constants';
 import { useGetAppointments } from '@/hooks/use-appointments-data';
 import { useMedicalCenters } from '@/hooks/use-medical-centers-data';
+import { useGetProfessionals } from '@/hooks/use-professionals-data';
 import { useGetSpecialties } from '@/hooks/use-specialties-data';
 import { getCalendarDays, getRangeTimeAvailability } from '../helpers/helpers';
 
-const professionalOptions = [
-  { value: 'p1', label: 'Dr. Juan Perez' },
-  { value: 'p2', label: 'Dra. Maria Lopez' },
-];
-
-const appointmentsDefaultParams: AppointmentsRequest = {
-  // since: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-  since: '2026-04-10 00:00:00',
-  // until: format(addDays(new Date(), 30), 'yyyy-MM-dd HH:mm:ss'), // Próximos 30 días
-  until: '2026-05-10 00:00:00',
+const appointmentsDefaultParams: GetAppointmentsRequest = {
+  since: format(addDays(new Date(), 1), 'yyyy-MM-dd HH:mm:ss'),
+  until: format(addDays(new Date(), 31), 'yyyy-MM-dd HH:mm:ss'), // Próximos 30 días
 };
 
 export const FormContent = (props: FormContentProps) => {
   const { form } = props;
 
   const watchedFields = useWatch({ control: form.control });
-  const { data: specialties = [], isLoading: isLoadingSpecialties } = useGetSpecialties();
-  const { data: medicalCenters, isLoading: isLoadingMedicalCenters } = useMedicalCenters(watchedFields.priority || '');
+  const specialties = useGetSpecialties();
+  const medicalCenters = useMedicalCenters(watchedFields.priority || '');
+  const professionals = useGetProfessionals(watchedFields.speciality_id || '');
 
-  const [appointmentsParams, _setAppointmentsParams] = useState<AppointmentsRequest>(appointmentsDefaultParams);
-  const { data: appointments, isLoading: isLoadingAppointments } = useGetAppointments(appointmentsParams, true);
-
-  const priorityChangeHandler = (_value: string) => {
-    form.setValue('medicalCenter', '');
-  };
+  const [appointmentsParams, _setAppointmentsParams] = useState<GetAppointmentsRequest>(appointmentsDefaultParams);
+  const { data: appointments = [], isLoading: isLoadingAppointments } = useGetAppointments(appointmentsParams);
 
   const enabledDates = getCalendarDays();
   const rangeTimeOptions = useMemo(() => {
     if (!isLoadingAppointments) {
-      // TODO: reemplazar occupiedSlots con appointments > starts_at cuando devuelva
-      // horarios finalizados en rangos de media hora, ahora mismo estan como:
-      // starts_at: "2026-04-11 01:22:00" y no funcionaria
-      const occupiedSlots = ['2026-05-16 11:30:00', '2026-05-16 15:00:00'];
-      return getRangeTimeAvailability(new Date(), occupiedSlots);
+      if (!watchedFields.date) return [];
+      const daySelected = format(watchedFields.date as Date, 'yyyy-MM-dd');
+      const appointmentsMock = appointments.filter(a => a.starts_at.startsWith(daySelected));
+      const occupiedSlots = appointmentsMock.map(a => a.starts_at);
+      return getRangeTimeAvailability(watchedFields.date, occupiedSlots);
     }
     return [];
-  }, [appointments, isLoadingAppointments]);
+  }, [watchedFields.date, appointments, isLoadingAppointments]);
 
-  console.warn('rangeTimeOptions');
-  console.warn(rangeTimeOptions);
+  const priorityChangeHandler = (_value: string) => {
+    form.setValue('medical_center_id', '');
+  };
 
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -62,13 +54,13 @@ export const FormContent = (props: FormContentProps) => {
         <Grid size={{ xs: 12, sm: 6 }}>
           <RhfCombobox
             control={form.control}
-            name="speciality"
+            name="speciality_id"
             rules={{ required: true }}
             label="Especialidad"
-            loading={isLoadingSpecialties}
+            loading={specialties.isLoading}
             placeholder="Seleccione una especialidad"
-            disabled={isLoadingSpecialties}
-            options={specialties}
+            disabled={specialties.isLoading}
+            options={specialties.data || []}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
@@ -78,7 +70,7 @@ export const FormContent = (props: FormContentProps) => {
             rules={{ required: true }}
             label="Prioridad"
             placeholder="Seleccione la prioridad"
-            disabled={watchedFields.speciality === ''}
+            disabled={watchedFields.speciality_id === ''}
             onValueChange={priorityChangeHandler}
             options={[
               { value: PRIORITY_TYPES.PROXIMITY, label: 'Por cercanía' },
@@ -89,13 +81,13 @@ export const FormContent = (props: FormContentProps) => {
         <Grid size={{ xs: 12, sm: 6 }}>
           <RhfSelect
             control={form.control}
-            name="medicalCenter"
+            name="medical_center_id"
             rules={{ required: true }}
             label="Centro médico"
-            loading={isLoadingMedicalCenters}
+            loading={medicalCenters.isLoading}
             placeholder="Seleccione un centro médico"
-            disabled={watchedFields.priority === ''}
-            options={medicalCenters || []}
+            disabled={!watchedFields.priority}
+            options={medicalCenters.data || []}
           />
         </Grid>
       </Grid>
@@ -107,33 +99,35 @@ export const FormContent = (props: FormContentProps) => {
             name="date"
             rules={{ required: true }}
             label="Fecha"
-            //disabled={watchedFields.medicalCenter === ''}
+            disabled={!watchedFields.medical_center_id}
             enabledDates={enabledDates}
             startMonth={new Date()}
             endMonth={addMonths(new Date(), 1)}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          {!!watchedFields.date && (
-            <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
+            {!!watchedFields.date && (
               <RhfChips
                 control={form.control}
-                name="professional"
+                name="professional_id"
                 label="Profesional"
-                options={professionalOptions}
+                options={professionals.data || []}
                 rules={{ required: true }}
                 disabled={!watchedFields.date}
               />
+            )}
+            {!!watchedFields.professional_id && (
               <RhfChips
                 control={form.control}
-                name="rangeTime"
+                name="starts_at"
                 label="Horario"
                 options={rangeTimeOptions}
                 rules={{ required: true }}
-                disabled={!watchedFields.professional}
+                disabled={!watchedFields.professional_id}
               />
-            </div>
-          )}
+            )}
+          </div>
         </Grid>
       </Grid>
     </div>

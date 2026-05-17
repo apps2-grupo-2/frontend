@@ -3,11 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { addDays, format } from 'date-fns';
 import { CalendarPlus } from 'lucide-react';
 
-import type { AppointmentsRequest } from '@/typings/services';
+import type { GetAppointmentsRequest } from '@/typings/services';
 import { AppointmentCard, EmptyState } from '@/components/ui/appointments-card';
 import { Button } from '@/components/ui/button';
-import { ROUTES } from '@/constants';
+import { APPOINTMENT_STATUSES, ROUTES } from '@/constants';
 import { useGetAppointments } from '@/hooks/use-appointments-data';
+
+const apptExample = {
+  id: 'TUR-8821',
+  doctor: 'Dr. Carlos Peralta',
+  specialty: 'Cardiología',
+  date: '2026-03-24',
+  time: '09:30',
+  location: 'Consultorio 4B',
+  modality: 'presencial',
+  status: APPOINTMENT_STATUSES.CONFIRMED,
+};
+
+const appointmentsDefaultParams: GetAppointmentsRequest = {
+  since: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+  until: format(addDays(new Date(), 30), 'yyyy-MM-dd HH:mm:ss'), // Próximos 30 días
+};
 
 export default function Page() {
   return (
@@ -23,25 +39,9 @@ export default function Page() {
   );
 }
 
-const apptExample = {
-  id: 'TUR-8821',
-  doctor: 'Dr. Carlos Peralta',
-  specialty: 'Cardiología',
-  date: '2026-03-24',
-  time: '09:30',
-  location: 'Consultorio 4B',
-  modality: 'presencial',
-  status: 'confirmado',
-};
-
-const appointmentsDefaultParams: AppointmentsRequest = {
-  since: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-  until: format(addDays(new Date(), 30), 'yyyy-MM-dd HH:mm:ss'), // Próximos 30 días
-};
-
 const Appointments = () => {
   const navigate = useNavigate();
-  const [appointmentsParams, _setAppointmentsParams] = useState<AppointmentsRequest>(appointmentsDefaultParams);
+  const [appointmentsParams, _setAppointmentsParams] = useState<GetAppointmentsRequest>(appointmentsDefaultParams);
   const [patientId, _setPatientId] = useState<number>(2);
   const { data: appointments, isLoading: isLoadingAppointments } = useGetAppointments(appointmentsParams, !!patientId);
 
@@ -90,15 +90,7 @@ const Appointments = () => {
           // />
         ))
       )}
-      <AppointmentCard
-        index={2}
-        appointment={apptExample}
-        isCancelling={false}
-        onCancel={() => {}}
-        onCancelRequest={() => {}}
-        onCancelDismiss={() => {}}
-        onReschedule={() => {}}
-      />
+      <AppointmentCard appointment={apptExample} isLoading={false} onCancel={() => {}} onReschedule={() => {}} />
     </div>
   );
 };

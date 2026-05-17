@@ -19,4 +19,5 @@ export type Module = {
 
 export type ModuleButtonProps = {
   mod: Module;
+  role?: UserRole;
 };

@@ -6,6 +6,7 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
   const user = MOCK_USERS.find(a => a.dni === body.identifier && a.password === body.password);
   if (!user) throw new Error('Credenciales incorrectas');
   return {
+    id: user.id,
     dni: user.dni,
     access_token: user.accessToken,
     refresh_token: user.refreshToken,

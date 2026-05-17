@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 import type { Module, ModuleButtonProps } from '@/typings/components/layouts/sidebar';
-import { ROUTES } from '@/constants';
+import { ROUTES, USER_TYPE } from '@/constants';
 import { getUserInitials } from '@/helpers/helpers';
 import { useGetModules } from '@/hooks/use-others-data';
 import { cn } from '@/lib/utils';
@@ -136,7 +136,7 @@ const SidebarContent = () => {
         </p>
         <div className="space-y-0.5">
           {modulesParsed.map(a => (
-            <ModuleButton key={a.id} mod={a} />
+            <ModuleButton key={a.id} role={role} mod={a} />
           ))}
         </div>
       </nav>
@@ -156,22 +156,32 @@ const SidebarContent = () => {
 };
 
 const ModuleButton = (props: ModuleButtonProps) => {
-  const { mod } = props;
+  const { mod, role } = props;
+  const navigate = useNavigate();
   const isActiveModule = mod.id === '2';
 
   const goTo = (m: Module) => {
-    if (isActiveModule) return;
-    window.location.href = m.url;
+    if (isActiveModule && role) {
+      if (role === USER_TYPE.PATIENT) {
+        navigate(ROUTES.TURNOS, { replace: true });
+      } else if (role === USER_TYPE.PROFESSIONAL) {
+        navigate(ROUTES.AGENDA_PROFESIONAL, { replace: true });
+      } else {
+        navigate(ROUTES.PRESENTISMO, { replace: true });
+      }
+    } else {
+      window.location.href = m.url;
+    }
   };
 
   return (
     <div
       onClick={() => goTo(mod)}
       className={cn(
-        'flex w-full items-center gap-3 rounded-lg px-3 py-3',
+        'flex w-full items-center gap-3 rounded-lg px-3 py-3 cursor-pointer',
         isActiveModule
           ? 'bg-sidebar-accent font-medium text-sidebar-foreground'
-          : 'text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer'
+          : 'text-sidebar-foreground hover:bg-sidebar-accent'
       )}
     >
       <mod.icon className="h-4 w-4 shrink-0 text-sidebar-foreground" />

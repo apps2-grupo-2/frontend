@@ -22,6 +22,10 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
     shouldUnregister,
   });
 
+  const handleSelect = (date: Date | undefined) => {
+    if (date) onChange(date);
+  };
+
   const disabledMatcher = rest.enabledDates
     ? (date: Date) =>
         !rest.enabledDates!.some(
@@ -41,7 +45,7 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
         <Calendar
           mode="single"
           selected={value}
-          onSelect={onChange}
+          onSelect={handleSelect}
           disabled={disabledMatcher}
           startMonth={rest.startMonth}
           locale={es}

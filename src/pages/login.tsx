@@ -57,6 +57,7 @@ export default function Page() {
     try {
       const res = await authLogin({ identifier, password: pass });
       authStore.setAuth({
+        id: res.id,
         accessToken: res.access_token,
         refreshToken: res.refresh_token,
         email: res.email,

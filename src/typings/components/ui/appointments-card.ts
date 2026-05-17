@@ -1,3 +1,5 @@
+import type { APPOINTMENT_STATUSES } from '@/constants';
+
 export type EmptyStateProps = {
   onRequest: () => void;
 };
@@ -10,15 +12,12 @@ export type Appointment = {
   time: string;
   location: string;
   modality: string;
-  status: string;
+  status: (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES];
 };
 
 export type AppointmentCardProps = {
   appointment: Appointment;
-  index: number;
-  isCancelling: boolean;
+  isLoading: boolean;
   onCancel: () => void;
-  onCancelRequest: () => void;
-  onCancelDismiss: () => void;
   onReschedule: () => void;
 };

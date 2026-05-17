@@ -16,8 +16,8 @@ export const getRangeTimeAvailability = (date: Date, occupiedSlots: string[] = [
     const base = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour, 0);
     const slotStart = addMinutes(base, i * intervalMinutes);
     const slotEnd = addMinutes(slotStart, intervalMinutes);
-    const label = `${format(slotStart, 'H:mm')} - ${format(slotEnd, 'H:mm')}`;
-    const value = format(slotStart, 'yyyy-MM-dd H:mm:ss');
+    const label = `${format(slotStart, 'HH:mm')} - ${format(slotEnd, 'HH:mm')}`;
+    const value = format(slotStart, 'yyyy-MM-dd HH:mm:ss');
     return { label, value };
   }).filter(slot => !occupiedSlots.includes(slot.value));
 };
