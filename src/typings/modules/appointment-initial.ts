@@ -10,7 +10,7 @@ export type AppointmentInitialFormProps = {
   speciality_id: string;
   priority: (typeof PRIORITY_TYPES)[keyof typeof PRIORITY_TYPES] | '';
   medical_center_id: string;
-  date: Date | undefined;
+  date: string | undefined;
   starts_at: string;
 };
 

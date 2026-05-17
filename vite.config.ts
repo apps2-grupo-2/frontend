@@ -15,5 +15,6 @@ export default defineConfig({
   },
   test: {
     pool: 'threads',
+    globalSetup: ['./vitest.setup.ts'],
   },
 });

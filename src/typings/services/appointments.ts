@@ -1,6 +1,8 @@
+import type { APPOINTMENT_STATUSES } from '@/constants';
 import type { Pagination } from './common';
 
 export type GetAppointmentsRequest = {
+  light_response?: number;
   medic_id?: number; // Filtrar por médico (ID de usuario)
   medical_center_id?: number; // Filtrar por centro médico (ID)
   page?: number; // Número de página (por defecto: 1)
@@ -17,11 +19,8 @@ export type GetAppointmentsResponse = {
 
 export type Appointment = {
   id: number;
-  medic_id: number;
-  patient_id: number;
   center_id: number;
-  speciality_id: number;
-  status: string;
+  status: (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES];
   starts_at: string;
   ends_at: string;
   confirmed_at: string | null;
@@ -29,6 +28,21 @@ export type Appointment = {
   cancelled_at: string | null;
   completed_at: string | null;
   created_at: string;
+  patient: {
+    id: number;
+    fullname: string;
+    email: string;
+  };
+  medic: {
+    id: number;
+    fullname: string;
+    email: string;
+  };
+  speciality: {
+    id: number;
+    name: string;
+    is_high_complexity: number;
+  };
 };
 
 export type CreateAppointmentRequest = {
@@ -52,4 +66,8 @@ export type CreateAppointmentRequest = {
 
 export type CreateAppointmentResponse = {
   appointment_id: number;
+};
+
+export type CancelAppointmentResponse = {
+  message: string;
 };

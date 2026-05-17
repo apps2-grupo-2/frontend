@@ -17,14 +17,12 @@ export const Appointment_Initial = (props: StepProps) => {
       speciality_id: '',
       priority: '',
       medical_center_id: '',
-      date: undefined,
+      date: '',
       starts_at: '',
     },
   });
 
   const onSubmit = async (formData: AppointmentInitialFormProps) => {
-    console.warn('formData');
-    console.warn(formData);
     const { date, ...rest } = formData;
     metadata.setPayload(rest);
     metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION);

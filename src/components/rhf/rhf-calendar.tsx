@@ -1,5 +1,6 @@
 import type { FieldValues } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import { format } from 'date-fns';
 import { es } from 'react-day-picker/locale';
 
 import type { RhfCalendarProps } from '@/typings/components/rhf/rhf-calendar';
@@ -23,7 +24,12 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
   });
 
   const handleSelect = (date: Date | undefined) => {
-    if (date) onChange(date);
+    if (date) {
+      const parsedDate = format(date, 'yyyy-MM-dd 00:00:00');
+      console.warn('parsedDate');
+      console.warn(parsedDate);
+      onChange(parsedDate);
+    }
   };
 
   const disabledMatcher = rest.enabledDates
@@ -49,6 +55,7 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
           disabled={disabledMatcher}
           startMonth={rest.startMonth}
           locale={es}
+          weekStartsOn={0}
           className="bg-white p-0"
         />
       </div>

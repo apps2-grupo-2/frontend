@@ -3,27 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { addDays, format } from 'date-fns';
 import { CalendarPlus } from 'lucide-react';
 
+import type { AppointmentsPaginationProps } from '@/typings/modules/appointments/appointments';
 import type { GetAppointmentsRequest } from '@/typings/services';
 import { AppointmentCard, EmptyState } from '@/components/ui/appointments-card';
 import { Button } from '@/components/ui/button';
-import { APPOINTMENT_STATUSES, ROUTES } from '@/constants';
-import { useGetAppointments } from '@/hooks/use-appointments-data';
-
-const apptExample = {
-  id: 'TUR-8821',
-  doctor: 'Dr. Carlos Peralta',
-  specialty: 'Cardiología',
-  date: '2026-03-24',
-  time: '09:30',
-  location: 'Consultorio 4B',
-  modality: 'presencial',
-  status: APPOINTMENT_STATUSES.CONFIRMED,
-};
-
-const appointmentsDefaultParams: GetAppointmentsRequest = {
-  since: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-  until: format(addDays(new Date(), 30), 'yyyy-MM-dd HH:mm:ss'), // Próximos 30 días
-};
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { ROUTES } from '@/constants';
+import { useCancelAppointment, useGetAppointments } from '@/hooks/use-appointments-data';
+import { useAuthStore } from '@/stores/auth.store';
 
 export default function Page() {
   return (
@@ -41,22 +35,25 @@ export default function Page() {
 
 const Appointments = () => {
   const navigate = useNavigate();
-  const [appointmentsParams, _setAppointmentsParams] = useState<GetAppointmentsRequest>(appointmentsDefaultParams);
-  const [patientId, _setPatientId] = useState<number>(2);
-  const { data: appointments, isLoading: isLoadingAppointments } = useGetAppointments(appointmentsParams, !!patientId);
+  const authStore = useAuthStore();
+  const cancelAppointment = useCancelAppointment();
 
-  console.warn('appointments');
-  console.warn(appointments);
+  const [appointmentsParams, setAppointmentsParams] = useState<GetAppointmentsRequest>({
+    since: format(new Date(), 'yyyy-MM-dd 00:00:00'),
+    until: format(addDays(new Date(), 30), 'yyyy-MM-dd 00:00:00'),
+    page: 1,
+  });
+  const isGetAppointmentsEnabled = !!authStore.id;
+  const appointments = useGetAppointments(appointmentsParams, isGetAppointmentsEnabled);
 
-  // Estado local para manejar cancelaciones sin backend
-  // TODO: reemplazar con mutación al endpoint DELETE /appointments/:id
-  //const [appointments, setAppointments] = useState<Appointment[]>(upcomingAppointments as Appointment[]);
-  const [_cancellingId, setCancellingId] = useState<string | null>(null);
-
-  const _handleCancel = (_id: string) => {
-    // TODO: llamar a DELETE /appointments/:id o PATCH /appointments/:id { status: 'cancelado' }
-    //setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'cancelado' } : a)));
-    setCancellingId(null);
+  const handleCancel = async (id: number) => {
+    try {
+      await cancelAppointment.mutateAsync(id);
+      appointments.refetch();
+    } catch (error) {
+      console.error('> mutateAsync error');
+      console.error(error);
+    }
   };
 
   return (
@@ -73,24 +70,62 @@ const Appointments = () => {
         </Button>
       </div>
 
-      {appointments?.length === 0 ? (
+      {appointments?.data?.appointments?.length === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (
-        appointments?.map((appt, _idx) => (
-          <b key={appt.id}>hola</b>
-          // <AppointmentCard
-          //   key={appt.id}
-          //   appointment={appt}
-          //   index={idx}
-          //   isCancelling={cancellingId === appt.id}
-          //   onCancel={() => handleCancel(appt.id)}
-          //   onCancelRequest={() => setCancellingId(appt.id)}
-          //   onCancelDismiss={() => setCancellingId(null)}
-          //   onReschedule={() => navigate(ROUTES.SOLICITAR_TURNOS)}
-          // />
+        appointments?.data?.appointments?.map((appt, _idx) => (
+          <AppointmentCard
+            key={appt.id}
+            appointment={appt}
+            isLoading={false}
+            onCancel={handleCancel}
+            onReschedule={() => {}}
+          />
         ))
       )}
-      <AppointmentCard appointment={apptExample} isLoading={false} onCancel={() => {}} onReschedule={() => {}} />
+
+      <AppointmentsPagination
+        pagination={appointments?.data?.pagination}
+        appointmentsParams={appointmentsParams}
+        setAppointmentsParams={setAppointmentsParams}
+      />
     </div>
+  );
+};
+
+const AppointmentsPagination = (props: AppointmentsPaginationProps) => {
+  const { pagination, appointmentsParams, setAppointmentsParams } = props;
+  if (!pagination || !appointmentsParams?.page) return null;
+
+  const handlePageChange = (page: number) => {
+    setAppointmentsParams({ ...appointmentsParams, page });
+  };
+
+  const totalPages = new Array(pagination.total_pages).fill(0).map((_, idx) => idx + 1);
+  const currentPage = appointmentsParams.page;
+
+  return (
+    <Pagination className="mt-8">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+        </PaginationItem>
+
+        {totalPages.map(page => (
+          <PaginationItem key={page}>
+            <PaginationLink onClick={() => handlePageChange(page)} isActive={page === currentPage}>
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+
+        <PaginationItem>
+          <PaginationNext
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === pagination.total_pages}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 };

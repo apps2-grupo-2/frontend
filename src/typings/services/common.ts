@@ -1,7 +1,7 @@
 export type Pagination = {
-  total_specialities: number;
+  appointments_per_page: number;
+  total_appointments: number;
   total_pages: number;
-  specialities_per_page: number;
 };
 
 export type OptionsResponse = {
