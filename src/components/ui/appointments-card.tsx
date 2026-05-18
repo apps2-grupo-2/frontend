@@ -84,7 +84,7 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
 
             {isEditable && (
               <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-                <Button size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
+                <Button disabled size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
                   <RefreshCw className="h-3.5 w-3.5" />
                   Reprogramar
                 </Button>

@@ -47,7 +47,6 @@ describe('getCalendarDays', () => {
 
 describe('getRangeTimeAvailability', () => {
   const date = '2026-05-16';
-  const medicId = '1';
 
   const makeAppointment = (starts_at: string): Appointment => ({
     id: 51,
@@ -78,29 +77,29 @@ describe('getRangeTimeAvailability', () => {
   });
 
   it('should return 18 slots from 9:00 to 18:00', () => {
-    const slots = getRangeTimeAvailability([], date, medicId);
+    const slots = getRangeTimeAvailability([], date);
     expect(slots).toHaveLength(18);
   });
 
   it('should start at 09:00 - 09:30', () => {
-    const slots = getRangeTimeAvailability([], date, medicId);
+    const slots = getRangeTimeAvailability([], date);
     expect(slots[0].label).toBe('09:00 - 09:30');
   });
 
   it('should end at 17:30 - 18:00', () => {
-    const slots = getRangeTimeAvailability([], date, medicId);
+    const slots = getRangeTimeAvailability([], date);
     expect(slots[slots.length - 1].label).toBe('17:30 - 18:00');
   });
 
   it('should have value in yyyy-MM-dd HH:mm:ss format', () => {
-    const slots = getRangeTimeAvailability([], date, medicId);
+    const slots = getRangeTimeAvailability([], date);
     expect(slots[0].value).toBe('2026-05-16 09:00:00');
     expect(slots[1].value).toBe('2026-05-16 09:30:00');
   });
 
   it('should exclude occupied slots', () => {
     const appointments = [makeAppointment('2026-05-16 09:00:00'), makeAppointment('2026-05-16 15:30:00')];
-    const slots = getRangeTimeAvailability(appointments, date, medicId);
+    const slots = getRangeTimeAvailability(appointments, date);
 
     expect(slots).toHaveLength(16);
     expect(slots.find(s => s.value === '2026-05-16 09:00:00')).toBeUndefined();
@@ -108,7 +107,7 @@ describe('getRangeTimeAvailability', () => {
   });
 
   it('should return all slots when no appointments match', () => {
-    const slots = getRangeTimeAvailability([], date, medicId);
+    const slots = getRangeTimeAvailability([], date);
     expect(slots).toHaveLength(18);
   });
 
@@ -413,51 +412,47 @@ describe('getRangeTimeAvailability', () => {
       },
     ];
 
-    it('should exclude 2 slots for medic 1 on 2026-05-18', () => {
-      const slots = getRangeTimeAvailability(realAppointments, '2026-05-18', '1');
+    it('should exclude 2 slots on 2026-05-18', () => {
+      const slots = getRangeTimeAvailability(realAppointments, '2026-05-18');
       expect(slots).toHaveLength(16);
       expect(slots.find(s => s.value === '2026-05-18 15:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-18 17:30:00')).toBeUndefined();
     });
 
-    it('should exclude 3 slots for medic 1 on 2026-05-19', () => {
-      const slots = getRangeTimeAvailability(realAppointments, '2026-05-19', '1');
+    it('should exclude 3 slots on 2026-05-19', () => {
+      const slots = getRangeTimeAvailability(realAppointments, '2026-05-19');
       expect(slots).toHaveLength(15);
       expect(slots.find(s => s.value === '2026-05-19 12:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-19 17:00:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-19 17:30:00')).toBeUndefined();
     });
 
-    it('should only exclude slots for the requested medic_id', () => {
-      const slotsForMedic1 = getRangeTimeAvailability(realAppointments, '2026-05-20', '1');
-      const slotsForMedic1210 = getRangeTimeAvailability(realAppointments, '2026-05-20', '1210');
+    it('should exclude all appointments on 2026-05-20 regardless of medic', () => {
+      const slots = getRangeTimeAvailability(realAppointments, '2026-05-20');
 
-      // medic 1 has 3 appointments on 2026-05-20
-      expect(slotsForMedic1).toHaveLength(15);
-      expect(slotsForMedic1.find(s => s.value === '2026-05-20 12:30:00')).toBeUndefined();
-      expect(slotsForMedic1.find(s => s.value === '2026-05-20 17:00:00')).toBeUndefined();
-      expect(slotsForMedic1.find(s => s.value === '2026-05-20 17:30:00')).toBeUndefined();
-
-      // medic 1210 has 2 appointments on 2026-05-20
-      expect(slotsForMedic1210).toHaveLength(16);
-      expect(slotsForMedic1210.find(s => s.value === '2026-05-20 15:00:00')).toBeUndefined();
-      expect(slotsForMedic1210.find(s => s.value === '2026-05-20 16:00:00')).toBeUndefined();
+      // 5 appointments on 2026-05-20: 12:30, 15:00, 16:00, 17:00, 17:30
+      expect(slots).toHaveLength(13);
+      expect(slots.find(s => s.value === '2026-05-20 12:30:00')).toBeUndefined();
+      expect(slots.find(s => s.value === '2026-05-20 15:00:00')).toBeUndefined();
+      expect(slots.find(s => s.value === '2026-05-20 16:00:00')).toBeUndefined();
+      expect(slots.find(s => s.value === '2026-05-20 17:00:00')).toBeUndefined();
+      expect(slots.find(s => s.value === '2026-05-20 17:30:00')).toBeUndefined();
     });
 
     it('should not exclude slots from other dates', () => {
-      const slots = getRangeTimeAvailability(realAppointments, '2026-05-21', '1');
-      // medic 1 has 1 appointment on 2026-05-21 (id: 55 at 12:30)
+      const slots = getRangeTimeAvailability(realAppointments, '2026-05-21');
+      // 1 appointment on 2026-05-21 (id: 55 at 12:30)
       expect(slots).toHaveLength(17);
       expect(slots.find(s => s.value === '2026-05-21 12:30:00')).toBeUndefined();
     });
 
-    it('should return all slots for a medic with no appointments on that date', () => {
-      const slots = getRangeTimeAvailability(realAppointments, '2026-05-18', '1210');
+    it('should return all slots for a date with no appointments', () => {
+      const slots = getRangeTimeAvailability(realAppointments, '2026-05-22');
       expect(slots).toHaveLength(18);
     });
 
     it('should exclude slots when date includes time component', () => {
-      const slots = getRangeTimeAvailability(realAppointments, '2026-05-18 00:00:00', '1');
+      const slots = getRangeTimeAvailability(realAppointments, '2026-05-18 00:00:00');
       expect(slots).toHaveLength(16);
       expect(slots.find(s => s.value === '2026-05-18 15:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-18 17:30:00')).toBeUndefined();

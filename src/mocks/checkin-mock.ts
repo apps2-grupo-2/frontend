@@ -1,6 +1,8 @@
 // TODO: reemplazar con GET /appointments/today?centerId=X (endpoint propio del módulo)
 // El módulo Core proveerá los datos del profesional vía GET /professionals/:id
 
+import { APPOINTMENT_STATUSES } from '@/constants';
+
 export type CheckinAppointment = {
   id: string;
   time: string;
@@ -9,7 +11,7 @@ export type CheckinAppointment = {
   doctor: string;
   specialty: string;
   medicalCenter: string;
-  status: 'pending' | 'arrived' | 'in-progress' | 'completed';
+  status: (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES];
 };
 
 // Turnos del día: jueves 10 de abril de 2026
@@ -22,7 +24,7 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dr. Fernandez Juan Pablo',
     specialty: 'Cardiología',
     medicalCenter: 'Hospital Central',
-    status: 'completed',
+    status: APPOINTMENT_STATUSES.COMPLETED,
   },
   {
     id: 'TUR-9014',
@@ -32,7 +34,7 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dr. Fernandez Juan Pablo',
     specialty: 'Cardiología',
     medicalCenter: 'Hospital Central',
-    status: 'arrived',
+    status: APPOINTMENT_STATUSES.CHECKED_IN,
   },
   {
     id: 'TUR-9021',
@@ -42,7 +44,7 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dr. Fernandez Juan Pablo',
     specialty: 'Electrofisiología',
     medicalCenter: 'Hospital Central',
-    status: 'pending',
+    status: APPOINTMENT_STATUSES.PENDING_CONFIRMATION,
   },
   {
     id: 'TUR-9035',
@@ -52,7 +54,7 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dra. Vásquez Laura Beatriz',
     specialty: 'Ginecología',
     medicalCenter: 'Hospital Central',
-    status: 'pending',
+    status: APPOINTMENT_STATUSES.PENDING_CONFIRMATION,
   },
   {
     id: 'TUR-9042',
@@ -62,7 +64,7 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dra. García Silvia Alejandra',
     specialty: 'Endocrinología',
     medicalCenter: 'Hospital Central',
-    status: 'pending',
+    status: APPOINTMENT_STATUSES.PENDING_CONFIRMATION,
   },
   {
     id: 'TUR-9055',
@@ -72,7 +74,7 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dra. García Silvia Alejandra',
     specialty: 'Diabetología',
     medicalCenter: 'Hospital Central',
-    status: 'pending',
+    status: APPOINTMENT_STATUSES.PENDING_CONFIRMATION,
   },
   {
     id: 'TUR-9061',
@@ -82,6 +84,6 @@ export const MOCK_TODAY_APPOINTMENTS: CheckinAppointment[] = [
     doctor: 'Dr. Rodríguez Martín Eduardo',
     specialty: 'Ortopedia y traumatología',
     medicalCenter: 'Hospital Central',
-    status: 'pending',
+    status: APPOINTMENT_STATUSES.PENDING_CONFIRMATION,
   },
 ];

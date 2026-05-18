@@ -6,15 +6,9 @@ export const getCalendarDays = (): Date[] => {
   return Array.from({ length: 31 }, (_, i) => addDays(new Date(), i + 1)).filter(date => !isWeekend(date));
 };
 
-export const getRangeTimeAvailability = (
-  appointments: Appointment[],
-  date: string,
-  medic_id: string
-): OptionsResponse => {
+export const getRangeTimeAvailability = (appointments: Appointment[], date: string): OptionsResponse => {
   const dateOnly = date.slice(0, 10);
-  const appointmentsFiltered = appointments.filter(
-    a => a.starts_at.startsWith(dateOnly) && a.medic.id === Number(medic_id)
-  );
+  const appointmentsFiltered = appointments.filter(a => a.starts_at.startsWith(dateOnly));
   const occupiedSlots = appointmentsFiltered.map(a => a.starts_at);
 
   const startHour = 9;

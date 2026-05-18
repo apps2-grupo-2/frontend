@@ -22,6 +22,7 @@ export { MyComponent };
 
 ## Tipos (Props)
 
+- Usar siempre **`type`** en lugar de `interface`, salvo que una librería o componente externo lo requiera explícitamente.
 - Los tipos se declaran en la carpeta `src/typings/`, respetando la misma estructura de carpetas del código fuente.
   - Componentes UI: `src/typings/components/ui/`
   - Componentes de layout: `src/typings/components/layouts/`

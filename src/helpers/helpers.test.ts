@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatDate, getUserInitials } from './helpers';
+import { formatDate } from '@/lib/utils';
+import { getUserInitials } from './helpers';
 
 describe('getUserInitials', () => {
   it('should return initials from first two words', () => {

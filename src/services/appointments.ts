@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import type {
   CancelAppointmentResponse,
+  ConfirmAppointmentResponse,
   CreateAppointmentRequest,
   CreateAppointmentResponse,
   GetAppointmentsRequest,
@@ -36,5 +37,10 @@ export const createAppointment = async (data: CreateAppointmentRequest): Promise
 
 export const cancelAppointment = async (id: number): Promise<CancelAppointmentResponse> => {
   const response = await axios.delete<CancelAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}`);
+  return response.data;
+};
+
+export const confirmAppointment = async (id: number): Promise<ConfirmAppointmentResponse> => {
+  const response = await axios.patch<ConfirmAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}/confirm`);
   return response.data;
 };

@@ -26,7 +26,7 @@ export const FormContent = (props: FormContentProps) => {
   const enabledDates = getCalendarDays();
   const rangeTimeOptions = useMemo(() => {
     if (appointments.isLoading || !watchedFields.date || !watchedFields.professional_id) return [];
-    return getRangeTimeAvailability(appointments.data.appointments, watchedFields.date, watchedFields.professional_id);
+    return getRangeTimeAvailability(appointments.data.appointments, watchedFields.date);
   }, [watchedFields.date, watchedFields.professional_id, appointments, appointments.isLoading]);
 
   const priorityChangeHandler = (_value: string) => {
