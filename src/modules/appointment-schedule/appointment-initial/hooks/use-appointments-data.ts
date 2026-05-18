@@ -16,14 +16,16 @@ export const useGetAppointmentsData = (form: UseFormReturn<AppointmentInitialFor
     until: until || '',
     speciality_id: Number(watchedFields.speciality_id) || undefined,
     medical_center_id: Number(watchedFields.medical_center_id) || undefined,
-    //light_response: 1,
+    medic_id: Number(watchedFields.professional_id) || undefined,
+    light_response: 1,
   };
 
   const isUseGetAppointmentsEnabled =
     !!appointmentsDefaultParams.since &&
     !!appointmentsDefaultParams.until &&
     !!appointmentsDefaultParams.speciality_id &&
-    !!appointmentsDefaultParams.medical_center_id;
+    !!appointmentsDefaultParams.medical_center_id &&
+    !!appointmentsDefaultParams.medic_id;
 
   const getApppointments = useGetAppointments(appointmentsDefaultParams, isUseGetAppointmentsEnabled);
 

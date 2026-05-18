@@ -4,14 +4,21 @@ import { CheckCircle2, Clock, Loader2, MapPin, Search, User } from 'lucide-react
 import type { CheckinAppointment } from '@/mocks/checkin-mock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { APPOINTMENT_STATUSES } from '@/constants';
 import { cn } from '@/lib/utils';
 import { MOCK_TODAY_APPOINTMENTS } from '@/mocks/checkin-mock';
 
-const statusConfig: Record<CheckinAppointment['status'], { label: string; className: string }> = {
-  pending: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-700' },
-  arrived: { label: 'Llegó', className: 'bg-primary/10 text-primary' },
-  'in-progress': { label: 'En atención', className: 'bg-success/10 text-success' },
-  completed: { label: 'Finalizado', className: 'bg-muted text-muted-foreground' },
+const statusConfig: Record<
+  (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES],
+  { label: string; className: string }
+> = {
+  [APPOINTMENT_STATUSES.PENDING_CONFIRMATION]: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-700' },
+  [APPOINTMENT_STATUSES.CONFIRMED]: { label: 'Confirmado', className: 'bg-blue-500/10 text-blue-700' },
+  [APPOINTMENT_STATUSES.CHECKED_IN]: { label: 'Llegó', className: 'bg-primary/10 text-primary' },
+  [APPOINTMENT_STATUSES.COMPLETED]: { label: 'Finalizado', className: 'bg-muted text-muted-foreground' },
+  [APPOINTMENT_STATUSES.CANCELLED]: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
+  [APPOINTMENT_STATUSES.ABSENT]: { label: 'Ausente', className: 'bg-muted text-muted-foreground' },
+  [APPOINTMENT_STATUSES.EXPIRED]: { label: 'Expirado', className: 'bg-muted text-muted-foreground' },
 };
 
 export default function Page() {
@@ -27,7 +34,7 @@ export default function Page() {
     // Simular latencia de red
     await new Promise(r => setTimeout(r, 800));
     // TODO: reemplazar con: await checkinAppointment(id)
-    setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: 'arrived' as const } : a)));
+    setAppointments(prev => prev.map(a => (a.id === id ? { ...a, status: APPOINTMENT_STATUSES.CHECKED_IN } : a)));
     setCheckingInId(null);
   };
 
@@ -37,8 +44,10 @@ export default function Page() {
     return a.patientName.toLowerCase().includes(q) || a.patientDni.includes(q) || a.id.toLowerCase().includes(q);
   });
 
-  const pendingCount = appointments.filter(a => a.status === 'pending').length;
-  const arrivedCount = appointments.filter(a => a.status === 'arrived' || a.status === 'in-progress').length;
+  const pendingCount = appointments.filter(a => a.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION).length;
+  const arrivedCount = appointments.filter(
+    a => a.status === APPOINTMENT_STATUSES.CHECKED_IN || a.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION
+  ).length;
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 mx-auto max-w-2xl">
@@ -96,8 +105,8 @@ export default function Page() {
                 style={{ animationDelay: `${idx * 40}ms` }}
                 className={cn(
                   'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none transition-all',
-                  appt.status === 'completed' && 'opacity-50',
-                  appt.status === 'arrived' && 'border-primary/30'
+                  appt.status === APPOINTMENT_STATUSES.COMPLETED && 'opacity-50',
+                  appt.status === APPOINTMENT_STATUSES.CHECKED_IN && 'border-primary/30'
                 )}
               >
                 <CardContent className="p-4">
@@ -141,7 +150,7 @@ export default function Page() {
                       </span>
                     </div>
 
-                    {appt.status === 'pending' && (
+                    {appt.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION && (
                       <div className="pl-12">
                         <Button
                           size="sm"

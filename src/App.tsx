@@ -6,10 +6,10 @@ import { ProtectedRoute } from '@/components/layouts/protected-route';
 import { ROUTES, USER_TYPE } from '@/constants';
 
 const LoginPage = lazy(() => import('./pages/login'));
-const AppointmentsPage = lazy(() => import('./pages/appointments'));
-const AppointmentSchedulePage = lazy(() => import('./pages/appointment-schedule'));
-const ProfessionalCalendarPage = lazy(() => import('./pages/professional-calendar'));
-const CheckinPage = lazy(() => import('./pages/checkin'));
+const AppointmentsPage = lazy(() => import('./pages/patient/appointments'));
+const AppointmentSchedulePage = lazy(() => import('./pages/patient/appointment-schedule'));
+const ProfessionalCalendarPage = lazy(() => import('./pages/professional/professional-calendar'));
+const CheckinPage = lazy(() => import('./pages/administrative/checkin'));
 
 export function App() {
   return (

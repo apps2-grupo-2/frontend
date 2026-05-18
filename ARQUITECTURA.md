@@ -4,7 +4,7 @@
 
 **Health Grid** es un sistema de gestión hospitalaria modular. Cada módulo es desarrollado por un equipo distinto. Este repositorio corresponde al **frontend compartido**, donde cada módulo integra sus páginas bajo un layout y sistema de diseño común.
 
-El proyecto se encuentra en etapa de desarrollo con datos mockeados. La integración con backends reales se hace reemplazando las constantes `USE_MOCK = true` en los servicios.
+El proyecto se encuentra en etapa de desarrollo con un enfoque mixto: algunos servicios consumen la API real (`https://dev.solefrancisco.com/apps2/api/v1`), mientras que otros usan datos mockeados localmente con latencia simulada. El listado de módulos del sidebar se obtiene desde un Cloudflare Worker externo.
 
 ---
 
@@ -12,21 +12,29 @@ El proyecto se encuentra en etapa de desarrollo con datos mockeados. La integrac
 
 | Herramienta | Versión | Rol |
 |---|---|---|
-| React | 19 | UI |
-| TypeScript | 5.9 | Tipado estático |
-| Vite | 7 | Bundler / dev server |
-| Tailwind CSS | 4.2 | Estilos (CSS-first config) |
-| shadcn/ui | — | Componentes base (adaptados) |
-| React Router | 7 | Routing |
-| Zustand | 5 | Estado global (auth) |
-| TanStack Query | 5 | Server state / fetching |
-| React Hook Form | 7 | Formularios |
-| Axios | 1.1 | HTTP client |
-| Lucide React | — | Iconografía |
-| react-day-picker | 9 | Componente de calendario |
-| class-variance-authority | — | Variantes de componentes |
+| React | 19.2 | UI |
+| TypeScript | 6.0 | Tipado estático |
+| Vite | 8.0 | Bundler / dev server |
+| Tailwind CSS | 4.3 | Estilos (CSS-first config) |
+| shadcn/ui | 4.7 | Componentes base (adaptados, solo CLI) |
+| Radix UI | 1.4 | Primitivos de accesibilidad |
+| Base UI React | 1.3 | Componentes headless |
+| React Router | 7.13 | Routing |
+| Zustand | 5.0 | Estado global (auth) |
+| TanStack Query | 5.96 | Server state / fetching |
+| React Hook Form | 7.72 | Formularios |
+| Axios | 1.14 | HTTP client |
+| date-fns | 4.1 | Utilidades de fechas |
+| Lucide React | 1.7 | Iconografía |
+| react-day-picker | 9.14 | Componente de calendario |
+| class-variance-authority | 0.7 | Variantes de componentes |
+| tw-animate-css | 1.4 | Animaciones Tailwind |
+| Biome | 2.4 | Linting y formatting |
+| Vitest | 4.1 | Testing |
+| Husky | 9.1 | Git hooks |
+| React Compiler (babel) | 1.0 | Optimización automática de re-renders |
 
-Dev server corre en `http://localhost:5173`. Backend mock en `http://localhost:3000` (json-server con `db.json`).
+Dev server corre en `http://localhost:5173`. API de desarrollo en `https://dev.solefrancisco.com/apps2/api/v1`.
 
 ---
 
@@ -34,16 +42,18 @@ Dev server corre en `http://localhost:5173`. Backend mock en `http://localhost:3
 
 ```
 src/
-├── App.tsx                  # Router principal
+├── App.tsx                  # Router principal (lazy loading de páginas)
 ├── main.tsx                 # Entry point
-├── index.css                # Variables CSS, Tailwind, scrollbar, reset
+├── index.css                # Variables CSS, Tailwind, tw-animate-css, scrollbar, reset
 │
 ├── components/
 │   ├── layouts/
 │   │   ├── base-layout.tsx     # Layout con sidebar + main scrollable
-│   │   ├── sidebar.tsx         # Sidebar con módulos, roles y animaciones
+│   │   ├── sidebar.tsx         # Sidebar dinámico (carga módulos desde API externa)
 │   │   └── protected-route.tsx # Guard de roles
 │   ├── rhf/                 # Wrappers de React Hook Form
+│   │   ├── rhf-calendar.tsx
+│   │   ├── rhf-chips.tsx
 │   │   ├── rhf-combobox.tsx
 │   │   ├── rhf-select.tsx
 │   │   └── rhf-tabs.tsx
@@ -51,49 +61,115 @@ src/
 │       ├── button.tsx
 │       ├── calendar.tsx
 │       ├── card.tsx
+│       ├── chip.tsx
 │       ├── combobox.tsx
+│       ├── confirm-dialog.tsx
+│       ├── dialog.tsx
+│       ├── divider.tsx
+│       ├── field.tsx
+│       ├── field-skeleton.tsx
+│       ├── form-control.tsx
+│       ├── grid.tsx
 │       ├── input.tsx
+│       ├── input-group.tsx
+│       ├── label.tsx
+│       ├── pagination.tsx
 │       ├── select.tsx
-│       ├── step-navigation.tsx  # Botones Volver/Siguiente del wizard
+│       ├── separator.tsx
+│       ├── step-navigation.tsx
 │       ├── tabs.tsx
-│       └── ...
+│       ├── textarea.tsx
+│       └── appointments-card.tsx
 │
-├── pages/                   # Una página por ruta
+├── pages/                   # Una página por ruta, agrupadas por rol
 │   ├── login.tsx
-│   ├── appointments.tsx         # /turnos
-│   ├── appointment-request.tsx  # /solicitar-turnos (wrapper del wizard)
-│   ├── professional-calendar.tsx # /agenda-profesional
-│   └── checkin.tsx              # /presentismo
+│   ├── patient/
+│   │   ├── appointments.tsx         # /turnos
+│   │   └── appointment-schedule.tsx # /solicitar-turnos (wrapper del wizard)
+│   ├── professional/
+│   │   └── professional-calendar.tsx # /agenda-profesional
+│   └── administrative/
+│       └── checkin.tsx              # /presentismo
 │
-├── modules/                 # Pasos del wizard de solicitud de turno
-│   ├── appointment-initial.tsx      # Paso 1: Preferencias
-│   ├── appointment-calendar.tsx     # Paso 2: Fecha y hora
-│   ├── appointment-confirmation.tsx # Paso 3: Confirmación
-│   └── appointment-success.tsx      # Paso 4: Éxito
+├── modules/                 # Lógica de negocio por feature
+│   ├── appointment-schedule/        # Wizard de solicitud de turno
+│   │   ├── index.ts
+│   │   ├── appointment-initial/     # Paso 1: Preferencias
+│   │   │   ├── appointment-initial.tsx
+│   │   │   ├── components/
+│   │   │   ├── helpers/
+│   │   │   ├── hooks/
+│   │   │   └── index.ts
+│   │   ├── appointment-confirmation/ # Paso 2: Confirmación
+│   │   │   ├── appointment-confirmation.tsx
+│   │   │   └── index.ts
+│   │   ├── appointment-success/     # Paso 3: Éxito
+│   │   │   ├── appointment-success.tsx
+│   │   │   └── index.ts
+│   │   ├── components/
+│   │   │   └── stepper.tsx
+│   │   └── hooks/
+│   │       └── use-appointment-labels.ts
+│   └── professional-dashboard/      # Dashboard del profesional
+│       ├── professional-dashboard.tsx
+│       ├── components/
+│       │   ├── weekday-selector.tsx  # Navegación y tabs de semana/día
+│       │   └── day-status.tsx        # Stats del día (turnos/disponibles)
+│       └── helpers/
+│           └── helpers.ts           # getWeekdaysByOffset()
 │
-├── hooks/
-│   ├── use-appointments/        # Hook principal del wizard
-│   └── use-appointments-data/   # Fetching de opciones (profesionales, especialidades, centros)
+├── hooks/                   # Hooks de datos (TanStack Query)
+│   ├── use-appointments/
+│   ├── use-appointments-data/
+│   ├── use-medical-centers-data/
+│   ├── use-others-data/         # useGetModules() (módulos del sidebar)
+│   ├── use-professionals-data/
+│   └── use-specialties-data/
 │
-├── services/                # Capa HTTP (con flag USE_MOCK)
-│   ├── auth.ts
-│   └── appointments.ts
+├── services/                # Capa HTTP (mixto: API real + mocks locales)
+│   ├── auth.ts              # Mock local (MOCK_USERS)
+│   ├── appointments.ts      # API real (Axios)
+│   ├── professionals.ts     # Mock local (professionalsMock)
+│   ├── specialties.ts       # Mock local (specialtiesMock)
+│   ├── medical-centers.ts   # Mock local (MOCK_MEDICAL_CENTERS)
+│   └── others.ts            # API externa (Cloudflare Worker)
 │
 ├── stores/
-│   └── auth.store.ts        # Zustand: accessToken, role, name, subtitle
+│   └── auth.store.ts        # Zustand con persist (sessionStorage)
 │
 ├── mocks/                   # Datos de prueba
 │   ├── auth-mock.ts
 │   ├── appointments-mock.ts
 │   ├── checkin-mock.ts
-│   └── professional-calendar-mock.ts
+│   ├── professional-calendar-mock.ts
+│   ├── professionals.mock.ts
+│   └── specialties.mock.ts
+│
+├── helpers/
+│   ├── helpers.ts           # formatDate(), getUserInitials()
+│   └── helpers.test.ts
+│
+├── lib/
+│   ├── axios.ts             # Instancia de Axios configurada
+│   ├── utils.ts             # cn() (clsx + tailwind-merge), formatDate()
+│   └── mock-data.ts
 │
 ├── constants/
 │   ├── routes.ts            # ROUTES object
 │   ├── appointments.ts      # Enums y constantes de turnos
-│   └── env.ts               # BASE_URL
+│   ├── env.ts               # BASE_URL, MOCK_BASE_URL
+│   └── index.ts             # Re-exports
 │
 ├── typings/                 # Tipos TypeScript organizados por dominio
+│   ├── components/
+│   │   ├── layouts/
+│   │   ├── rhf/
+│   │   └── ui/
+│   ├── hooks/
+│   ├── modules/
+│   ├── services/
+│   └── stores/
+│
 └── providers/
     └── tanstack-query-provider/
 ```
@@ -116,12 +192,18 @@ src/
 {
   accessToken: string | undefined
   refreshToken: string | undefined
+  autoLogin: boolean
+  dni: string | undefined
+  id: string | undefined
   role: 'paciente' | 'profesional' | 'administrativo' | undefined
   name: string | undefined       // Ej: "Fernandez Juan Pablo"
   subtitle: string | undefined   // Ej: "Cardiología · Electrofisiología"
   email: string | undefined
+  logoutRequired: boolean
 }
 ```
+
+Métodos: `setAuth()`, `logout()`, `enableAutoLogin()`, `resetStore()`.
 
 ### Usuarios de prueba
 
@@ -147,22 +229,16 @@ const ROLE_HOME = {
 
 ## Módulos del sistema (sidebar)
 
-El sidebar lista 10 módulos. Solo el **Módulo 2 (Turnos y Agendas)** está implementado en este repositorio. Los otros son placeholders deshabilitados (`opacity-40`, `cursor-not-allowed`) con tooltip "Módulo en desarrollo por otro equipo".
+El sidebar carga dinámicamente la lista de módulos desde una API externa (Cloudflare Worker en `http://da2.mattalbarenque.workers.dev/modules`) usando el hook `useGetModules()`. Solo el **Módulo 2 (Turnos y Agendas)** está implementado en este repositorio. Los otros módulos redirigen a URLs externas de otros equipos.
 
-| ID | Módulo | Estado |
-|---|---|---|
-| 1 | Historia Clínica | Placeholder |
-| **2** | **Turnos y Agendas** | **Implementado** |
-| 3 | Farmacia e Insumos | Placeholder |
-| 4 | Laboratorio | Placeholder |
-| 5 | Diagnóstico por Imágenes | Placeholder |
-| 6 | Internación y Camas | Placeholder |
-| 7 | Facturación | Placeholder |
-| 8 | Portal del Paciente | Placeholder |
-| 9 | Monitoreo | Placeholder |
-| 10 | Core | Placeholder |
+Cada módulo se mapea a un ícono de lucide-react (FileText, Calendar, Pill, Flask, Scan, Bed, Receipt, User, Monitor, Settings).
 
-El sidebar tiene animación de acordeón CSS (grid trick `grid-rows-[0fr→1fr]`) con stagger en los sub-items. Solo el módulo activo del usuario se muestra según rol.
+Para el Módulo 2, el sidebar redirige según el rol del usuario:
+- Paciente → `/turnos`
+- Profesional → `/agenda-profesional`
+- Administrativo → `/presentismo`
+
+El sidebar es responsive: barra lateral fija en desktop, drawer con hamburguesa en mobile.
 
 ---
 
@@ -180,17 +256,15 @@ El sidebar tiene animación de acordeón CSS (grid trick `grid-rows-[0fr→1fr]`
 - Botón "Solicitar turno" → `/solicitar-turnos`
 
 ### `/solicitar-turnos` — solo `paciente`
-Wizard de 4 pasos controlado por `UseAppointments` hook + `payloadRef` (acumulador del formulario multi-paso):
+Wizard de 3 pasos controlado por `UseAppointments` hook + `payloadRef` (acumulador del formulario multi-paso). Cada paso es un sub-módulo dentro de `modules/appointment-schedule/`:
 
-**Paso 0 — `Appointment_Initial`**: Tipo de turno (por especialidad / por profesional), especialidad, prioridad (cercanía / primera disponibilidad), centro médico. Usa RHF + Combobox + Select encadenados.
+**Paso 0 — `Appointment_Initial`**: Tipo de turno (por especialidad / por profesional), especialidad, prioridad (cercanía / primera disponibilidad), centro médico, fecha y hora. Usa RHF + Combobox + Select + Calendar encadenados. Tiene sub-carpetas propias de `components/`, `helpers/` y `hooks/`.
 
-**Paso 1 — `Appointment_Calendar`**: Layout dos columnas — calendario (react-day-picker) | slots de horario en grilla 2 cols. Fechas habilitadas desde mock. Al cambiar fecha, slots entran con animación escalonada.
+**Paso 1 — `Appointment_Confirmation`**: Resumen de los datos acumulados en `payloadRef.current`. Solo lectura.
 
-**Paso 2 — `Appointment_Confirmation`**: Resumen de los datos acumulados en `payloadRef.current`. Solo lectura.
+**Paso 2 — `Appointment_Success`**: Ícono animado (zoom-in), ID de turno generado. TODO: vendrá del POST `/appointments`.
 
-**Paso 3 — `Appointment_Success`**: Ícono animado (zoom-in), ID de turno generado con `Math.random()`. TODO: vendrá del POST `/appointments`.
-
-El stepper en la parte superior muestra progreso (no se renderiza en el paso de éxito).
+El componente `Stepper` en la parte superior muestra progreso (no se renderiza en el paso de éxito).
 
 ### `/agenda-profesional` — `profesional` y `administrativo`
 
@@ -198,7 +272,12 @@ El stepper en la parte superior muestra progreso (no se renderiza en el paso de 
 
 **Para `administrativo`**: incluye dropdown para cambiar el profesional visualizado. Título: "Agenda Profesional".
 
-Tabs de días Lun–Vie. Slots con colores por estado: confirmado (verde), pendiente (ámbar), cancelado (tachado), disponible (verde suave), bloqueado (gris).
+Usa el módulo `professional-dashboard/` con componentes extraídos:
+- `WeekdaySelector`: navegación de semana y tabs de días Lun–Vie.
+- `DayStatus`: stats del día (cantidad de turnos y disponibles).
+- `SlotCard`: renderiza cada slot con colores por estado (confirmado, pendiente, cancelado, disponible, bloqueado).
+
+Helper `getWeekdaysByOffset(weekOffset)` genera los días hábiles de una semana relativa usando `date-fns`.
 
 ### `/presentismo` — solo `administrativo`
 - Lista de turnos del día con buscador (nombre, DNI, N° turno)
@@ -256,29 +335,47 @@ Todos tienen: `active:translate-y-px active:scale-[0.97]`, `hover:shadow-sm/md`,
 
 ## Convenciones
 
+- **Componentes**: `export const` con arrow function (no `function` declarations)
+- **Tipos**: siempre `type` en lugar de `interface`, salvo que una librería lo requiera
 - **Nombres de páginas**: default export `function Page()` en `/pages/`
-- **Nombres de módulos**: named export `Appointment_NombrePaso` en `/modules/`
-- **Servicios**: flag `USE_MOCK = true` al tope del archivo para alternar entre mock y real
+- **Nombres de módulos**: named export en `/modules/`
+- **Servicios**: enfoque mixto — algunos usan API real con Axios, otros importan mocks directamente
 - **TODOs**: marcados con `// TODO: reemplazar con METHOD /endpoint` indicando el contrato esperado
 - **Alias de imports**: `@/` apunta a `src/`
-- **Tipados**: en `src/typings/` organizados por `services/`, `stores/`, `modules/`, `components/`
+- **Import de tipos**: usar `import type` siempre
+- **Tipados**: en `src/typings/` organizados por `services/`, `stores/`, `modules/`, `components/`, `hooks/`
+- **Lógica / marcado**: callbacks y lógica derivada se declaran antes del `return`, no inline en JSX
+- **Linting**: Biome (no ESLint/Prettier)
+- **Testing**: Vitest con lint-staged en pre-commit (solo tests relacionados)
 
 ---
 
-## Integración con backend (pendiente)
+## Integración con backend
 
-Todos los servicios tienen un switch `USE_MOCK`. Al pasar a `false`, usan Axios contra `http://localhost:3000` (configurable en `src/constants/env.ts`).
+### Estado actual
+
+| Servicio | Fuente de datos | URL |
+|---|---|---|
+| `auth.ts` | Mock local (`MOCK_USERS`) | — |
+| `appointments.ts` | API real (Axios) | `https://dev.solefrancisco.com/apps2/api/v1` |
+| `professionals.ts` | Mock local (`professionalsMock`) | — |
+| `specialties.ts` | Mock local (`specialtiesMock`) | — |
+| `medical-centers.ts` | Mock local (`MOCK_MEDICAL_CENTERS`) | — |
+| `others.ts` | API externa | `http://da2.mattalbarenque.workers.dev/modules` |
+
+Los servicios con mock simulan latencia de ~50ms con `setTimeout`. La constante `MOCK_BASE_URL` (`http://localhost:3000`) está definida en `src/constants/env.ts` pero no se utiliza actualmente (el json-server local ya no es necesario).
+
+### Endpoints esperados (pendientes de integración)
 
 | Endpoint esperado | Usado en |
 |---|---|
 | `POST /auth/sign-in` | `services/auth.ts` |
-| `GET /professionals` | `services/appointments.ts` |
-| `GET /specialties` | `services/appointments.ts` |
-| `GET /medical_centers?priority=` | `services/appointments.ts` |
-| `GET /professionals/:id/schedule?weekStart=` | `pages/professional-calendar.tsx` |
-| `POST /appointments/reserve` | `modules/appointment-calendar.tsx` |
-| `POST /appointments` | `modules/appointment-confirmation.tsx` |
-| `DELETE /appointments/:id` | `pages/appointments.tsx` |
-| `PATCH /appointments/:id/checkin` | `pages/checkin.tsx` |
+| `GET /professionals` | `services/professionals.ts` |
+| `GET /specialties` | `services/specialties.ts` |
+| `GET /medical_centers?priority=` | `services/medical-centers.ts` |
+| `GET /professionals/:id/schedule?weekStart=` | `pages/professional/professional-calendar.tsx` |
+| `POST /appointments` | `modules/appointment-schedule/` |
+| `DELETE /appointments/:id` | `pages/patient/appointments.tsx` |
+| `PATCH /appointments/:id/checkin` | `pages/administrative/checkin.tsx` |
 
 El módulo Core (equipo externo) proveerá: autenticación JWT, listado de profesionales, especialidades.

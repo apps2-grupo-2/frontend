@@ -32,7 +32,7 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
           <Button variant="outline" onClick={handleCancel}>
             Volver
           </Button>
-          <Button onClick={handleConfirm} variant="destructive">
+          <Button onClick={handleConfirm} variant="default">
             {ctaTitle}
           </Button>
         </DialogFooter>

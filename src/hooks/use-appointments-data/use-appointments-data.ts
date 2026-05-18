@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import type { CreateAppointmentRequest, GetAppointmentsRequest } from '@/typings/services';
-import { cancelAppointment, createAppointment, getAppointments } from '@/services/appointments';
+import { cancelAppointment, confirmAppointment, createAppointment, getAppointments } from '@/services/appointments';
 
 const staleTime = 5 * 60 * 1000; // Los datos expiran después de 5 minutos
 
@@ -21,4 +21,9 @@ export const useCreateAppointment = () =>
 export const useCancelAppointment = () =>
   useMutation({
     mutationFn: (id: number) => cancelAppointment(id),
+  });
+
+export const useConfirmAppointment = () =>
+  useMutation({
+    mutationFn: (id: number) => confirmAppointment(id),
   });
