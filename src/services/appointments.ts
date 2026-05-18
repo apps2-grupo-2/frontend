@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import type {
   CancelAppointmentResponse,
+  CheckInAppointmentResponse,
   ConfirmAppointmentResponse,
   CreateAppointmentRequest,
   CreateAppointmentResponse,
@@ -17,16 +18,19 @@ export const getAppointments = async (req: GetAppointmentsRequest): Promise<GetA
     const response = await axios.get<GetAppointmentsResponse>(url, { params: req });
     return response.data;
   } catch (err) {
-    console.warn('ERROR ON: getAppointments');
-    console.warn(err);
-    return {
-      appointments: [],
-      pagination: {
-        appointments_per_page: 0,
-        total_appointments: 0,
-        total_pages: 0,
-      },
-    } as unknown as GetAppointmentsResponse;
+    // 404 = no appointments found for the given criteria → return empty list
+    if (axios.isAxiosError(err) && err.response?.status === 404) {
+      return {
+        appointments: [],
+        pagination: {
+          appointments_per_page: 0,
+          total_appointments: 0,
+          total_pages: 0,
+        },
+      };
+    }
+    // Any other error (network, 5xx, etc.) → rethrow so useQuery sets isError = true
+    throw err;
   }
 };
 
@@ -42,5 +46,10 @@ export const cancelAppointment = async (id: number): Promise<CancelAppointmentRe
 
 export const confirmAppointment = async (id: number): Promise<ConfirmAppointmentResponse> => {
   const response = await axios.patch<ConfirmAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}/confirm`);
+  return response.data;
+};
+
+export const checkInAppointment = async (id: number): Promise<CheckInAppointmentResponse> => {
+  const response = await axios.patch<CheckInAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}/check-in`);
   return response.data;
 };

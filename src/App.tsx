@@ -10,6 +10,7 @@ const AppointmentsPage = lazy(() => import('./pages/patient/appointments'));
 const AppointmentSchedulePage = lazy(() => import('./pages/patient/appointment-schedule'));
 const ProfessionalCalendarPage = lazy(() => import('./pages/professional/professional-calendar'));
 const CheckinPage = lazy(() => import('./pages/administrative/checkin'));
+const AdminAppointmentCreatePage = lazy(() => import('./pages/administrative/appointment-create'));
 
 export function App() {
   return (
@@ -52,6 +53,14 @@ export function App() {
             element={
               <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
                 <CheckinPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CREAR_TURNO_ADMIN}
+            element={
+              <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
+                <AdminAppointmentCreatePage />
               </ProtectedRoute>
             }
           />

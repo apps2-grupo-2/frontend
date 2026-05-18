@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "packageManager": "pnpm@11.1.0+sha512.0c44e842e5686b2c061a81adda8b2258bd8818e9704b2cf2c63d56b931a7b2e910092e085027003b96ca3911ab56a07f6df5abaed2be9925034cdd686a535b14",
+  "packageManager": "pnpm@11.1.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -11,7 +11,7 @@
     "lint:fix": "biome check --fix .",
     "format": "biome format --write .",
     "test": "vitest run",
-    "preinstall": "node -e \"if(!process.env.npm_config_user_agent||!process.env.npm_config_user_agent.startsWith('pnpm')){console.error('Use \\\"pnpm install\\\" for installation in this project.');process.exit(1)}\"",
+    "preinstall": "npx only-allow pnpm",
     "prepare": "husky"
   },
   "dependencies": {

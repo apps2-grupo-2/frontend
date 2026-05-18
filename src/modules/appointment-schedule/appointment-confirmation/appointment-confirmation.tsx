@@ -32,6 +32,13 @@ export const Appointment_Confirmation = (props: StepProps) => {
     const ends_at = format(ends_at_with_30_minutes, 'yyyy-MM-dd HH:mm:ss');
     const professional = professionals?.find(a => a.value === payload.professional_id);
 
+    // Admin flow passes patient in payload; patient flow falls back to authStore
+    const patientInfo = payload.patient ?? {
+      id: Number(authStore.id),
+      email: authStore.email || '',
+      fullname: authStore.name || '',
+    };
+
     try {
       const { appointment_id } = await mutateAsync({
         appointment: {
@@ -45,11 +52,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
           fullname: professional?.label || '',
           email: professional?.email || '',
         },
-        patient: {
-          id: Number(authStore.id),
-          email: authStore.email || '',
-          fullname: authStore.name || '',
-        },
+        patient: patientInfo,
       });
 
       metadata.setPayload({ ...metadata.payload, appointment_id: `${appointment_id}` });

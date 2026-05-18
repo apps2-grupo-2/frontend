@@ -75,3 +75,7 @@ export type CancelAppointmentResponse = {
 export type ConfirmAppointmentResponse = {
   message: string;
 };
+
+export type CheckInAppointmentResponse = {
+  message: string;
+};

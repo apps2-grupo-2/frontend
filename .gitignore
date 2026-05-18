@@ -24,3 +24,4 @@ dist-ssr
 
 # Claude
 .claude/
+claude.md

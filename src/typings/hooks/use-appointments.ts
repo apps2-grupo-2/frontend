@@ -12,4 +12,9 @@ export type UseAppointmentsData = {
 
 export type Payload = Omit<AppointmentInitialFormProps, 'date'> & {
   appointment_id?: string;
+  patient?: {
+    id: number;
+    fullname: string;
+    email: string;
+  };
 };
