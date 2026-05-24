@@ -16,7 +16,7 @@ jobs:
 
       - name: Clone destination repository
         run: |
-          git clone https://x-access-token:${{ secrets.DEST_REPO_TOKEN }}@github.com/solefrancisco/frontend.git destination
+          git clone https://x-access-token:${{ secrets.DEST_REPO_TOKEN }}@${{ secrets.DEST_REPO_URL }} destination
 
       - name: Sync files into destination repository
         run: |
