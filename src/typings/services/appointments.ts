@@ -19,14 +19,16 @@ export type GetAppointmentsResponse = {
 
 export type Appointment = {
   id: number;
-  center_id: number;
   status: (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES];
   starts_at: string;
   ends_at: string;
   confirmed_at: string | null;
+  absent_at: string | null;
+  expired_at: string | null;
   checked_in_at: string | null;
   cancelled_at: string | null;
   completed_at: string | null;
+  started_at: string | null;
   created_at: string;
   patient: {
     id: number;
@@ -42,6 +44,10 @@ export type Appointment = {
     id: number;
     name: string;
     is_high_complexity: number;
+  };
+  medical_center: {
+    id: number;
+    name: string;
   };
 };
 

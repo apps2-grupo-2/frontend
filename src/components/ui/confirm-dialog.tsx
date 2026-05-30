@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 
 export const ConfirmDialog = (props: ConfirmDialogProps) => {
-  const { title, description, ctaTitle, open, onOpenChange, onConfirm } = props;
+  const { title, description, ctaTitle, ctaVariant = 'default', dismissTitle, open, onOpenChange, onConfirm } = props;
 
   const handleCancel = () => {
     onOpenChange(false);
@@ -30,9 +30,9 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
-            Volver
+            {dismissTitle || 'Volver'}
           </Button>
-          <Button onClick={handleConfirm} variant="default">
+          <Button onClick={handleConfirm} variant={ctaVariant}>
             {ctaTitle}
           </Button>
         </DialogFooter>

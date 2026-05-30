@@ -15,7 +15,7 @@ export type MockUser = {
   lng: string;
 };
 
-export const MOCK_USERS: MockUser[] = [
+const MOCK_USERS_PATIENTS: MockUser[] = [
   {
     id: '1',
     dni: '28345671',
@@ -30,18 +30,21 @@ export const MOCK_USERS: MockUser[] = [
     lng: '-58.3974',
   },
   {
-    id: '2',
-    dni: '20987654',
+    id: '4',
+    dni: '35678912',
     password: '1234',
-    role: USER_TYPE.PROFESSIONAL,
-    name: 'Fernandez Juan Pablo',
-    email: 'jfernandez@healthgrid.com',
-    subtitle: 'Cardiología · Electrofisiología',
-    accessToken: 'mock-token-profesional',
-    refreshToken: 'mock-refresh-profesional',
-    lat: '-34.6037',
-    lng: '-58.3816',
+    role: USER_TYPE.PATIENT,
+    name: 'López Martín Andrés',
+    email: 'martin.lopez@email.com',
+    subtitle: 'Swiss Medical SMG20',
+    accessToken: 'mock-token-paciente-2',
+    refreshToken: 'mock-refresh-paciente-2',
+    lat: '-34.6118',
+    lng: '-58.4173',
   },
+];
+
+const MOCK_USERS_ADMINISTRATIVE: MockUser[] = [
   {
     id: '3',
     dni: '33112233',
@@ -54,6 +57,22 @@ export const MOCK_USERS: MockUser[] = [
     refreshToken: 'mock-refresh-administrativo',
     lat: '-34.6174',
     lng: '-58.3628',
+  },
+];
+
+const MOCK_USERS_PROFESSIONAL: MockUser[] = [
+  {
+    id: '2',
+    dni: '20987654',
+    password: '1234',
+    role: USER_TYPE.PROFESSIONAL,
+    name: 'Fernandez Juan Pablo',
+    email: 'jfernandez@healthgrid.com',
+    subtitle: 'Cardiología · Electrofisiología',
+    accessToken: 'mock-token-profesional',
+    refreshToken: 'mock-refresh-profesional',
+    lat: '-34.6037',
+    lng: '-58.3816',
   },
   {
     id: '1019',
@@ -731,4 +750,10 @@ export const MOCK_USERS: MockUser[] = [
     lat: '-34.6037',
     lng: '-58.3816',
   },
+];
+
+export const MOCK_USERS: MockUser[] = [
+  ...MOCK_USERS_PATIENTS,
+  ...MOCK_USERS_ADMINISTRATIVE,
+  ...MOCK_USERS_PROFESSIONAL,
 ];

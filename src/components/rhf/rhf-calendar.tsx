@@ -26,8 +26,6 @@ export const RhfCalendar = <T extends FieldValues>(props: RhfCalendarProps<T>) =
   const handleSelect = (date: Date | undefined) => {
     if (date) {
       const parsedDate = format(date, 'yyyy-MM-dd 00:00:00');
-      console.warn('parsedDate');
-      console.warn(parsedDate);
       onChange(parsedDate);
     }
   };
