@@ -16,4 +16,6 @@ export type AuthLoginResponse = {
   role: UserRole;
   name: string;
   subtitle: string; // obra social / especialidad / área
+  lat: string;
+  lng: string;
 };

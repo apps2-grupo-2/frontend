@@ -16,6 +16,7 @@ const statusConfig: Record<
   [APPOINTMENT_STATUSES.ABSENT]: { label: 'Ausente', className: 'bg-orange-500/10 text-orange-600' },
   [APPOINTMENT_STATUSES.CANCELLED]: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
   [APPOINTMENT_STATUSES.CHECKED_IN]: { label: 'En consulta', className: 'bg-primary/10 text-primary' },
+  [APPOINTMENT_STATUSES.IN_PROGRESS]: { label: 'En curso', className: 'bg-green-500/10 text-green-700' },
   [APPOINTMENT_STATUSES.COMPLETED]: { label: 'Completado', className: 'bg-emerald-500/10 text-emerald-600' },
   [APPOINTMENT_STATUSES.CONFIRMED]: { label: 'Confirmado', className: 'bg-success/10 text-success' },
   [APPOINTMENT_STATUSES.EXPIRED]: { label: 'Vencido', className: 'bg-muted text-muted-foreground' },

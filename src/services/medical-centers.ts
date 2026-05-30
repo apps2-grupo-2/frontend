@@ -1,18 +1,24 @@
-import type { OptionsResponse } from '@/typings/services';
-import { MOCK_MEDICAL_CENTERS, MOCK_MEDICAL_CENTERS_AVAILABILITY } from '@/mocks/appointments-mock';
+import axios from 'axios';
 
-export const getMedicalCenters = async (priority: 'availability' | string): Promise<OptionsResponse> => {
-  return priority === 'availability'
-    ? MOCK_MEDICAL_CENTERS_AVAILABILITY.map(a => ({ value: a.value, label: `${a.label} (${a.value})` }))
-    : MOCK_MEDICAL_CENTERS.map(a => ({ value: a.value, label: `${a.label} (${a.value})` }));
+import type {
+  GetMedicalCentersResponse,
+  MedicalCenterOptionsResponse,
+  MedicalCentersRequest,
+} from '@/typings/services/medical-centers';
+import { ENV } from '@/constants';
 
-  // try {
-  //   const url = `${ENV.MOCK_BASE_URL}/medical_centers`;
-  //   const response = await axios.get<OptionsResponse>(url, { params: { priority } });
-  //   return response.data;
-  // } catch (err) {
-  //   console.warn('ERROR ON: getMedicalCenters');
-  //   console.warn(err);
-  //   return [] as OptionsResponse;
-  // }
+export const getMedicalCenters = async (params: MedicalCentersRequest): Promise<MedicalCenterOptionsResponse> => {
+  try {
+    const url = `${ENV.BASE_URL}/medical-centers`;
+    const response = await axios.get<GetMedicalCentersResponse>(url, { params });
+    return response.data.medicalCenters.map(a => ({
+      value: `${a.id}`,
+      label: a.name,
+      city: a.city,
+    }));
+  } catch (err) {
+    console.warn('ERROR ON: getMedicalCenters');
+    console.warn(err);
+    return [] as MedicalCenterOptionsResponse;
+  }
 };

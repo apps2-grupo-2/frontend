@@ -25,6 +25,7 @@ const statusConfig: Record<
   },
   [APPOINTMENT_STATUSES.CONFIRMED]: { label: 'Confirmado', className: 'bg-primary/10 border-primary/20 text-primary' },
   [APPOINTMENT_STATUSES.CHECKED_IN]: { label: 'En consulta', className: 'bg-primary/10 text-primary' },
+  [APPOINTMENT_STATUSES.IN_PROGRESS]: { label: 'En curso', className: 'bg-green-500/10 text-green-700' },
   [APPOINTMENT_STATUSES.COMPLETED]: { label: 'Completado', className: 'bg-muted text-muted-foreground' },
   [APPOINTMENT_STATUSES.CANCELLED]: {
     label: 'Cancelado',

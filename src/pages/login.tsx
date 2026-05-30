@@ -65,6 +65,8 @@ export default function Page() {
         name: res.name,
         subtitle: res.subtitle,
         dni: res.dni,
+        lat: res.lat,
+        lng: res.lng,
       });
       navigate(ROLE_HOME[res.role], { replace: true });
     } catch {

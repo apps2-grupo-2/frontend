@@ -9,7 +9,7 @@ import { useGetSpecialties } from '@/hooks/use-specialties-data';
 
 export const useAppointmentLabels = (payload: Payload) => {
   const specialties = useGetSpecialties();
-  const medicalCenters = useMedicalCenters(payload.priority);
+  //const medicalCenters = useMedicalCenters();
   const professionals = useGetProfessionals(payload.speciality_id);
 
   const specialtyLabel = useMemo(() => {
@@ -27,11 +27,13 @@ export const useAppointmentLabels = (payload: Payload) => {
   }, [professionals.isLoading, professionals.data, payload.professional_id]);
 
   const medicalCenterLabel = useMemo(() => {
-    if (!medicalCenters.isLoading && medicalCenters.data) {
-      return medicalCenters.data.find(a => a.value === payload.medical_center_id)?.label || '';
-    }
-    return '';
-  }, [medicalCenters.isLoading, medicalCenters.data, payload.medical_center_id]);
+    // if (!medicalCenters.isLoading && medicalCenters.data) {
+    //   return medicalCenters.data.find(a => a.value === payload.medical_center_id)?.label || '';
+    // }
+    // return '';
+    return 'Mocked Medical Center';
+  }, [payload.medical_center_id]);
+  //}, [medicalCenters.isLoading, medicalCenters.data, payload.medical_center_id]);
 
   const priorityLabel = payload.priority === PRIORITY_TYPES.PROXIMITY ? 'Por cercanía' : 'Por primera disponibilidad';
   const dateLabel = format(payload.starts_at, 'dd/MM/yyyy');
