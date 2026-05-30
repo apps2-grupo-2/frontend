@@ -11,6 +11,8 @@ export type MockUser = {
   subtitle: string; // obra social / especialidad / área
   accessToken: string;
   refreshToken: string;
+  lat: string;
+  lng: string;
 };
 
 export const MOCK_USERS: MockUser[] = [
@@ -24,6 +26,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'OSDE 310',
     accessToken: 'mock-token-paciente',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5875',
+    lng: '-58.3974',
   },
   {
     id: '2',
@@ -35,6 +39,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cardiología · Electrofisiología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-profesional',
+    lat: '-34.6037',
+    lng: '-58.3816',
   },
   {
     id: '3',
@@ -46,6 +52,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Administración',
     accessToken: 'mock-token-administrativo',
     refreshToken: 'mock-refresh-administrativo',
+    lat: '-34.6174',
+    lng: '-58.3628',
   },
   {
     id: '1019',
@@ -57,6 +65,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Clínica Médica',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5795',
+    lng: '-58.4240',
   },
   {
     id: '1082',
@@ -68,6 +78,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Clínica Médica',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5627',
+    lng: '-58.4568',
   },
   {
     id: '1128',
@@ -79,6 +91,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Clínica Médica',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6186',
+    lng: '-58.4383',
   },
   {
     id: '1023',
@@ -90,6 +104,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cardiología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6215',
+    lng: '-58.3730',
   },
   {
     id: '1042',
@@ -101,6 +117,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cardiología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6345',
+    lng: '-58.4627',
   },
   {
     id: '1131',
@@ -112,6 +130,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cardiología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5988',
+    lng: '-58.4387',
   },
   {
     id: '1159',
@@ -123,6 +143,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cardiología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5458',
+    lng: '-58.4577',
   },
   {
     id: '1002',
@@ -134,6 +156,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Dermatología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6066',
+    lng: '-58.4201',
   },
   {
     id: '1029',
@@ -145,6 +169,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Dermatología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5731',
+    lng: '-58.4893',
   },
   {
     id: '1130',
@@ -156,6 +182,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Dermatología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5744',
+    lng: '-58.4497',
   },
   {
     id: '1014',
@@ -167,6 +195,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Endocrinología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6089',
+    lng: '-58.4068',
   },
   {
     id: '1075',
@@ -178,6 +208,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Endocrinología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6036',
+    lng: '-58.3843',
   },
   {
     id: '1088',
@@ -189,6 +221,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Endocrinología',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6133',
+    lng: '-58.3808',
   },
   {
     id: '1007',
@@ -200,6 +234,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cirugía General',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6283',
+    lng: '-58.4175',
   },
   {
     id: '1051',
@@ -211,6 +247,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cirugía General',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6275',
+    lng: '-58.3821',
   },
   {
     id: '1092',
@@ -222,6 +260,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cirugía General',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6098',
+    lng: '-58.4098',
   },
   {
     id: '1043',
@@ -233,6 +273,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Densitometría Ósea',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6381',
+    lng: '-58.4013',
   },
   {
     id: '1086',
@@ -244,6 +286,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Densitometría Ósea',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6222',
+    lng: '-58.4022',
   },
   {
     id: '1107',
@@ -255,6 +299,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Densitometría Ósea',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6365',
+    lng: '-58.4383',
   },
   {
     id: '1005',
@@ -266,6 +312,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ecocardiograma Doppler',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5255',
+    lng: '-58.4739',
   },
   {
     id: '1011',
@@ -277,6 +325,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ecocardiograma Doppler',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.4717',
+    lng: '-58.5115',
   },
   {
     id: '1033',
@@ -288,6 +338,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ecocardiograma Doppler',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6051',
+    lng: '-58.4891',
   },
   {
     id: '1090',
@@ -299,6 +351,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ecocardiograma Doppler',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5977',
+    lng: '-58.5147',
   },
   {
     id: '1003',
@@ -310,6 +364,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ergometría',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6420',
+    lng: '-58.5266',
   },
   {
     id: '1063',
@@ -321,6 +377,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ergometría',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6583',
+    lng: '-58.5088',
   },
   {
     id: '1095',
@@ -332,6 +390,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Ergometría',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6393',
+    lng: '-58.5015',
   },
   {
     id: '1008',
@@ -343,6 +403,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electroencefalograma',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6455',
+    lng: '-58.3840',
   },
   {
     id: '1009',
@@ -354,6 +416,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electroencefalograma',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6345',
+    lng: '-58.3631',
   },
   {
     id: '1016',
@@ -365,6 +429,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electroencefalograma',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6290',
+    lng: '-58.5173',
   },
   {
     id: '1046',
@@ -376,6 +442,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electroencefalograma',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5104',
+    lng: '-58.4828',
   },
   {
     id: '1100',
@@ -387,6 +455,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electroencefalograma',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5300',
+    lng: '-58.4915',
   },
   {
     id: '1084',
@@ -398,6 +468,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electromiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.4920',
+    lng: '-58.5055',
   },
   {
     id: '1099',
@@ -409,6 +481,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electromiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6534',
+    lng: '-58.6197',
   },
   {
     id: '1116',
@@ -420,6 +494,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Electromiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5779',
+    lng: '-58.5350',
   },
   {
     id: '1027',
@@ -431,6 +507,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Angiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.7024',
+    lng: '-58.3925',
   },
   {
     id: '1081',
@@ -442,6 +520,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Angiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6625',
+    lng: '-58.3648',
   },
   {
     id: '1129',
@@ -453,6 +533,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Angiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.7613',
+    lng: '-58.4003',
   },
   {
     id: '1170',
@@ -464,6 +546,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Angiografía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.7204',
+    lng: '-58.2543',
   },
   {
     id: '1012',
@@ -475,6 +559,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Biopsia Guiada por Imágenes',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.4260',
+    lng: '-58.5796',
   },
   {
     id: '1038',
@@ -486,6 +572,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Biopsia Guiada por Imágenes',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6419',
+    lng: '-58.5618',
   },
   {
     id: '1071',
@@ -497,6 +585,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Biopsia Guiada por Imágenes',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6023',
+    lng: '-58.5632',
   },
   {
     id: '1001',
@@ -508,6 +598,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cateterismo Cardíaco',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5893',
+    lng: '-58.6361',
   },
   {
     id: '1017',
@@ -519,6 +611,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cateterismo Cardíaco',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.7939',
+    lng: '-58.3912',
   },
   {
     id: '1032',
@@ -530,6 +624,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cateterismo Cardíaco',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.7438',
+    lng: '-58.3950',
   },
   {
     id: '1080',
@@ -541,6 +637,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cateterismo Cardíaco',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.4700',
+    lng: '-58.5330',
   },
   {
     id: '1105',
@@ -552,6 +650,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Cateterismo Cardíaco',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.7700',
+    lng: '-58.3947',
   },
   {
     id: '1004',
@@ -563,6 +663,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Broncoscopía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.4424',
+    lng: '-58.5567',
   },
   {
     id: '1020',
@@ -574,6 +676,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Broncoscopía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6051',
+    lng: '-58.3808',
   },
   {
     id: '1083',
@@ -585,6 +689,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Broncoscopía',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.5875',
+    lng: '-58.4240',
   },
   {
     id: '1022',
@@ -596,6 +702,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Colonoscopía Virtual',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6174',
+    lng: '-58.3628',
   },
   {
     id: '1064',
@@ -607,6 +715,8 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Colonoscopía Virtual',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.9205',
+    lng: '-57.9536',
   },
   {
     id: '1087',
@@ -618,5 +728,7 @@ export const MOCK_USERS: MockUser[] = [
     subtitle: 'Colonoscopía Virtual',
     accessToken: 'mock-token-profesional',
     refreshToken: 'mock-refresh-paciente',
+    lat: '-34.6037',
+    lng: '-58.3816',
   },
 ];

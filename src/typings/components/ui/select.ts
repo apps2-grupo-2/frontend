@@ -3,9 +3,10 @@ import type { Select } from 'radix-ui';
 export type SelectProps = Select.SelectProps & CustomProps;
 
 type CustomProps = {
+  children?: React.ReactNode;
   label?: string;
   loading?: boolean;
-  options: Options[];
+  options?: Options[];
   placeholder: string;
 };
 

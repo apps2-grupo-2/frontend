@@ -8,18 +8,20 @@ import { RhfChips } from '@/components/rhf/rhf-chips';
 import { RhfCombobox } from '@/components/rhf/rhf-combobox';
 import { RhfSelect } from '@/components/rhf/rhf-select';
 import { Grid } from '@/components/ui/grid';
+import { SelectItem } from '@/components/ui/select';
 import { PRIORITY_TYPES } from '@/constants';
-import { useMedicalCenters } from '@/hooks/use-medical-centers-data';
 import { useGetProfessionals } from '@/hooks/use-professionals-data';
 import { useGetSpecialties } from '@/hooks/use-specialties-data';
 import { getCalendarDays, getRangeTimeAvailability } from '../helpers/helpers';
 import { useGetAppointmentsData } from '../hooks/use-appointments-data';
+import { useMedicalCentersData } from '../hooks/use-medical-centers-data';
 
 export const FormContent = (props: FormContentProps) => {
   const { form } = props;
   const watchedFields = useWatch({ control: form.control });
   const specialties = useGetSpecialties();
-  const medicalCenters = useMedicalCenters(watchedFields.priority || '');
+
+  const medicalCenters = useMedicalCentersData(form);
   const professionals = useGetProfessionals(watchedFields.speciality_id || '');
   const appointments = useGetAppointmentsData(form);
 
@@ -72,8 +74,16 @@ export const FormContent = (props: FormContentProps) => {
             loading={medicalCenters.isLoading}
             placeholder="Seleccione un centro médico"
             disabled={!watchedFields.priority}
-            options={medicalCenters.data || []}
-          />
+          >
+            {medicalCenters.data?.map(a => (
+              <SelectItem key={a.value} value={a.value} className="px-3 py-2">
+                <div className="flex flex-col items-start">
+                  <div>{a.label}</div>
+                  <div className="text-xs text-gray-500">{a.city}</div>
+                </div>
+              </SelectItem>
+            ))}
+          </RhfSelect>
         </Grid>
       </Grid>
 

@@ -38,11 +38,12 @@ export const RhfSelect = <T extends FieldValues>(props: RhfSelectProps<T>) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {rest.options.map(a => (
-              <SelectItem key={a.value} value={a.value} className="px-3 py-2">
-                {a.label}
-              </SelectItem>
-            ))}
+            {rest.children ||
+              rest?.options?.map(a => (
+                <SelectItem key={a.value} value={a.value} className="px-3 py-2">
+                  {a.label}
+                </SelectItem>
+              ))}
           </SelectGroup>
         </SelectContent>
       </Select>

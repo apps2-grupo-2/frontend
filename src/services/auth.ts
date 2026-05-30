@@ -14,6 +14,8 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
     role: user.role,
     name: user.name,
     subtitle: user.subtitle,
+    lat: user.lat,
+    lng: user.lng,
   };
 
   // try {

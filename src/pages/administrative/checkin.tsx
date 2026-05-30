@@ -9,8 +9,8 @@ import type { Appointment } from '@/typings/services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { APPOINTMENT_STATUSES, ROUTES } from '@/constants';
-import { checkInAppointment, getAppointments } from '@/services/appointments';
 import { cn } from '@/lib/utils';
+import { checkInAppointment, getAppointments } from '@/services/appointments';
 
 const CHECKIN_QUERY_KEY = 'checkin-appointments';
 
@@ -21,6 +21,7 @@ const statusConfig: Record<
   [APPOINTMENT_STATUSES.PENDING_CONFIRMATION]: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-700' },
   [APPOINTMENT_STATUSES.CONFIRMED]: { label: 'Confirmado', className: 'bg-blue-500/10 text-blue-700' },
   [APPOINTMENT_STATUSES.CHECKED_IN]: { label: 'Llegó', className: 'bg-primary/10 text-primary' },
+  [APPOINTMENT_STATUSES.IN_PROGRESS]: { label: 'En curso', className: 'bg-green-500/10 text-green-700' },
   [APPOINTMENT_STATUSES.COMPLETED]: { label: 'Finalizado', className: 'bg-muted text-muted-foreground' },
   [APPOINTMENT_STATUSES.CANCELLED]: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
   [APPOINTMENT_STATUSES.ABSENT]: { label: 'Ausente', className: 'bg-muted text-muted-foreground' },
@@ -53,14 +54,20 @@ export default function Page() {
 
   const [checkInError, setCheckInError] = useState<string | null>(null);
 
-  const { mutate: doCheckIn, isPending: isCheckingIn, variables: checkingInId } = useMutation({
+  const {
+    mutate: doCheckIn,
+    isPending: isCheckingIn,
+    variables: checkingInId,
+  } = useMutation({
     mutationFn: (id: number) => checkInAppointment(id),
     onSuccess: () => {
       setCheckInError(null);
       queryClient.invalidateQueries({ queryKey: [CHECKIN_QUERY_KEY] });
     },
     onError: () => {
-      setCheckInError('No se pudo registrar la llegada. Verificá que el turno esté en estado válido e intentá de nuevo.');
+      setCheckInError(
+        'No se pudo registrar la llegada. Verificá que el turno esté en estado válido e intentá de nuevo.'
+      );
     },
   });
 
@@ -94,11 +101,7 @@ export default function Page() {
             Registro de llegada de pacientes · {todayLabelCapitalized}
           </p>
         </div>
-        <Button
-          size="sm"
-          className="shrink-0 mt-1"
-          onClick={() => navigate(ROUTES.CREAR_TURNO_ADMIN)}
-        >
+        <Button size="sm" className="shrink-0 mt-1" onClick={() => navigate(ROUTES.CREAR_TURNO_ADMIN)}>
           <CalendarPlus className="h-3.5 w-3.5" />
           Crear turno
         </Button>
@@ -191,7 +194,7 @@ export default function Page() {
                 className={cn(
                   'animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300 border-border shadow-none transition-all',
                   appt.status === APPOINTMENT_STATUSES.COMPLETED && 'opacity-50',
-                  appt.status === APPOINTMENT_STATUSES.CHECKED_IN && 'border-primary/30',
+                  appt.status === APPOINTMENT_STATUSES.CHECKED_IN && 'border-primary/30'
                 )}
               >
                 <CardContent className="p-4">
@@ -213,7 +216,7 @@ export default function Page() {
                       <span
                         className={cn(
                           'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-                          statusConfig[appt.status].className,
+                          statusConfig[appt.status].className
                         )}
                       >
                         {statusConfig[appt.status].label}

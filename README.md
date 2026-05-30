@@ -20,5 +20,5 @@ pnpm install
 ## Iniciar en desarrollo
 
 ```bash
-pnpm run dev            '>> Inicia el proyecto'
+pnpm run dev
 ```
