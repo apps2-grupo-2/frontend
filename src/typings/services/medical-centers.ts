@@ -24,3 +24,8 @@ export type MedicalCenterOptionsResponse = {
   label: string;
   city: string;
 }[];
+
+export type GetMedicalCenterByIdResponse = {
+  id: number;
+  name: string;
+};

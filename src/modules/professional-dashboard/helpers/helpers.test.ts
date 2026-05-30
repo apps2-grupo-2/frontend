@@ -6,14 +6,16 @@ import { getDayAppointments, getFormattedDate, getWeekdaysByOffset } from './hel
 const mockAppointments: Appointment[] = [
   {
     id: 134,
-    center_id: 4,
     status: 'PENDING_CONFIRMATION',
     starts_at: '2026-05-18 11:00:00',
     ends_at: '2026-05-18 11:30:00',
     confirmed_at: null,
+    absent_at: null,
+    expired_at: null,
     checked_in_at: null,
     cancelled_at: null,
     completed_at: null,
+    started_at: null,
     created_at: '2026-05-17 19:53:19',
     patient: {
       id: 1,
@@ -30,17 +32,23 @@ const mockAppointments: Appointment[] = [
       name: 'Angiografía',
       is_high_complexity: 1,
     },
+    medical_center: {
+      id: 4,
+      name: 'Test Center',
+    },
   },
   {
     id: 135,
-    center_id: 4,
     status: 'PENDING_CONFIRMATION',
     starts_at: '2026-05-18 14:30:00',
     ends_at: '2026-05-18 15:00:00',
     confirmed_at: null,
+    absent_at: null,
+    expired_at: null,
     checked_in_at: null,
     cancelled_at: null,
     completed_at: null,
+    started_at: null,
     created_at: '2026-05-17 19:55:19',
     patient: {
       id: 1,
@@ -57,17 +65,23 @@ const mockAppointments: Appointment[] = [
       name: 'Angiografía',
       is_high_complexity: 1,
     },
+    medical_center: {
+      id: 4,
+      name: 'Test Center',
+    },
   },
   {
     id: 136,
-    center_id: 4,
     status: 'PENDING_CONFIRMATION',
     starts_at: '2026-05-18 16:00:00',
     ends_at: '2026-05-18 16:30:00',
     confirmed_at: null,
+    absent_at: null,
+    expired_at: null,
     checked_in_at: null,
     cancelled_at: null,
     completed_at: null,
+    started_at: null,
     created_at: '2026-05-17 20:01:39',
     patient: {
       id: 1,
@@ -83,6 +97,10 @@ const mockAppointments: Appointment[] = [
       id: 43,
       name: 'Angiografía',
       is_high_complexity: 1,
+    },
+    medical_center: {
+      id: 4,
+      name: 'Test Center',
     },
   },
 ];

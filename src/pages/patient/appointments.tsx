@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addDays, format } from 'date-fns';
 import { CalendarPlus } from 'lucide-react';
@@ -37,14 +37,24 @@ const Appointments = () => {
   const navigate = useNavigate();
   const authStore = useAuthStore();
   const cancelAppointment = useCancelAppointment();
+  const areAppointmetsFetched = useRef(false);
 
   const [appointmentsParams, setAppointmentsParams] = useState<GetAppointmentsRequest>({
     since: format(new Date(), 'yyyy-MM-dd 00:00:00'),
     until: format(addDays(new Date(), 30), 'yyyy-MM-dd 00:00:00'),
+    patient_id: Number(authStore.id),
     page: 1,
   });
-  const isGetAppointmentsEnabled = !!authStore.id;
-  const appointments = useGetAppointments(appointmentsParams, isGetAppointmentsEnabled);
+  const appointments = useGetAppointments(appointmentsParams, !!appointmentsParams.patient_id);
+
+  useEffect(() => {
+    // Esto es para que se reconsulten los turnos
+    // cuando vuelve a esta pantalla luego de crear un turno
+    if (!areAppointmetsFetched.current) {
+      areAppointmetsFetched.current = true;
+      appointments.refetch();
+    }
+  }, [areAppointmetsFetched.current]);
 
   const handleCancel = async (id: number) => {
     try {

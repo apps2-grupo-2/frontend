@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import type {
+  GetMedicalCenterByIdResponse,
   GetMedicalCentersResponse,
   MedicalCenterOptionsResponse,
   MedicalCentersRequest,
@@ -20,5 +21,17 @@ export const getMedicalCenters = async (params: MedicalCentersRequest): Promise<
     console.warn('ERROR ON: getMedicalCenters');
     console.warn(err);
     return [] as MedicalCenterOptionsResponse;
+  }
+};
+
+export const getMedicalCenterById = async (id: string): Promise<GetMedicalCenterByIdResponse> => {
+  try {
+    const url = `${ENV.BASE_URL}/medical-centers/${id}`;
+    const response = await axios.get<GetMedicalCenterByIdResponse>(url);
+    return response.data;
+  } catch (err) {
+    console.warn('ERROR ON: getMedicalCenterById - id: ', id);
+    console.warn(err);
+    return {} as GetMedicalCenterByIdResponse;
   }
 };

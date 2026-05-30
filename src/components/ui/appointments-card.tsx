@@ -77,7 +77,7 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
                   </span>
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">Centro médico {appointment.center_id}</span>
+                    <span className="truncate">{appointment.medical_center.name}</span>
                   </span>
                 </div>
               </div>
@@ -107,7 +107,9 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
       <ConfirmDialog
         title="Cancelar turno"
         description="¿Querés cancelar este turno? Esta acción no se puede deshacer."
-        ctaTitle="Confirmar"
+        ctaTitle="Sí, cancelar"
+        ctaVariant="destructive"
+        dismissTitle="Deshacer"
         open={isConfirmDialogOpen}
         onOpenChange={setIsConfirmDialogOpen}
         onConfirm={() => onCancel(appointment.id)}

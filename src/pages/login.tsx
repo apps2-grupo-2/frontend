@@ -77,7 +77,12 @@ export default function Page() {
   };
 
   const handleQuickAccess = (role: UserRole) => {
-    const user = MOCK_USERS.find(u => u.role === role)!;
+    let user: (typeof MOCK_USERS)[0];
+    if (role === USER_TYPE.PATIENT) {
+      user = MOCK_USERS.find(u => u.role === USER_TYPE.PATIENT && u.id === '4')!;
+    } else {
+      user = MOCK_USERS.find(u => u.role === role)!;
+    }
     setDni(user.dni);
     setPassword(user.password);
     doLogin(user.dni, user.password);
