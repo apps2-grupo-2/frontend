@@ -53,10 +53,10 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground sm:text-base">
-                      {appointment.medic.fullname}
+                      {appointment.speciality.name}
                     </p>
                     <p className="truncate text-xs text-muted-foreground sm:text-sm">
-                      Especialidad: {appointment.speciality.name}
+                      Dr/Dra: {appointment.medic.fullname} ({appointment.medic.id})
                     </p>
                   </div>
                   {statusConfig[appointment.status] && (

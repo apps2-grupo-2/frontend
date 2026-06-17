@@ -8,8 +8,7 @@ const staleTime = 5 * 60 * 1000; // Los datos expiran después de 5 minutos
 export const useMedicalCenters = (data: MedicalCentersRequest, enabled: boolean) => {
   return useQuery({
     queryKey: ['MedicalCenters', data],
-    // TODO: Pasar data cuando soporte los parametros
-    queryFn: () => getMedicalCenters({}),
+    queryFn: () => getMedicalCenters(data),
     staleTime,
     enabled,
   });

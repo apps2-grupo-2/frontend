@@ -3,7 +3,7 @@ import type { Pagination } from './common';
 export type MedicalCentersRequest = {
   lat?: string;
   lng?: string;
-  specialty_id?: number;
+  speciality_id?: number;
 };
 
 export type GetMedicalCentersResponse = {
