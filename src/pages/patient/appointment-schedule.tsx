@@ -2,7 +2,6 @@ import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
 import { APPOINTMENTS_STEPS } from '@/constants';
 import { useAppointments } from '@/hooks/use-appointments';
 import { Appointment_Confirmation } from '@/modules/appointment-schedule/appointment-confirmation';
-//import { Appointment_Confirmation, Appointment_Initial, Appointment_Success } from '@/modules/appointment-schedule';
 import { Appointment_Initial } from '@/modules/appointment-schedule/appointment-initial';
 import { Appointment_Success } from '@/modules/appointment-schedule/appointment-success';
 import { Stepper } from '@/modules/appointment-schedule/components/stepper';

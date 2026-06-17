@@ -16,7 +16,7 @@ export const useMedicalCentersData = (form: UseFormReturn<AppointmentInitialForm
 
   const params: MedicalCentersRequest = {
     ...(isProximity ? { lat: authStore.lat, lng: authStore.lng } : {}),
-    ...(isAvailability ? { specialty_id: Number(watchedFields.speciality_id) } : {}),
+    ...(isAvailability ? { speciality_id: Number(watchedFields.speciality_id) } : {}),
   };
 
   const isEnabled = !!watchedFields.priority || !!watchedFields.speciality_id;
