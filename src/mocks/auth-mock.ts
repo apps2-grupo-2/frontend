@@ -15,7 +15,7 @@ export type MockUser = {
   lng: string;
 };
 
-const MOCK_USERS_PATIENTS: MockUser[] = [
+export const MOCK_USERS_PATIENTS: MockUser[] = [
   {
     id: '1',
     dni: '28345671',
