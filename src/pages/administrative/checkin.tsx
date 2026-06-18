@@ -1,48 +1,26 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { CalendarPlus, CheckCircle2, Clock, Loader2, MapPin, RefreshCw, Search, User } from 'lucide-react';
 
-import type { Appointment } from '@/typings/services';
+import type { AdministrativeCheckInFormProps } from '@/typings/modules/administrative-check-in/administrative-check-in';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { APPOINTMENT_STATUSES, ROUTES } from '@/constants';
 import { cn } from '@/lib/utils';
+import { SearchBar } from '@/modules/administrative-check-in/search-bar';
 import { checkInAppointment, getAppointments } from '@/services/appointments';
+import { canCheckIn, extractTime, getTodayRange, statusConfig } from './helpers';
 
 const CHECKIN_QUERY_KEY = 'checkin-appointments';
-
-const statusConfig: Record<
-  (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES],
-  { label: string; className: string }
-> = {
-  [APPOINTMENT_STATUSES.PENDING_CONFIRMATION]: { label: 'Pendiente', className: 'bg-amber-500/10 text-amber-700' },
-  [APPOINTMENT_STATUSES.CONFIRMED]: { label: 'Confirmado', className: 'bg-blue-500/10 text-blue-700' },
-  [APPOINTMENT_STATUSES.CHECKED_IN]: { label: 'Llegó', className: 'bg-primary/10 text-primary' },
-  [APPOINTMENT_STATUSES.IN_PROGRESS]: { label: 'En curso', className: 'bg-green-500/10 text-green-700' },
-  [APPOINTMENT_STATUSES.COMPLETED]: { label: 'Finalizado', className: 'bg-muted text-muted-foreground' },
-  [APPOINTMENT_STATUSES.CANCELLED]: { label: 'Cancelado', className: 'bg-destructive/10 text-destructive' },
-  [APPOINTMENT_STATUSES.ABSENT]: { label: 'Ausente', className: 'bg-muted text-muted-foreground' },
-  [APPOINTMENT_STATUSES.EXPIRED]: { label: 'Expirado', className: 'bg-muted text-muted-foreground' },
-};
-
-const getTodayRange = () => {
-  const date = format(new Date(), 'yyyy-MM-dd');
-  return { since: `${date} 00:00:00`, until: `${date} 23:59:59` };
-};
-
-const extractTime = (dateTimeStr: string) => dateTimeStr.split(' ')[1]?.slice(0, 5) ?? '';
-
-const canCheckIn = (status: Appointment['status']) =>
-  status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION || status === APPOINTMENT_STATUSES.CONFIRMED;
 
 export default function Page() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-
   const { since, until } = getTodayRange();
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
@@ -81,6 +59,13 @@ export default function Page() {
       a.medic.fullname.toLowerCase().includes(q) ||
       String(a.id).includes(q)
     );
+  });
+
+  const form = useForm<AdministrativeCheckInFormProps>({
+    mode: 'onChange',
+    defaultValues: {
+      search: '',
+    },
   });
 
   const pendingCount = appointments.filter(a => canCheckIn(a.status)).length;
@@ -134,7 +119,7 @@ export default function Page() {
         </div>
 
         {/* Buscador */}
-        <div className="relative">
+        <div>
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
@@ -144,6 +129,7 @@ export default function Page() {
             className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/25"
           />
         </div>
+        <SearchBar form={form} />
 
         {/* Error de check-in */}
         {checkInError && (
