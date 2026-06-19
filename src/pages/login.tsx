@@ -36,7 +36,7 @@ export default function Page() {
   const navigate = useNavigate();
   const authStore = useAuthStore();
 
-  const [dni, setDni] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,11 +44,11 @@ export default function Page() {
 
   const handleLogin = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (!dni.trim() || !password.trim()) {
-      setError('Ingresá tu DNI y contraseña para continuar.');
+    if (!email.trim() || !password.trim()) {
+      setError('Ingresá tu email y contraseña para continuar.');
       return;
     }
-    doLogin(dni, password);
+    doLogin(email, password);
   };
 
   const doLogin = async (identifier: string, pass: string) => {
@@ -70,7 +70,7 @@ export default function Page() {
       });
       navigate(ROLE_HOME[res.role], { replace: true });
     } catch {
-      setError('DNI o contraseña incorrectos.');
+      setError('Email o contraseña incorrectos.');
     } finally {
       setLoading(false);
     }
@@ -83,9 +83,9 @@ export default function Page() {
     } else {
       user = MOCK_USERS.find(u => u.role === role)!;
     }
-    setDni(user.dni);
+    setEmail(user.email);
     setPassword(user.password);
-    doLogin(user.dni, user.password);
+    doLogin(user.email, user.password);
   };
 
   return (
@@ -136,7 +136,7 @@ export default function Page() {
           <CardContent className="p-8">
             <div className="mb-8">
               <h1 className="font-heading text-2xl font-bold text-foreground">Iniciar sesión</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Accedé al portal con tu DNI.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Accedé al portal con tu email.</p>
             </div>
 
             {/* Acceso rápido (solo en entorno de desarrollo/mock) */}
@@ -169,21 +169,21 @@ export default function Page() {
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
                 <label
-                  htmlFor="dni"
+                  htmlFor="email"
                   className="mb-2 block text-xs font-semibold tracking-wider text-muted-foreground uppercase"
                 >
-                  DNI / CUIL
+                  Email
                 </label>
                 <div className="relative">
                   <User className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors" />
                   <input
-                    id="dni"
-                    type="text"
+                    id="email"
+                    type="email"
                     className="w-full rounded-lg border border-input bg-background py-3 pr-4 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
-                    placeholder="DNI o CUIL"
-                    value={dni}
-                    onChange={e => setDni(e.target.value.replace(/\D/g, ''))}
-                    autoComplete="username"
+                    placeholder="Ingresá tu email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -238,7 +238,9 @@ export default function Page() {
                 )}
               </Button>
 
-              <div className="text-center">
+            </form>
+
+              <div className="mt-4 text-center">
                 <button
                   type="button"
                   className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]"
@@ -246,17 +248,7 @@ export default function Page() {
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
-            </form>
 
-            <div className="mt-6 border-t border-border pt-6">
-              <p className="text-center text-xs text-muted-foreground">
-                ¿Primera vez? Registrate con tu número de afiliado en la recepción o
-                <button className="ml-1 text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]">
-                  solicitá acceso online
-                </button>
-                .
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

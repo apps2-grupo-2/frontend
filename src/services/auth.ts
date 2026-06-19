@@ -3,7 +3,7 @@ import { MOCK_USERS } from '@/mocks/auth-mock';
 
 export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginResponse> => {
   await new Promise(a => setTimeout(a, 50));
-  const user = MOCK_USERS.find(a => a.dni === body.identifier && a.password === body.password);
+  const user = MOCK_USERS.find(a => a.email === body.identifier && a.password === body.password);
   if (!user) throw new Error('Credenciales incorrectas');
   return {
     id: user.id,

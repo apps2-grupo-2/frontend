@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CalendarPlus, CheckCircle, Clock, MapPin, User, UserPlus } from 'lucide-react';
+import { CalendarPlus, CheckCircle, Clock, MapPin, Search, User } from 'lucide-react';
 
 import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { APPOINTMENTS_STEPS, ROUTES } from '@/constants';
 import { useAppointments } from '@/hooks/use-appointments';
+import { useGetPatientsSearch } from '@/hooks/use-patients-data/use-patients-data';
 import { Appointment_Confirmation } from '@/modules/appointment-schedule/appointment-confirmation';
 import { Appointment_Initial } from '@/modules/appointment-schedule/appointment-initial';
 import { Stepper } from '@/modules/appointment-schedule/components/stepper';
@@ -75,95 +76,70 @@ export default function Page() {
   );
 }
 
-// ─── Form de datos del paciente ───────────────────────────────────────────────
+// ─── Form de búsqueda por DNI ────────────────────────────────────────────────
 
 type PatientFormProps = {
   onConfirm: (patient: PatientInfo) => void;
 };
 
 const PatientForm = ({ onConfirm }: PatientFormProps) => {
-  const [fullname, setFullname] = useState('');
-  const [email, setEmail] = useState('');
-  const [patientId, setPatientId] = useState('');
-  const [touched, setTouched] = useState(false);
+  const [emailSearch, setEmailSearch] = useState('');
+  const { data: results = [], isFetching } = useGetPatientsSearch(emailSearch);
 
-  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidId = /^\d+$/.test(patientId.trim()) && patientId.trim().length > 0;
-  const isValid = fullname.trim().length >= 2 && isValidEmail && isValidId;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTouched(true);
-    if (!isValid) return;
-    onConfirm({ id: Number(patientId.trim()), fullname: fullname.trim(), email: email.trim() });
-  };
+  const match = results.find(r => r.subtitle.toLowerCase().startsWith(emailSearch.toLowerCase())) ?? (results.length === 1 ? results[0] : null);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+    <div className="flex flex-col gap-5">
       <Card className="border-border shadow-none">
-        <CardContent className="flex flex-col gap-5 pt-2">
-          {/* Nombre completo */}
+        <CardContent className="flex flex-col gap-4 pt-2">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="fullname" className="text-sm font-medium text-foreground">
-              Nombre completo
+            <label htmlFor="email-search" className="text-sm font-medium text-foreground">
+              Email del paciente
             </label>
-            <input
-              id="fullname"
-              type="text"
-              placeholder="Ej: María García"
-              value={fullname}
-              onChange={e => setFullname(e.target.value)}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
-            />
-            {touched && fullname.trim().length < 2 && (
-              <p className="text-xs text-destructive">Ingresá el nombre completo del paciente.</p>
-            )}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                id="email-search"
+                type="email"
+                placeholder="Ej: paciente@mail.com"
+                value={emailSearch}
+                onChange={e => setEmailSearch(e.target.value)}
+                className="h-10 w-full rounded-lg border border-input bg-transparent pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
+              />
+            </div>
           </div>
 
-          {/* Email */}
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-foreground">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Ej: paciente@mail.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
-            />
-            {touched && !isValidEmail && (
-              <p className="text-xs text-destructive">Ingresá un email válido.</p>
-            )}
-          </div>
+          {isFetching && (
+            <p className="text-xs text-muted-foreground animate-pulse">Buscando paciente...</p>
+          )}
 
-          {/* ID del paciente */}
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="patient-id" className="text-sm font-medium text-foreground">
-              ID de paciente
-            </label>
-            <input
-              id="patient-id"
-              type="text"
-              inputMode="numeric"
-              placeholder="Ej: 12345"
-              value={patientId}
-              onChange={e => setPatientId(e.target.value)}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
-            />
-            {touched && !isValidId && (
-              <p className="text-xs text-destructive">Ingresá el ID numérico del paciente.</p>
-            )}
-          </div>
+          {!isFetching && emailSearch.length >= 2 && !match && (
+            <p className="text-xs text-destructive">No se encontró ningún paciente con ese email.</p>
+          )}
+
+          {match && (
+            <div className="flex items-center gap-3 rounded-lg bg-muted/50 px-4 py-3 border border-border">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">{match.label}</p>
+                <p className="text-xs text-muted-foreground truncate">{match.subtitle}</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      <Button type="submit" size="lg" className="self-start">
-        <UserPlus className="h-4 w-4" />
+      <Button
+        size="lg"
+        className="self-start"
+        disabled={!match}
+        onClick={() => match && onConfirm({ id: Number(match.value), fullname: match.label, email: match.email })}
+      >
         Continuar con el turno
       </Button>
-    </form>
+    </div>
   );
 };
 
