@@ -12,7 +12,7 @@ export const getMedicalCenters = async (params: MedicalCentersRequest): Promise<
   try {
     const url = `${ENV.BASE_URL}/medical-centers`;
     const response = await axios.get<GetMedicalCentersResponse>(url, { params });
-    return response.data.medicalCenters.map(a => ({
+    return response.data.medical_centers.map(a => ({
       value: `${a.id}`,
       label: a.name,
       city: a.city,
