@@ -1,7 +1,7 @@
-import type { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from 'react-hook-form';
 
 export type AdministrativeCheckInFormProps = {
-  search: string;
+  patientId: string;
 };
 
 export type SearchBarProps = {

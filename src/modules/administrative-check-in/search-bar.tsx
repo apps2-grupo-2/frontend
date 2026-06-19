@@ -1,32 +1,22 @@
-import { useEffect } from 'react';
-import { useWatch } from 'react-hook-form';
+import { useState } from 'react';
 
 import type { SearchBarProps } from '@/typings/modules/administrative-check-in/administrative-check-in';
-import { RhfCombobox } from '@/components/rhf/rhf-combobox';
+import { RhfAsyncCombobox } from '@/components/rhf/rhf-async-combobox';
+import { useGetPatientsSearch } from '@/hooks/use-patients-data/use-patients-data';
 
 export const SearchBar = (props: SearchBarProps) => {
   const { form } = props;
-
-  const searchWatched = useWatch({ control: form.control, name: 'search' });
-
-  useEffect(() => {
-    if (searchWatched.length >= 3) {
-      //
-    }
-  }, [searchWatched]);
-
-  const options = [
-    { label: 'Juan Pérez - Dr. Smith - Turno #123', value: '123' },
-    { label: 'María Gómez - Dr. Johnson - Turno #456', value: '456' },
-    { label: 'Carlos López - Dr. Brown - Turno #789', value: '789' },
-  ];
-
+  const [search, setSearch] = useState('');
+  const { data: patients, isLoading } = useGetPatientsSearch(search);
   return (
-    <RhfCombobox
-      name="search"
+    <RhfAsyncCombobox
+      name="patientId"
       control={form.control}
-      options={options}
+      options={patients || []}
       placeholder="Buscar por nombre del paciente, médico o N° de turno..."
+      onValueChange={setSearch}
+      search={search}
+      isFetching={isLoading}
     />
   );
 };

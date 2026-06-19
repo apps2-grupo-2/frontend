@@ -26,3 +26,8 @@ export const extractTime = (dateTimeStr: string) => dateTimeStr.split(' ')[1]?.s
 
 export const canCheckIn = (status: Appointment['status']) =>
   status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION || status === APPOINTMENT_STATUSES.CONFIRMED;
+
+export const formatDateTime = (dateTime: string) => {
+  const date = new Date(dateTime);
+  return `${format(date, 'dd/MM/yyyy')} a las ${format(date, 'HH:mm')}`;
+};
