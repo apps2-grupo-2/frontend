@@ -7,7 +7,7 @@ export type MedicalCentersRequest = {
 };
 
 export type GetMedicalCentersResponse = {
-  medicalCenters: MedicalCenter[];
+  medical_centers: MedicalCenter[];
   pagination: Pagination;
 };
 
