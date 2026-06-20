@@ -113,7 +113,6 @@ const SlotCard = (props: SlotCardProps) => {
           <User className="h-3 w-3 shrink-0 opacity-70" />
           <span className="font-medium">{slot.patient.fullname}</span>
         </div>
-        <p className="pl-5 opacity-70">DNI {'slot.patient.dni'}</p>
       </div>
       <div className="flex flex-col justify-between gap-0.5">
         <span className="ml-auto font-mono opacity-80">TUR-{slot.id}</span>

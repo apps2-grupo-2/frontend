@@ -16,7 +16,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { ROUTES } from '@/constants';
-import { useCancelAppointment, useGetAppointments } from '@/hooks/use-appointments-data';
+import { useCancelAppointment, useConfirmAppointment, useGetAppointments } from '@/hooks/use-appointments-data';
 import { useAuthStore } from '@/stores/auth.store';
 
 export default function Page() {
@@ -37,6 +37,7 @@ const Appointments = () => {
   const navigate = useNavigate();
   const authStore = useAuthStore();
   const cancelAppointment = useCancelAppointment();
+  const confirmAppointment = useConfirmAppointment();
   const areAppointmetsFetched = useRef(false);
 
   const [appointmentsParams, setAppointmentsParams] = useState<GetAppointmentsRequest>({
@@ -66,6 +67,16 @@ const Appointments = () => {
     }
   };
 
+  const handleConfirm = async (id: number) => {
+    try {
+      await confirmAppointment.mutateAsync(id);
+      appointments.refetch();
+    } catch (error) {
+      console.error('> confirm error');
+      console.error(error);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -89,6 +100,7 @@ const Appointments = () => {
             appointment={appt}
             isLoading={false}
             onCancel={handleCancel}
+            onConfirm={handleConfirm}
             onReschedule={() => {}}
           />
         ))

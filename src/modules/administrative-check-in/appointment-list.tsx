@@ -9,7 +9,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { APPOINTMENT_STATUSES } from '@/constants';
 import { useCheckInAppointment } from '@/hooks/use-appointments-data';
 import { cn } from '@/lib/utils';
-import { canCheckIn, formatDateTime, statusConfig } from '@/modules/administrative-check-in/helpers';
+import {
+  canCheckIn,
+  formatDateTime,
+  sortByCompletedLast,
+  statusConfig,
+} from '@/modules/administrative-check-in/helpers';
 
 export const AppointmentList = (props: AppointmentListProps) => {
   const { appointments } = props;
@@ -34,7 +39,7 @@ export const AppointmentList = (props: AppointmentListProps) => {
 
   return (
     <div className="flex flex-col gap-3">
-      {appointments.data.appointments.map(a => (
+      {sortByCompletedLast(appointments.data.appointments).map(a => (
         <AppointmentCard key={a.id} appointment={a} />
       ))}
     </div>

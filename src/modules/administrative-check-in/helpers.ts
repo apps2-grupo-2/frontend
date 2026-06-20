@@ -27,6 +27,14 @@ export const extractTime = (dateTimeStr: string) => dateTimeStr.split(' ')[1]?.s
 export const canCheckIn = (status: Appointment['status']) =>
   status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION || status === APPOINTMENT_STATUSES.CONFIRMED;
 
+// Ordena los turnos dejando los "Finalizados" (COMPLETED) al final del listado.
+export const sortByCompletedLast = (appointments: Appointment[]) =>
+  [...appointments].sort((a, b) => {
+    const aCompleted = a.status === APPOINTMENT_STATUSES.COMPLETED ? 1 : 0;
+    const bCompleted = b.status === APPOINTMENT_STATUSES.COMPLETED ? 1 : 0;
+    return aCompleted - bCompleted;
+  });
+
 export const formatDateTime = (dateTime: string) => {
   const date = new Date(dateTime);
   return `${format(date, 'dd/MM/yyyy')} a las ${format(date, 'HH:mm')}`;

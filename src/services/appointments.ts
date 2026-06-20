@@ -10,8 +10,16 @@ import type {
   GetAppointmentsResponse,
 } from '@/typings/services';
 import { ENV } from '@/constants';
+import {
+  mockCancelAppointment,
+  mockCheckInAppointment,
+  mockConfirmAppointment,
+  mockGetAppointments,
+} from '@/mocks/appointments.mock';
+import { isMockEnabled } from '@/stores/mock.store';
 
 export const getAppointments = async (req: GetAppointmentsRequest): Promise<GetAppointmentsResponse> => {
+  if (isMockEnabled()) return mockGetAppointments(req);
   await new Promise(a => setTimeout(a, 50));
   try {
     const url = `${ENV.BASE_URL}/appointments`;
@@ -40,16 +48,19 @@ export const createAppointment = async (data: CreateAppointmentRequest): Promise
 };
 
 export const cancelAppointment = async (id: number): Promise<CancelAppointmentResponse> => {
+  if (isMockEnabled()) return mockCancelAppointment(id);
   const response = await axios.delete<CancelAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}`);
   return response.data;
 };
 
 export const confirmAppointment = async (id: number): Promise<ConfirmAppointmentResponse> => {
+  if (isMockEnabled()) return mockConfirmAppointment(id);
   const response = await axios.patch<ConfirmAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}/confirm`);
   return response.data;
 };
 
 export const checkInAppointment = async (id: number): Promise<CheckInAppointmentResponse> => {
+  if (isMockEnabled()) return mockCheckInAppointment(id);
   const response = await axios.patch<CheckInAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}/check-in`);
   return response.data;
 };

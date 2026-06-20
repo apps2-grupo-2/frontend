@@ -7,9 +7,11 @@ import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES, USER_TYPE } from '@/constants';
+import { cn } from '@/lib/utils';
 import { MOCK_USERS } from '@/mocks/auth-mock';
 import { authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
+import { useMockStore } from '@/stores/mock.store';
 
 const ROLE_HOME: Record<UserRole, string> = {
   [USER_TYPE.PATIENT]: ROUTES.TURNOS,
@@ -32,9 +34,14 @@ const stats = [
 
 const statDelays = ['delay-0', 'delay-75', 'delay-150', 'delay-200'] as const;
 
+// Genera una coordenada random (string) dentro de un rango.
+const randomCoordinate = (min: number, max: number) => (Math.random() * (max - min) + min).toFixed(4);
+
 export default function Page() {
   const navigate = useNavigate();
   const authStore = useAuthStore();
+  const mockEnabled = useMockStore(s => s.enabled);
+  const toggleMock = useMockStore(s => s.toggle);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,8 +72,9 @@ export default function Page() {
         name: res.name,
         subtitle: res.subtitle,
         dni: res.dni,
-        lat: res.lat,
-        lng: res.lng,
+        // Se genera una lat/lng random en cada login (CABA aprox.)
+        lat: randomCoordinate(-34.705, -34.527),
+        lng: randomCoordinate(-58.531, -58.335),
       });
       navigate(ROLE_HOME[res.role], { replace: true });
     } catch {
@@ -158,6 +166,34 @@ export default function Page() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Toggle modo mock (turnos/pacientes en memoria, sin backend) */}
+            <div className="mb-6 flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <div>
+                <p className="text-xs font-semibold text-foreground">Modo mock</p>
+                <p className="text-xs text-muted-foreground">
+                  {mockEnabled ? 'Turnos y pacientes en memoria' : 'Usando el backend real'}
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={mockEnabled}
+                aria-label="Activar o desactivar el modo mock"
+                onClick={toggleMock}
+                className={cn(
+                  'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+                  mockEnabled ? 'bg-primary' : 'bg-input'
+                )}
+              >
+                <span
+                  className={cn(
+                    'inline-block h-5 w-5 transform rounded-full bg-background shadow transition-transform',
+                    mockEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                  )}
+                />
+              </button>
             </div>
 
             <div className="mb-5 flex items-center gap-3">
