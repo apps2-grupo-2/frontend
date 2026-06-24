@@ -34,8 +34,18 @@ const stats = [
 
 const statDelays = ['delay-0', 'delay-75', 'delay-150', 'delay-200'] as const;
 
-// Genera una coordenada random (string) dentro de un rango.
-const randomCoordinate = (min: number, max: number) => (Math.random() * (max - min) + min).toFixed(4);
+const getGeolocation = (): Promise<{ lat: string; lng: string } | null> =>
+  new Promise(resolve => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({
+        lat: pos.coords.latitude.toFixed(6),
+        lng: pos.coords.longitude.toFixed(6),
+      }),
+      () => resolve(null),
+      { timeout: 10000 },
+    );
+  });
 
 export default function Page() {
   const navigate = useNavigate();
@@ -63,6 +73,7 @@ export default function Page() {
     setLoading(true);
     try {
       const res = await authLogin({ identifier, password: pass });
+      const location = await getGeolocation();
       authStore.setAuth({
         id: res.id,
         accessToken: res.access_token,
@@ -72,9 +83,8 @@ export default function Page() {
         name: res.name,
         subtitle: res.subtitle,
         dni: res.dni,
-        // Se genera una lat/lng random en cada login (CABA aprox.)
-        lat: randomCoordinate(-34.705, -34.527),
-        lng: randomCoordinate(-58.531, -58.335),
+        lat: location?.lat,
+        lng: location?.lng,
       });
       navigate(ROLE_HOME[res.role], { replace: true });
     } catch {

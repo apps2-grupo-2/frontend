@@ -1,6 +1,12 @@
 import { addDays, addHours, format } from 'date-fns';
 
-import type { Appointment, GetAppointmentsRequest, GetAppointmentsResponse } from '@/typings/services';
+import type {
+  Appointment,
+  CreateAppointmentRequest,
+  CreateAppointmentResponse,
+  GetAppointmentsRequest,
+  GetAppointmentsResponse,
+} from '@/typings/services';
 import { APPOINTMENT_STATUSES } from '@/constants';
 
 /**
@@ -200,4 +206,31 @@ export const mockCheckInAppointment = async (id: number) => {
     appt.checked_in_at = fmt(new Date());
   }
   return { message: 'checked-in' };
+};
+
+// Crea un turno en memoria a partir del request del wizard y lo agrega al store,
+// de modo que aparezca luego en los listados mockeados.
+export const mockCreateAppointment = async (
+  data: CreateAppointmentRequest
+): Promise<CreateAppointmentResponse> => {
+  await new Promise(r => setTimeout(r, 120));
+  const nextId = store.reduce((max, a) => Math.max(max, a.id), 0) + 1;
+  const matchedSpeciality =
+    SPECIALITIES.find(s => s.id === data.appointment.speciality_id) ?? SPECIALITIES[0];
+  store.push(
+    baseAppointment({
+      id: nextId,
+      status: APPOINTMENT_STATUSES.PENDING_CONFIRMATION,
+      starts_at: data.appointment.starts_at,
+      ends_at: data.appointment.ends_at,
+      patient: data.patient,
+      medic: data.medic,
+      speciality: { ...matchedSpeciality, id: data.appointment.speciality_id },
+      medical_center: {
+        id: data.appointment.center_id,
+        name: MEDICAL_CENTERS.find(c => c.id === data.appointment.center_id)?.name ?? 'Centro Médico',
+      },
+    })
+  );
+  return { appointment_id: nextId };
 };

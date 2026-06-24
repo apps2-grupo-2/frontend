@@ -14,6 +14,7 @@ import {
   mockCancelAppointment,
   mockCheckInAppointment,
   mockConfirmAppointment,
+  mockCreateAppointment,
   mockGetAppointments,
 } from '@/mocks/appointments.mock';
 import { isMockEnabled } from '@/stores/mock.store';
@@ -43,6 +44,7 @@ export const getAppointments = async (req: GetAppointmentsRequest): Promise<GetA
 };
 
 export const createAppointment = async (data: CreateAppointmentRequest): Promise<CreateAppointmentResponse> => {
+  if (isMockEnabled()) return mockCreateAppointment(data);
   const response = await axios.post<CreateAppointmentResponse>(`${ENV.BASE_URL}/appointments`, data);
   return response.data;
 };

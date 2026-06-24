@@ -4,6 +4,7 @@ export type MedicalCentersRequest = {
   lat?: string;
   lng?: string;
   speciality_id?: number;
+  sort_by?: 'distance' | 'first_availability' | 'name';
 };
 
 export type GetMedicalCentersResponse = {
@@ -17,12 +18,14 @@ export type MedicalCenter = {
   city: string;
   lat: string;
   lng: string;
+  distance_km?: number;
 };
 
 export type MedicalCenterOptionsResponse = {
   value: string;
   label: string;
   city: string;
+  distance_km?: number;
 }[];
 
 export type GetMedicalCenterByIdResponse = {

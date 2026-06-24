@@ -1,12 +1,19 @@
 import type { GetPatientsResponse } from '@/typings/services';
 import { MOCK_USERS_PATIENTS } from '@/mocks/auth-mock';
 
-// A ser usada por administracion
+/**
+ * Búsqueda de pacientes (usada por administración para crear turnos).
+ * Se sirve desde el mock en AMBOS modos (mock y real).
+ *
+ * Motivo: los pacientes los registra el Core (módulo 10), pero su API (GET /users)
+ * no expone una búsqueda por email/nombre con este shape. Hasta que el Core lo
+ * disponibilice, mantenemos la búsqueda mockeada para no romper el alta de turnos.
+ *
+ * Cuando el Core lo exponga, reemplazar por la llamada real (GET al
+ * ${ENV.CORE_BASE_URL}/users con búsqueda) detrás de isMockEnabled().
+ */
 export const getPatientsSearch = async (search: string): Promise<GetPatientsResponse> => {
   try {
-    // const url = `${ENV.BASE_URL}/professionals`;
-    // const response = await axios.get<ProfessionalsResponse>(url, { params: { specialty_id: specialtyId } });
-    // return response.data.professionals.map(p => ({ value: p.id.toString(), label: p.name }));
     await new Promise(a => setTimeout(a, 300));
     if (search.length < 2) {
       return [];
