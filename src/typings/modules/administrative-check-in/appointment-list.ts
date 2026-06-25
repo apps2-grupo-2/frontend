@@ -8,4 +8,5 @@ export type AppointmentListProps = {
 
 export type AppointmentCardProps = {
   appointment: GetAppointmentsResponse['appointments'][number];
+  refreshAppointments: () => void;
 };

@@ -14,8 +14,8 @@ const defaultFields: AuthStoreStates & AuthStoreOptionsStates = {
   refreshToken: undefined,
   role: undefined,
   subtitle: undefined,
-  lat: undefined,
-  lng: undefined,
+  lat: '',
+  lng: '',
 };
 
 export const useAuthStore = create<AuthStore>()(

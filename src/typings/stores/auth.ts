@@ -9,8 +9,8 @@ export type AuthStoreStates = {
   refreshToken: string | undefined;
   role: UserRole | undefined;
   subtitle: string | undefined;
-  lat: string | undefined;
-  lng: string | undefined;
+  lat: string;
+  lng: string;
 };
 
 export type AuthStoreOptionsStates = {
