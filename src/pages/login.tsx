@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES, USER_TYPE } from '@/constants';
 import { cn } from '@/lib/utils';
-import { MOCK_USERS } from '@/mocks/auth-mock';
+import { MOCK_LATITUDES, MOCK_USERS } from '@/mocks/auth-mock';
 import { authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 import { useMockStore } from '@/stores/mock.store';
@@ -38,14 +38,20 @@ const getGeolocation = (): Promise<{ lat: string; lng: string } | null> =>
   new Promise(resolve => {
     if (!navigator.geolocation) return resolve(null);
     navigator.geolocation.getCurrentPosition(
-      pos => resolve({
-        lat: pos.coords.latitude.toFixed(6),
-        lng: pos.coords.longitude.toFixed(6),
-      }),
+      pos =>
+        resolve({
+          lat: pos.coords.latitude.toFixed(6),
+          lng: pos.coords.longitude.toFixed(6),
+        }),
       () => resolve(null),
-      { timeout: 10000 },
+      { timeout: 10000 }
     );
   });
+
+const getMockLocation = (loc: { lat: string; lng: string } | null) => {
+  if (loc) return loc;
+  return MOCK_LATITUDES[Math.floor(Math.random() * MOCK_LATITUDES.length)];
+};
 
 export default function Page() {
   const navigate = useNavigate();
@@ -73,7 +79,8 @@ export default function Page() {
     setLoading(true);
     try {
       const res = await authLogin({ identifier, password: pass });
-      const location = await getGeolocation();
+      const autoLocation = await getGeolocation();
+      const location = getMockLocation(autoLocation);
       authStore.setAuth({
         id: res.id,
         accessToken: res.access_token,
@@ -83,8 +90,8 @@ export default function Page() {
         name: res.name,
         subtitle: res.subtitle,
         dni: res.dni,
-        lat: location?.lat,
-        lng: location?.lng,
+        lat: location.lat,
+        lng: location.lng,
       });
       navigate(ROLE_HOME[res.role], { replace: true });
     } catch {
@@ -283,18 +290,16 @@ export default function Page() {
                   'Ingresar al portal'
                 )}
               </Button>
-
             </form>
 
-              <div className="mt-4 text-center">
-                <button
-                  type="button"
-                  className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]"
-                >
-                  ¿Olvidaste tu contraseña?
-                </button>
-              </div>
-
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>

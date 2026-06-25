@@ -14,15 +14,14 @@ export const useMedicalCentersData = (form: UseFormReturn<AppointmentInitialForm
   const isProximity = watchedFields.priority === PRIORITY_TYPES.PROXIMITY;
   const isAvailability = watchedFields.priority === PRIORITY_TYPES.AVAILABILITY;
 
-  const hasCoords = !!authStore.lat && !!authStore.lng;
-
   const params: MedicalCentersRequest = {
-    ...(hasCoords ? { lat: authStore.lat, lng: authStore.lng } : {}),
-    ...(isProximity && hasCoords ? { sort_by: 'distance' } : {}),
-    ...(isAvailability ? { speciality_id: Number(watchedFields.speciality_id), sort_by: 'first_availability' } : {}),
+    lat: authStore.lat,
+    lng: authStore.lng,
+    sort_by: isProximity ? 'distance' : 'first_availability',
+    ...(isAvailability ? { speciality_id: Number(watchedFields.speciality_id) } : {}),
   };
 
-  const isEnabled = !!watchedFields.priority || !!watchedFields.speciality_id;
+  const isEnabled = !!watchedFields.priority;
 
   const medicalCenters = useMedicalCenters(params, isEnabled);
   return medicalCenters;

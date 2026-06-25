@@ -1,8 +1,8 @@
 import type { Pagination } from './common';
 
 export type MedicalCentersRequest = {
-  lat?: string;
-  lng?: string;
+  lat: string;
+  lng: string;
   speciality_id?: number;
   sort_by?: 'distance' | 'first_availability' | 'name';
 };

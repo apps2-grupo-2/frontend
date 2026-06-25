@@ -100,12 +100,8 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
                 <Button
                   size="sm"
                   className="text-xs"
-                  disabled={!canConfirm || isLoading}
-                  title={
-                    canConfirm
-                      ? undefined
-                      : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'
-                  }
+                  //disabled={!canConfirm || isLoading}
+                  title={canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'}
                   onClick={() => setIsConfirmTurnDialogOpen(true)}
                 >
                   <CheckCircle2 className="h-3.5 w-3.5" />

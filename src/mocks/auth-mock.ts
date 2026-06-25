@@ -809,3 +809,5 @@ export const MOCK_USERS: MockUser[] = [
   ...MOCK_USERS_ADMINISTRATIVE,
   ...MOCK_USERS_PROFESSIONAL,
 ];
+
+export const MOCK_LATITUDES = MOCK_USERS.map(({ lat, lng }) => ({ lat, lng }));

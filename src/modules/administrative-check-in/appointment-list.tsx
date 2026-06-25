@@ -40,15 +40,24 @@ export const AppointmentList = (props: AppointmentListProps) => {
   return (
     <div className="flex flex-col gap-3">
       {sortByCompletedLast(appointments.data.appointments).map(a => (
-        <AppointmentCard key={a.id} appointment={a} />
+        <AppointmentCard key={a.id} appointment={a} refreshAppointments={appointments.refetch} />
       ))}
     </div>
   );
 };
 
 const AppointmentCard = (props: AppointmentCardProps) => {
-  const { appointment } = props;
+  const { appointment, refreshAppointments } = props;
   const checkInAppointment = useCheckInAppointment();
+
+  const handleCheckIn = () => {
+    checkInAppointment.mutate(appointment.id, {
+      onSuccess: () => {
+        refreshAppointments();
+      },
+    });
+  };
+
   return (
     <Card
       style={{ animationDelay: `40ms` }}
@@ -102,7 +111,7 @@ const AppointmentCard = (props: AppointmentCardProps) => {
           {canCheckIn(appointment.status) && (
             <div className="pl-12">
               <Button
-                onClick={() => checkInAppointment.mutate(appointment.id)}
+                onClick={handleCheckIn}
                 disabled={checkInAppointment.isPending && checkInAppointment.variables === appointment.id}
                 className="text-xs"
               >
