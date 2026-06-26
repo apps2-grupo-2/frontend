@@ -12,6 +12,7 @@ export const professionalsMock = [
   { value: '1002', name: 'Dra. Cecilia Romero', specialty_id: '7', email: 'cecilia.romero@mail.com' },
   { value: '1029', name: 'Dr. Matías Roldán', specialty_id: '7', email: 'matias.roldan@mail.com' },
   { value: '1130', name: 'Dra. Fernanda Soria', specialty_id: '7', email: 'fernanda.soria@mail.com' },
+  { value: '1088', name: 'Dr. Juan Mendez', specialty_id: '7', email: 'da2_pro1@yopmail.com' },
 
   { value: '1014', name: 'Dr. Nicolás Herrera', specialty_id: '12', email: 'nicolas.herrera@mail.com' },
   { value: '1075', name: 'Dr. Carlos Aguirre', specialty_id: '12', email: 'carlos.aguirre@mail.com' },
