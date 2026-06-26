@@ -24,7 +24,7 @@ export const Appointment_Initial = (props: StepProps) => {
 
   const onSubmit = async (formData: AppointmentInitialFormProps) => {
     const { date, ...rest } = formData;
-    metadata.setPayload(rest);
+    metadata.setPayload({ ...metadata.payload, ...rest });
     metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_CONFIRMATION);
   };
 
