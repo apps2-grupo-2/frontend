@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { APPOINTMENT_STATUSES } from '@/constants';
-import { useConfirmAppointment, useGetAppointments } from '@/hooks/use-appointments-data';
+import { useFinishAppointment, useGetAppointments, useStartAppointment } from '@/hooks/use-appointments-data';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth.store';
 import { DayStatus } from './components/day-status';
@@ -37,9 +37,11 @@ const statusConfig: Record<
 
 export const ProfessionalDashboard = () => {
   const authStore = useAuthStore();
-  const confirmAppointment = useConfirmAppointment();
+  const startAppointment = useStartAppointment();
+  const finishAppointment = useFinishAppointment();
   const days = getWeekdaysByOffset(0);
   const [selectedDay, setSelectedDay] = useState<Date>(days[0]);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const appointmentsParams: GetAppointmentsRequest = {
     since: format(selectedDay, 'yyyy-MM-dd 09:00:00'),
@@ -51,13 +53,25 @@ export const ProfessionalDashboard = () => {
   const totalAppointments = appointments.data?.appointments?.length ?? 0;
   const dayAppointments = getDayAppointments(appointments.data?.appointments, selectedDay);
 
-  const handleConfirm = async (id: number) => {
+  const handleStart = async (id: number) => {
+    setActionError(null);
     try {
-      await confirmAppointment.mutateAsync(id);
+      await startAppointment.mutateAsync(id);
       appointments.refetch();
     } catch (error) {
-      console.error('> Confirm error');
-      console.error(error);
+      console.error('> Start error', error);
+      setActionError('No se pudo iniciar la consulta. Intentá de nuevo.');
+    }
+  };
+
+  const handleFinish = async (id: number) => {
+    setActionError(null);
+    try {
+      await finishAppointment.mutateAsync(id);
+      appointments.refetch();
+    } catch (error) {
+      console.error('> Finish error', error);
+      setActionError('No se pudo finalizar la consulta. Intentá de nuevo.');
     }
   };
 
@@ -66,6 +80,13 @@ export const ProfessionalDashboard = () => {
       <WeekdaySelector selectedDay={selectedDay} onSelectDay={setSelectedDay} />
       <DayStatus totalAppointments={totalAppointments} totalAvailable={18 - totalAppointments} />
 
+      {actionError && (
+        <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{actionError}</span>
+        </div>
+      )}
+
       {/* Lista de slots */}
       <Card className="border-border shadow-none">
         <CardContent className="flex flex-col gap-2">
@@ -73,7 +94,7 @@ export const ProfessionalDashboard = () => {
             {selectedDay.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
           {dayAppointments.map(slot => (
-            <SlotCard key={slot.id} slot={slot} onConfirm={handleConfirm} />
+            <SlotCard key={slot.id} slot={slot} onStart={handleStart} onFinish={handleFinish} />
           ))}
         </CardContent>
       </Card>
@@ -81,9 +102,15 @@ export const ProfessionalDashboard = () => {
   );
 };
 
-const SlotCard = (props: SlotCardProps) => {
-  const { slot, onConfirm } = props;
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+type SlotCardLocalProps = {
+  slot: SlotCardProps['slot'];
+  onStart: (id: number) => Promise<void>;
+  onFinish: (id: number) => Promise<void>;
+};
+
+const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
+  const [isStartDialogOpen, setIsStartDialogOpen] = useState(false);
+  const [isFinishDialogOpen, setIsFinishDialogOpen] = useState(false);
 
   if (slot.status === 'available') {
     return (
@@ -96,9 +123,9 @@ const SlotCard = (props: SlotCardProps) => {
   }
 
   const colorClass = statusConfig[slot.status].className;
-
-  const isConfimBtnVisible = slot.status === APPOINTMENT_STATUSES.CHECKED_IN;
-  const isConfirmBtnDisabled = isBefore(new Date(), new Date(slot.starts_at));
+  const isCheckedIn = slot.status === APPOINTMENT_STATUSES.CHECKED_IN;
+  const isInProgress = slot.status === APPOINTMENT_STATUSES.IN_PROGRESS;
+  const isSlotInFuture = isBefore(new Date(), new Date(slot.starts_at));
 
   return (
     <div className={cn('flex justify-between rounded-lg border px-3 py-2 text-xs', colorClass)}>
@@ -116,24 +143,38 @@ const SlotCard = (props: SlotCardProps) => {
       </div>
       <div className="flex flex-col justify-between gap-0.5">
         <span className="ml-auto font-mono opacity-80">TUR-{slot.id}</span>
-        {isConfimBtnVisible && (
+        {isCheckedIn && (
           <Button
             size="sm"
-            variant={isConfirmBtnDisabled ? 'outline' : 'default'}
-            disabled={isConfirmBtnDisabled}
-            onClick={() => setIsConfirmDialogOpen(true)}
+            variant={isSlotInFuture ? 'outline' : 'default'}
+            disabled={isSlotInFuture}
+            onClick={() => setIsStartDialogOpen(true)}
           >
-            Completar
+            Iniciar
+          </Button>
+        )}
+        {isInProgress && (
+          <Button size="sm" onClick={() => setIsFinishDialogOpen(true)}>
+            Finalizar
           </Button>
         )}
       </div>
+
       <ConfirmDialog
-        title="Confirmar turno"
-        description="¿Querés confirmar este turno?"
-        ctaTitle="Confirmar"
-        open={isConfirmDialogOpen}
-        onOpenChange={setIsConfirmDialogOpen}
-        onConfirm={() => onConfirm(slot.id)}
+        title="Iniciar consulta"
+        description="¿Iniciás la consulta con este paciente?"
+        ctaTitle="Iniciar"
+        open={isStartDialogOpen}
+        onOpenChange={setIsStartDialogOpen}
+        onConfirm={() => onStart(slot.id)}
+      />
+      <ConfirmDialog
+        title="Finalizar consulta"
+        description="¿Confirmás que la consulta fue completada?"
+        ctaTitle="Finalizar"
+        open={isFinishDialogOpen}
+        onOpenChange={setIsFinishDialogOpen}
+        onConfirm={() => onFinish(slot.id)}
       />
     </div>
   );

@@ -7,10 +7,12 @@ import {
   checkInAppointment,
   confirmAppointment,
   createAppointment,
+  finishAppointment,
   getAppointments,
+  startAppointment,
 } from '@/services/appointments';
 
-const staleTime = 5 * 60 * 1000; // Los datos expiran después de 5 minutos
+const staleTime = 5 * 60 * 1000;
 
 export const useGetAppointments = (req: GetAppointmentsRequest, enabled: boolean = true) =>
   useQuery({
@@ -48,4 +50,14 @@ export const useCheckInAppointment = () =>
         throw error instanceof Error ? error : new Error('Error desconocido');
       }
     },
+  });
+
+export const useStartAppointment = () =>
+  useMutation({
+    mutationFn: (id: number) => startAppointment(id),
+  });
+
+export const useFinishAppointment = () =>
+  useMutation({
+    mutationFn: (id: number) => finishAppointment(id),
   });

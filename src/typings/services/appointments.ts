@@ -85,3 +85,11 @@ export type ConfirmAppointmentResponse = {
 export type CheckInAppointmentResponse = {
   message: string;
 };
+
+export type StartAppointmentResponse = {
+  message: string;
+};
+
+export type FinishAppointmentResponse = {
+  message: string;
+};

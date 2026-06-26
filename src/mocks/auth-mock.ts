@@ -8,7 +8,7 @@ export type MockUser = {
   role: UserRole;
   name: string;
   email: string;
-  subtitle: string; // obra social / especialidad / área
+  subtitle: string;
   accessToken: string;
   refreshToken: string;
   lat: string;
@@ -16,6 +16,19 @@ export type MockUser = {
 };
 
 export const MOCK_USERS_PATIENTS: MockUser[] = [
+  {
+    id: '18',
+    dni: '',
+    password: '1234',
+    role: USER_TYPE.PATIENT,
+    name: 'Benjamín Ruiz',
+    email: 'benjamin.ruiz@mock.com',
+    subtitle: 'Paciente',
+    accessToken: 'dev-token-paciente',
+    refreshToken: 'dev-token-paciente',
+    lat: '-34.607548',
+    lng: '-58.426964',
+  },
   {
     id: '1',
     dni: '28345671',

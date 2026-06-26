@@ -5,8 +5,6 @@ import { ENV, USER_TYPE } from '@/constants';
 import { MOCK_USERS } from '@/mocks/auth-mock';
 import { isMockEnabled } from '@/stores/mock.store';
 
-// ─── Tipos de la respuesta del Core (módulo 10) ──────────────────────────────
-// Doc: SwaggerHub uade-0e3/core. Login por email + contraseña.
 type CoreAuthResponse = {
   token: string;
   user: {
@@ -20,8 +18,6 @@ type CoreAuthResponse = {
 type CoreRole = { id: number; name: string };
 type CoreUser = { id: number; roles?: CoreRole[] };
 
-// El Core devuelve roles con nombre libre; los mapeamos a los 3 roles del front.
-// Tolerante a variantes (es/en, singular/plural). Default: paciente.
 const resolveRole = (roles: CoreRole[] = []): UserRole => {
   const names = roles.map(r => (r.name ?? '').toLowerCase());
   const has = (...keys: string[]) => names.some(n => keys.some(k => n.includes(k)));
@@ -36,8 +32,6 @@ const ROLE_LABEL: Record<UserRole, string> = {
   [USER_TYPE.ADMINISTRATIVE]: 'Administración',
 };
 
-// El login del Core no devuelve el rol; lo obtenemos consultando el usuario.
-// Best-effort: si falla, no bloqueamos el login (queda como paciente).
 const fetchUserRole = async (userId: number, token: string): Promise<UserRole> => {
   try {
     const { data } = await axios.get<CoreUser>(`${ENV.CORE_BASE_URL}/users/${userId}`, {
@@ -68,13 +62,60 @@ const mockLogin = async (body: AuthLoginRequest): Promise<AuthLoginResponse> => 
   };
 };
 
+export const DEV_USERS: AuthLoginResponse[] = [
+  {
+    id: '18',
+    dni: '',
+    access_token: 'dev-token-paciente',
+    refresh_token: 'dev-token-paciente',
+    email: 'benjamin.ruiz@mock.com',
+    role: USER_TYPE.PATIENT,
+    name: 'Benjamín Ruiz',
+    subtitle: 'Paciente',
+    lat: '-34.607548',
+    lng: '-58.426964',
+  },
+  {
+    id: '19',
+    dni: '',
+    access_token: 'dev-token-profesional',
+    refresh_token: 'dev-token-profesional',
+    email: 'medico@mock.com',
+    role: USER_TYPE.PROFESSIONAL,
+    name: 'Dr. Dev Profesional',
+    subtitle: 'Profesional',
+    lat: '-34.607548',
+    lng: '-58.426964',
+  },
+  {
+    id: '20',
+    dni: '',
+    access_token: 'dev-token-administrativo',
+    refresh_token: 'dev-token-administrativo',
+    email: 'admin@mock.com',
+    role: USER_TYPE.ADMINISTRATIVE,
+    name: 'Admin Dev',
+    subtitle: 'Administración',
+    lat: '-34.607548',
+    lng: '-58.426964',
+  },
+];
+
+const devLogin = async (body: AuthLoginRequest): Promise<AuthLoginResponse | null> => {
+  await new Promise(a => setTimeout(a, 50));
+  const user = DEV_USERS.find(u => u.email === body.identifier && body.password === '1234');
+  return user ?? null;
+};
+
 export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginResponse> => {
   if (isMockEnabled()) return mockLogin(body);
 
-  // ─── Modo real: autenticación contra el Core (módulo 10) ───────────────────
+  const devUser = await devLogin(body);
+  if (devUser) return devUser;
+
   try {
     const { data } = await axios.post<CoreAuthResponse>(`${ENV.CORE_BASE_URL}/auth/login`, {
-      email: body.identifier, // el form del login envía el email como "identifier"
+      email: body.identifier,
       password: body.password,
     });
 
@@ -83,16 +124,13 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
 
     return {
       id: `${data.user.id}`,
-      dni: '', // el Core no maneja DNI (login por email)
+      dni: '',
       access_token: data.token,
-      // El Core no devuelve refresh en el login (existe /auth/refresh aparte).
-      // Reutilizamos el token para que el interceptor de axios tenga algo válido.
       refresh_token: data.token,
       email: data.user.email,
       role,
       name,
       subtitle: ROLE_LABEL[role],
-      // lat/lng las resuelve el navegador en la pantalla de login (geolocalización).
       lat: '',
       lng: '',
     };

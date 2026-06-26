@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES, USER_TYPE } from '@/constants';
 import { cn } from '@/lib/utils';
 import { MOCK_LATITUDES, MOCK_USERS } from '@/mocks/auth-mock';
-import { authLogin } from '@/services/auth';
+import { DEV_USERS, authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 import { useMockStore } from '@/stores/mock.store';
 
@@ -102,15 +102,22 @@ export default function Page() {
   };
 
   const handleQuickAccess = (role: UserRole) => {
-    let user: (typeof MOCK_USERS)[0];
-    if (role === USER_TYPE.PATIENT) {
-      user = MOCK_USERS.find(u => u.role === USER_TYPE.PATIENT && u.id === '4')!;
+    if (mockEnabled) {
+      // Modo mock: usar MOCK_USERS (en memoria, sin backend)
+      const user =
+        role === USER_TYPE.PATIENT
+          ? MOCK_USERS.find(u => u.role === USER_TYPE.PATIENT && u.id === '4')!
+          : MOCK_USERS.find(u => u.role === role)!;
+      setEmail(user.email);
+      setPassword(user.password);
+      doLogin(user.email, user.password);
     } else {
-      user = MOCK_USERS.find(u => u.role === role)!;
+      // Modo real: usar DEV_USERS (IDs reales de la DB)
+      const user = DEV_USERS.find(u => u.role === role)!;
+      setEmail(user.email);
+      setPassword('1234');
+      doLogin(user.email, '1234');
     }
-    setEmail(user.email);
-    setPassword(user.password);
-    doLogin(user.email, user.password);
   };
 
   return (
