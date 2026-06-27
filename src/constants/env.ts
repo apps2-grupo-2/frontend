@@ -2,8 +2,9 @@ export const ENV = {
   // Backend propio (modulo 2 - turnos): turnos, especialidades, centros medicos, notificaciones.
   BASE_URL: 'https://dev.solefrancisco.com/apps2/api/v1',
   // Backend del grupo Core (modulo 10): autenticacion y gestion de usuarios.
-  // Login por email + contrasena -> { token, user }. Ver doc del core (SwaggerHub uade-0e3/core).
-  CORE_BASE_URL: 'https://daii.nicopenaloza.com',
+  // Login por email + contrasena -> { token, user }. Server de produccion segun swagger del core.
+  // (daii.nicopenaloza.com es el de dev/staging si hace falta alternar.)
+  CORE_BASE_URL: 'https://api.healthcare.cantero.ar',
   MOCK_BASE_URL: 'http://localhost:3000',
   // Activar para trabajar con todo mockeado en memoria (sin backend).
   // Poner en false para consumir los backends reales (propio + core).

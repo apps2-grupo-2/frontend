@@ -1,29 +1,16 @@
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, ClipboardList, Eye, EyeOff, Lock, Stethoscope, User } from 'lucide-react';
+import { Activity, AtSign, Eye, EyeOff, Lock, User } from 'lucide-react';
 
-import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ROUTES, USER_TYPE } from '@/constants';
+import { ROUTES } from '@/constants';
 import { cn } from '@/lib/utils';
-import { MOCK_LATITUDES, MOCK_USERS } from '@/mocks/auth-mock';
-import { DEV_USERS, authLogin } from '@/services/auth';
+import { MOCK_LATITUDES } from '@/mocks/auth-mock';
+import { authRegister } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 import { useMockStore } from '@/stores/mock.store';
-
-const ROLE_HOME: Record<UserRole, string> = {
-  [USER_TYPE.PATIENT]: ROUTES.TURNOS,
-  [USER_TYPE.PROFESSIONAL]: ROUTES.AGENDA_PROFESIONAL,
-  [USER_TYPE.ADMINISTRATIVE]: ROUTES.PRESENTISMO,
-};
-
-const ROLE_QUICK_ACCESS = [
-  { role: USER_TYPE.PATIENT, label: 'Paciente', icon: User, color: 'text-primary' },
-  { role: USER_TYPE.PROFESSIONAL, label: 'Profesional', icon: Stethoscope, color: 'text-success' },
-  { role: USER_TYPE.ADMINISTRATIVE, label: 'Administrativo', icon: ClipboardList, color: 'text-amber-600' },
-];
 
 const stats = [
   { value: '48k+', label: 'Pacientes activos' },
@@ -59,26 +46,40 @@ export default function Page() {
   const mockEnabled = useMockStore(s => s.enabled);
   const toggleMock = useMockStore(s => s.toggle);
 
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = (e: SyntheticEvent) => {
+  const handleRegister = async (e: SyntheticEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setError('Ingresá tu email y contraseña para continuar.');
+    setError('');
+
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password) {
+      setError('Completá todos los campos para continuar.');
       return;
     }
-    doLogin(email, password);
-  };
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
 
-  const doLogin = async (identifier: string, pass: string) => {
-    setError('');
     setLoading(true);
     try {
-      const res = await authLogin({ identifier, password: pass });
+      const res = await authRegister({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
+        password,
+      });
       const autoLocation = await getGeolocation();
       const location = getMockLocation(autoLocation);
       authStore.setAuth({
@@ -93,35 +94,17 @@ export default function Page() {
         lat: location.lat,
         lng: location.lng,
       });
-      navigate(ROLE_HOME[res.role], { replace: true });
-    } catch {
-      setError('Email o contraseña incorrectos.');
+      // Autoregistro = paciente -> va al listado de turnos.
+      navigate(ROUTES.TURNOS, { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo crear la cuenta.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickAccess = (role: UserRole) => {
-    if (mockEnabled) {
-      // Modo mock: usar MOCK_USERS (en memoria, sin backend)
-      const user =
-        role === USER_TYPE.PATIENT
-          ? MOCK_USERS.find(u => u.role === USER_TYPE.PATIENT && u.id === '4')!
-          : MOCK_USERS.find(u => u.role === role)!;
-      setEmail(user.email);
-      setPassword(user.password);
-      doLogin(user.email, user.password);
-    } else {
-      // Modo real: usar DEV_USERS (IDs reales de la DB)
-      const user = DEV_USERS.find(u => u.role === role)!;
-      setEmail(user.email);
-      setPassword('1234');
-      doLogin(user.email, '1234');
-    }
-  };
-
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex min-h-screen bg-background">
       {/* Left panel */}
       <div className="hidden w-2/5 flex-col justify-between bg-sidebar p-10 lg:flex">
         <div className="flex items-center gap-3">
@@ -133,11 +116,10 @@ export default function Page() {
 
         <div className="space-y-6">
           <p className="font-heading text-4xl leading-tight font-bold text-balance text-sidebar-foreground">
-            Tu salud, en la palma de tu mano.
+            Creá tu cuenta y empezá a gestionar tu salud.
           </p>
           <p className="text-sm leading-relaxed text-sidebar-foreground/60">
-            Accedé a tus turnos, resultados de laboratorio, recetas y teleconsultas médicas desde un solo portal seguro
-            y unificado.
+            Reservá turnos, accedé a tus resultados y a tu historia clínica desde un solo portal seguro y unificado.
           </p>
           <div className="grid grid-cols-2 gap-3">
             {stats.map(({ value, label }, i) => (
@@ -156,7 +138,7 @@ export default function Page() {
       </div>
 
       {/* Right panel */}
-      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
         <div className="mb-10 flex items-center gap-3 lg:hidden">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
             <Activity className="h-5 w-5 text-primary-foreground" />
@@ -165,39 +147,18 @@ export default function Page() {
         </div>
 
         <Card className="w-full max-w-md animate-in border-border shadow-none duration-300 fill-mode-both fade-in slide-in-from-bottom-4">
-          <CardContent className="p-6">
-            <div className="mb-5">
-              <h1 className="font-heading text-2xl font-bold text-foreground">Iniciar sesión</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Accedé al portal con tu email.</p>
-            </div>
-
-            {/* Acceso rápido (solo en entorno de desarrollo/mock) */}
-            <div className="mb-4 rounded-lg border border-dashed border-border bg-muted/30 p-3">
-              <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Acceso rápido · Demo
-              </p>
-              <div className="flex gap-2">
-                {ROLE_QUICK_ACCESS.map(({ role, label, icon: Icon, color }) => (
-                  <button
-                    key={role}
-                    type="button"
-                    disabled={loading}
-                    onClick={() => handleQuickAccess(role)}
-                    className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2.5 text-xs transition-all hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm active:scale-[0.97] active:bg-primary/10 disabled:opacity-50"
-                  >
-                    <Icon className={`h-4 w-4 ${color}`} />
-                    <span className="font-medium text-foreground">{label}</span>
-                  </button>
-                ))}
-              </div>
+          <CardContent className="p-8">
+            <div className="mb-8">
+              <h1 className="font-heading text-2xl font-bold text-foreground">Crear cuenta</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Registrate como paciente para reservar turnos.</p>
             </div>
 
             {/* Toggle modo mock (turnos/pacientes en memoria, sin backend) */}
-            <div className="mb-4 flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
+            <div className="mb-6 flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
               <div>
                 <p className="text-xs font-semibold text-foreground">Modo mock</p>
                 <p className="text-xs text-muted-foreground">
-                  {mockEnabled ? 'Turnos y pacientes en memoria' : 'Usando el backend real'}
+                  {mockEnabled ? 'Cuenta en memoria, sin backend' : 'Usando el backend real'}
                 </p>
               </div>
               <button
@@ -220,13 +181,47 @@ export default function Page() {
               </button>
             </div>
 
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">o ingresá con tus credenciales</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
+            <form onSubmit={handleRegister} className="space-y-5">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className="mb-2 block text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                  >
+                    Nombre
+                  </label>
+                  <div className="relative">
+                    <User className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="firstName"
+                      type="text"
+                      className="w-full rounded-lg border border-input bg-background py-3 pr-4 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
+                      placeholder="Nombre"
+                      value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                      autoComplete="given-name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className="mb-2 block text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                  >
+                    Apellido
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
+                    placeholder="Apellido"
+                    value={lastName}
+                    onChange={e => setLastName(e.target.value)}
+                    autoComplete="family-name"
+                  />
+                </div>
+              </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label
                   htmlFor="email"
@@ -235,12 +230,12 @@ export default function Page() {
                   Email
                 </label>
                 <div className="relative">
-                  <User className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors" />
+                  <AtSign className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
                     id="email"
                     type="email"
                     className="w-full rounded-lg border border-input bg-background py-3 pr-4 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
-                    placeholder="Ingresá tu email"
+                    placeholder="tu@email.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     autoComplete="email"
@@ -256,15 +251,15 @@ export default function Page() {
                   Contraseña
                 </label>
                 <div className="relative">
-                  <Lock className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors" />
+                  <Lock className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     className="w-full rounded-lg border border-input bg-background py-3 pr-10 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
-                    placeholder="Contraseña"
+                    placeholder="Mínimo 6 caracteres"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -277,6 +272,27 @@ export default function Page() {
                 </div>
               </div>
 
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="mb-2 block text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                >
+                  Repetir contraseña
+                </label>
+                <div className="relative">
+                  <Lock className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="confirmPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    className="w-full rounded-lg border border-input bg-background py-3 pr-4 pl-10 text-sm text-foreground transition-[border-color,box-shadow] outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
+                    placeholder="Repetí tu contraseña"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                </div>
+              </div>
+
               {error && (
                 <p className="animate-in rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive duration-200 fill-mode-both fade-in">
                   {error}
@@ -285,38 +301,28 @@ export default function Page() {
 
               <Button
                 type="submit"
-                className="h-11 w-full bg-primary text-sm font-semibold text-primary-foreground hover:bg-secondary"
+                className="h-12 w-full bg-primary text-sm font-semibold text-primary-foreground hover:bg-secondary"
                 disabled={loading}
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" />
-                    Ingresando...
+                    Creando cuenta...
                   </span>
                 ) : (
-                  'Ingresar al portal'
+                  'Crear cuenta'
                 )}
               </Button>
             </form>
 
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center text-sm text-muted-foreground">
+              ¿Ya tenés cuenta?{' '}
               <button
                 type="button"
-                onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
-                className="text-sm text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]"
-              >
-                ¿Olvidaste tu contraseña?
-              </button>
-            </div>
-
-            <div className="mt-2 text-center text-sm text-muted-foreground">
-              ¿No tenés cuenta?{' '}
-              <button
-                type="button"
-                onClick={() => navigate(ROUTES.REGISTER)}
+                onClick={() => navigate(ROUTES.LOGIN)}
                 className="font-medium text-accent underline-offset-4 transition-all hover:text-accent/80 hover:underline active:scale-[0.97]"
               >
-                Registrate
+                Iniciá sesión
               </button>
             </div>
           </CardContent>

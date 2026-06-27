@@ -7,6 +7,28 @@ export type AuthLoginRequest = {
   password: string;
 };
 
+export type AuthRegisterRequest = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+};
+
+export type AuthForgotPasswordRequest = {
+  email: string;
+};
+
+export type AuthResetPasswordRequest = {
+  email: string;
+  code: string;
+  new_password: string;
+};
+
+export type AuthVerifyAccountRequest = {
+  token: string;
+  password: string;
+};
+
 export type AuthLoginResponse = {
   id: string;
   dni: string;

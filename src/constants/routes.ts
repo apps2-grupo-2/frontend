@@ -1,5 +1,8 @@
 export const ROUTES = {
   LOGIN: '/login',
+  REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  VERIFY_ACCOUNT: '/verify-account',
   TURNOS: '/turnos',
   SOLICITAR_TURNOS: '/solicitar-turnos',
   AGENDA_PROFESIONAL: '/agenda-profesional',
