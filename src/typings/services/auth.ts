@@ -29,6 +29,12 @@ export type AuthVerifyAccountRequest = {
   password: string;
 };
 
+// Canje de ticket SSO del core: el navegador entrega el ticket efímero
+// (un solo uso, ~60s) y el core devuelve { user, token } (JWT).
+export type AuthSsoExchangeRequest = {
+  ticket: string;
+};
+
 export type AuthLoginResponse = {
   id: string;
   dni: string;

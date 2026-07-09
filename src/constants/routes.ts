@@ -3,6 +3,7 @@ export const ROUTES = {
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   VERIFY_ACCOUNT: '/verify-account',
+  SSO: '/auth/sso',
   TURNOS: '/turnos',
   SOLICITAR_TURNOS: '/solicitar-turnos',
   AGENDA_PROFESIONAL: '/agenda-profesional',

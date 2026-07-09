@@ -24,9 +24,11 @@ describe('getCalendarDays', () => {
     }
   });
 
-  it('should return between 22 and 23 weekdays', () => {
+  it('should return between 21 and 23 weekdays', () => {
+    // En una ventana de 31 días corridos hay 8, 9 o 10 días de fin de semana
+    // según en qué día caiga el arranque, así que los hábiles van de 21 a 23.
     const days = getCalendarDays();
-    expect(days.length).toBeGreaterThanOrEqual(22);
+    expect(days.length).toBeGreaterThanOrEqual(21);
     expect(days.length).toBeLessThanOrEqual(23);
   });
 

@@ -308,3 +308,30 @@ export const verifyAccount = async (body: AuthVerifyAccountRequest): Promise<Aut
     throw new Error('No se pudo activar la cuenta');
   }
 };
+
+// SSO entre módulos de Health Grid: el usuario llega a /auth/sso con un ticket
+// efímero (un solo uso, ~60s) emitido por el core. Como el módulo 2 es una SPA
+// sin backend de auth propio, el canje se hace desde el navegador contra el
+// endpoint público POST /auth/sso-exchange (variante SPA de la guía del core).
+// Reutilizamos fetchUserRole para resolver el rol, igual que en el login normal.
+export const establishSessionFromTicket = async (ticket: string): Promise<AuthLoginResponse> => {
+  if (isMockEnabled()) {
+    await new Promise(a => setTimeout(a, 50));
+    return DEV_USERS[0];
+  }
+  try {
+    const { data } = await axios.post<CoreAuthResponse>(`${ENV.CORE_BASE_URL}/auth/sso-exchange`, { ticket });
+    const role = await fetchUserRole(data.user.id, data.token);
+    const name = `${data.user.first_name ?? ''} ${data.user.last_name ?? ''}`.trim();
+    return {
+      id: `${data.user.id}`, dni: '', access_token: data.token, refresh_token: data.token,
+      email: data.user.email, role, name, subtitle: ROLE_LABEL[role], lat: '', lng: '',
+    };
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response?.status === 401) {
+      throw new Error('El enlace de acceso expiró o ya fue usado. Iniciá sesión nuevamente.');
+    }
+    console.warn('ERROR ON: establishSessionFromTicket (core)', err);
+    throw new Error('No se pudo completar el ingreso automático (SSO)');
+  }
+};
