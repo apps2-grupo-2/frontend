@@ -60,8 +60,7 @@ export default function Page() {
         </p>
         <h1 className="font-heading text-2xl font-bold text-balance text-foreground sm:text-3xl">Crear turno</h1>
         <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-          Paciente:{' '}
-          <span className="font-medium text-foreground">{patientInfo.fullname}</span>
+          Paciente: <span className="font-medium text-foreground">{patientInfo.fullname}</span>
         </p>
       </div>
 
@@ -86,7 +85,9 @@ const PatientForm = ({ onConfirm }: PatientFormProps) => {
   const [emailSearch, setEmailSearch] = useState('');
   const { data: results = [], isFetching } = useGetPatientsSearch(emailSearch);
 
-  const match = results.find(r => r.subtitle.toLowerCase().startsWith(emailSearch.toLowerCase())) ?? (results.length === 1 ? results[0] : null);
+  const match =
+    results.find(r => r.subtitle.toLowerCase().startsWith(emailSearch.toLowerCase())) ??
+    (results.length === 1 ? results[0] : null);
 
   return (
     <div className="flex flex-col gap-5">
@@ -109,9 +110,7 @@ const PatientForm = ({ onConfirm }: PatientFormProps) => {
             </div>
           </div>
 
-          {isFetching && (
-            <p className="text-xs text-muted-foreground animate-pulse">Buscando paciente...</p>
-          )}
+          {isFetching && <p className="text-xs text-muted-foreground animate-pulse">Buscando paciente...</p>}
 
           {!isFetching && emailSearch.length >= 2 && !match && (
             <p className="text-xs text-destructive">No se encontró ningún paciente con ese email.</p>
@@ -165,8 +164,9 @@ const AdminTurnosStep = (props: UseAppointmentsData) => {
 const AdminSuccess = (props: UseAppointmentsData) => {
   const { metadata } = props;
   const navigate = useNavigate();
-  const { specialtyLabel, professionalLabel, medicalCenterLabel, dateLabel, rangeTimeLabel } =
-    useAppointmentLabels(metadata.payload);
+  const { specialtyLabel, professionalLabel, medicalCenterLabel, dateLabel, rangeTimeLabel } = useAppointmentLabels(
+    metadata.payload
+  );
 
   const patientName = metadata.payload.patient?.fullname ?? '—';
 
@@ -209,7 +209,9 @@ const AdminSuccess = (props: UseAppointmentsData) => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Especialidad · Centro médico</p>
-                <p className="text-sm font-semibold text-foreground">{specialtyLabel} · {medicalCenterLabel}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {specialtyLabel} · {medicalCenterLabel}
+                </p>
               </div>
             </div>
 
@@ -219,7 +221,9 @@ const AdminSuccess = (props: UseAppointmentsData) => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Fecha y horario</p>
-                <p className="text-sm font-semibold capitalize text-foreground">{dateLabel} · {rangeTimeLabel} hs</p>
+                <p className="text-sm font-semibold capitalize text-foreground">
+                  {dateLabel} · {rangeTimeLabel} hs
+                </p>
               </div>
             </div>
           </div>

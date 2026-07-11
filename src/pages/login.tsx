@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES, USER_TYPE } from '@/constants';
 import { cn } from '@/lib/utils';
 import { MOCK_LATITUDES, MOCK_USERS } from '@/mocks/auth-mock';
-import { DEV_USERS, authLogin } from '@/services/auth';
+import { authLogin, DEV_USERS } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 import { useMockStore } from '@/stores/mock.store';
 

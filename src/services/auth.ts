@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import type { MockUser } from '@/mocks/auth-mock';
 import type {
   AuthLoginRequest,
   AuthLoginResponse,
@@ -8,7 +9,6 @@ import type {
   AuthVerifyAccountRequest,
   UserRole,
 } from '@/typings/services/auth';
-import type { MockUser } from '@/mocks/auth-mock';
 import { ENV, USER_TYPE } from '@/constants';
 import { MOCK_USERS, MOCK_USERS_PATIENTS } from '@/mocks/auth-mock';
 import { isMockEnabled } from '@/stores/mock.store';
@@ -324,8 +324,16 @@ export const establishSessionFromTicket = async (ticket: string): Promise<AuthLo
     const role = await fetchUserRole(data.user.id, data.token);
     const name = `${data.user.first_name ?? ''} ${data.user.last_name ?? ''}`.trim();
     return {
-      id: `${data.user.id}`, dni: '', access_token: data.token, refresh_token: data.token,
-      email: data.user.email, role, name, subtitle: ROLE_LABEL[role], lat: '', lng: '',
+      id: `${data.user.id}`,
+      dni: '',
+      access_token: data.token,
+      refresh_token: data.token,
+      email: data.user.email,
+      role,
+      name,
+      subtitle: ROLE_LABEL[role],
+      lat: '',
+      lng: '',
     };
   } catch (err) {
     if (axios.isAxiosError(err) && err.response?.status === 401) {

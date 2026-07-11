@@ -37,7 +37,9 @@ const MEDIC = { id: 2, fullname: 'Fernandez Juan Pablo', email: 'jfernandez@heal
 // Paciente principal (coincide con el acceso rápido "Paciente" → id 4).
 const PATIENT = { id: 4, fullname: 'López Martín Andrés', email: 'martin.lopez@email.com' };
 
-const baseAppointment = (overrides: Partial<Appointment> & Pick<Appointment, 'id' | 'status' | 'starts_at'>): Appointment => ({
+const baseAppointment = (
+  overrides: Partial<Appointment> & Pick<Appointment, 'id' | 'status' | 'starts_at'>
+): Appointment => ({
   ends_at: fmt(addHours(new Date(overrides.starts_at.replace(' ', 'T')), 1)),
   confirmed_at: null,
   absent_at: null,
@@ -210,13 +212,10 @@ export const mockCheckInAppointment = async (id: number) => {
 
 // Crea un turno en memoria a partir del request del wizard y lo agrega al store,
 // de modo que aparezca luego en los listados mockeados.
-export const mockCreateAppointment = async (
-  data: CreateAppointmentRequest
-): Promise<CreateAppointmentResponse> => {
+export const mockCreateAppointment = async (data: CreateAppointmentRequest): Promise<CreateAppointmentResponse> => {
   await new Promise(r => setTimeout(r, 120));
   const nextId = store.reduce((max, a) => Math.max(max, a.id), 0) + 1;
-  const matchedSpeciality =
-    SPECIALITIES.find(s => s.id === data.appointment.speciality_id) ?? SPECIALITIES[0];
+  const matchedSpeciality = SPECIALITIES.find(s => s.id === data.appointment.speciality_id) ?? SPECIALITIES[0];
   store.push(
     baseAppointment({
       id: nextId,

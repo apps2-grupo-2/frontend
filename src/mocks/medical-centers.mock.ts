@@ -17,9 +17,7 @@ const CENTERS: Array<{ id: number; name: string; city: string; distance_km: numb
   { id: 5, name: 'Hospital del Este', city: 'San Isidro', distance_km: 9.6 },
 ];
 
-export const mockGetMedicalCenters = async (
-  params: MedicalCentersRequest
-): Promise<MedicalCenterOptionsResponse> => {
+export const mockGetMedicalCenters = async (params: MedicalCentersRequest): Promise<MedicalCenterOptionsResponse> => {
   await new Promise(r => setTimeout(r, 60));
   const ordered =
     params.sort_by === 'name'
