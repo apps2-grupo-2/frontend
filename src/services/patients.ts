@@ -1,15 +1,12 @@
 import type { GetPatientsResponse } from '@/typings/services';
 import { MOCK_USERS_PATIENTS } from '@/mocks/auth-mock';
-import { isMockEnabled } from '@/stores/mock.store';
 import { coreFullName, fetchAllCoreUsers } from '@/services/core-users';
+import { isMockEnabled } from '@/stores/mock.store';
 
 const getPatientsSearchMock = async (search: string): Promise<GetPatientsResponse> => {
   await new Promise(a => setTimeout(a, 300));
   const patientsFiltered = MOCK_USERS_PATIENTS.filter(({ name, email }) => {
-    return (
-      email.toLowerCase().includes(search.toLowerCase()) ||
-      name.toLowerCase().includes(search.toLowerCase())
-    );
+    return email.toLowerCase().includes(search.toLowerCase()) || name.toLowerCase().includes(search.toLowerCase());
   });
   return patientsFiltered.map(a => ({
     value: a.id.toString(),

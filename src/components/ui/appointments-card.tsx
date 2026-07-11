@@ -40,7 +40,7 @@ export const canConfirmAppointment = (appointment: AppointmentCardProps['appoint
 };
 
 export const AppointmentCard = (props: AppointmentCardProps) => {
-  const { appointment, isLoading, onCancel, onConfirm, onReschedule } = props;
+  const { appointment, onCancel, onConfirm, onReschedule } = props;
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isConfirmTurnDialogOpen, setIsConfirmTurnDialogOpen] = useState(false);
 

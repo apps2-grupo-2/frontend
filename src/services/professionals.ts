@@ -1,7 +1,7 @@
 import type { ProfessionalsResponse } from '@/typings/services';
 import { professionalsMock } from '@/mocks/professionals.mock';
-import { isMockEnabled } from '@/stores/mock.store';
 import { coreFullName, fetchCoreUsersDetailed, isProfessional } from '@/services/core-users';
+import { isMockEnabled } from '@/stores/mock.store';
 
 const getProfessionalsMock = async (specialtyId: string): Promise<ProfessionalsResponse> => {
   await new Promise(a => setTimeout(a, 50));

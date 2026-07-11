@@ -93,7 +93,7 @@ export const FormContent = (props: FormContentProps) => {
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid size={{ xs: 12, sm: 6 }} className="max-w-[650px]">
           <RhfCalendar
             control={form.control}
             name="date"

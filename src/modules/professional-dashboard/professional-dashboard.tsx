@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format, isBefore } from 'date-fns';
-import { Clock, User } from 'lucide-react';
+import { AlertCircle, Clock, User } from 'lucide-react';
 
 import type { SlotCardProps } from '@/typings/modules/professional-dashboard';
 import type { GetAppointmentsRequest } from '@/typings/services';
