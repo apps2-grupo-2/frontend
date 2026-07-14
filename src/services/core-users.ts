@@ -41,15 +41,6 @@ const authHeaders = (): Record<string, string> => {
 export const coreFullName = (u: CoreUser): string =>
   `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() || (u.email ?? `#${u.id}`);
 
-// Mismo criterio por substring que usa authLogin para resolver el rol.
-const PROFESSIONAL_KEYS = ['medic', 'médic', 'doctor', 'profesional', 'professional'];
-
-export const isProfessional = (roles: CoreRole[] = []): boolean =>
-  roles.some(r => {
-    const name = (r.name ?? '').toLowerCase();
-    return PROFESSIONAL_KEYS.some(k => name.includes(k));
-  });
-
 /** Trae todos los usuarios del Core paginando GET /users. */
 export const fetchAllCoreUsers = async (): Promise<CoreUser[]> => {
   const url = `${ENV.CORE_BASE_URL}/users`;
@@ -77,28 +68,4 @@ export const fetchAllCoreUsers = async (): Promise<CoreUser[]> => {
   }
 
   return users;
-};
-
-/**
- * Igual que fetchAllCoreUsers pero garantiza roles[] y specialities[].
- * Si el listado no los embebe, completa con GET /users/{id} solo para
- * los que falten. Necesario para filtrar profesionales por especialidad.
- */
-export const fetchCoreUsersDetailed = async (): Promise<CoreUser[]> => {
-  const users = await fetchAllCoreUsers();
-  const needsDetail = users.some(u => u.roles === undefined || u.specialities === undefined);
-  if (!needsDetail) return users;
-
-  const headers = authHeaders();
-  return Promise.all(
-    users.map(async u => {
-      if (u.roles !== undefined && u.specialities !== undefined) return u;
-      try {
-        const { data } = await axios.get<CoreUser>(`${ENV.CORE_BASE_URL}/users/${u.id}`, { headers });
-        return { ...u, ...data };
-      } catch {
-        return u;
-      }
-    })
-  );
 };

@@ -26,11 +26,18 @@ type CoreAuthResponse = {
 type CoreRole = { id: number; name: string };
 type CoreUser = { id: number; roles?: CoreRole[] };
 
+// Ids de rol del core (Francisco, 13/07/2026): el backend de turnos valida
+// medico = rol id 2 y paciente = rol id 10. Los usamos como señal primaria y
+// caemos al match por nombre si el core devolviera otros ids.
+const ROLE_ID = { PROFESSIONAL: 2, PATIENT: 10 } as const;
+
 const resolveRole = (roles: CoreRole[] = []): UserRole => {
+  const ids = roles.map(r => r.id);
   const names = roles.map(r => (r.name ?? '').toLowerCase());
   const has = (...keys: string[]) => names.some(n => keys.some(k => n.includes(k)));
   if (has('admin', 'recep', 'staff', 'administrativo')) return USER_TYPE.ADMINISTRATIVE;
-  if (has('medic', 'médic', 'doctor', 'profesional', 'professional')) return USER_TYPE.PROFESSIONAL;
+  if (ids.includes(ROLE_ID.PROFESSIONAL) || has('medic', 'médic', 'doctor', 'profesional', 'professional'))
+    return USER_TYPE.PROFESSIONAL;
   return USER_TYPE.PATIENT;
 };
 

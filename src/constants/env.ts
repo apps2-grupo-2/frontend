@@ -13,5 +13,6 @@ export const ENV = {
   // Activar para trabajar con todo mockeado en memoria (sin backend).
   // Poner en false para consumir los backends reales (propio + core).
   // En runtime se puede alternar desde el switch del login (useMockStore).
-  USE_MOCKS: true,
+  // Entrega final: arranca en REAL; el switch del login permite ir a mock.
+  USE_MOCKS: false,
 } as const;
