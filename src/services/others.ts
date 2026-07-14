@@ -4,7 +4,7 @@ import type { ModulesResponse } from '@/typings/services';
 
 export const getModules = async (): Promise<ModulesResponse> => {
   try {
-    const url = 'http://da2.mattalbarenque.workers.dev/modules';
+    const url = 'https://da2.mattalbarenque.workers.dev/modules';
     const response = await axios.get<ModulesResponse>(url);
     return response.data;
   } catch (err) {

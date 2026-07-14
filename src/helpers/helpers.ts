@@ -1,5 +1,7 @@
 import { format } from 'date-fns/format';
 
+import { parseApiDate } from '@/helpers/dates';
+
 export const getUserInitials = (name: string | null | undefined): string => {
   if (!name) return '?';
   return name
@@ -9,6 +11,6 @@ export const getUserInitials = (name: string | null | undefined): string => {
     .join('');
 };
 export const formatDateTime = (dateTime: string) => {
-  const date = new Date(dateTime);
+  const date = parseApiDate(dateTime);
   return format(date, 'dd/MM/yyyy HH:mm:ss');
 };

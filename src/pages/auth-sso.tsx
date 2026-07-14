@@ -5,8 +5,7 @@ import { Activity, AlertTriangle } from 'lucide-react';
 import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ROUTES, USER_TYPE } from '@/constants';
-import { MOCK_LATITUDES } from '@/mocks/auth-mock';
+import { DEFAULT_GEO, ROUTES, USER_TYPE } from '@/constants';
 import { establishSessionFromTicket } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -26,8 +25,7 @@ const getGeolocation = (): Promise<{ lat: string; lng: string } | null> =>
     );
   });
 
-const getMockLocation = (loc: { lat: string; lng: string } | null) =>
-  loc ?? MOCK_LATITUDES[Math.floor(Math.random() * MOCK_LATITUDES.length)];
+const resolveLocation = (loc: { lat: string; lng: string } | null) => loc ?? DEFAULT_GEO;
 
 /**
  * Sólo se permiten rutas internas absolutas (`/algo`). Se descartan URLs
@@ -78,7 +76,7 @@ export default function Page() {
     void (async () => {
       try {
         const res = await establishSessionFromTicket(ticket);
-        const location = getMockLocation(await getGeolocation());
+        const location = resolveLocation(await getGeolocation());
         authStore.setAuth({
           id: res.id,
           accessToken: res.access_token,

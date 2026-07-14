@@ -1,6 +1,7 @@
 import { addDays, addMinutes, format, isWeekend } from 'date-fns';
 
 import type { Appointment, OptionsResponse } from '@/typings/services';
+import { parseApiDate } from '@/helpers/dates';
 
 export const getCalendarDays = (): Date[] => {
   return Array.from({ length: 31 }, (_, i) => addDays(new Date(), i + 1)).filter(date => !isWeekend(date));
@@ -17,7 +18,7 @@ export const getRangeTimeAvailability = (appointments: Appointment[], date: stri
   const totalSlots = ((endHour - startHour) * 60) / intervalMinutes;
 
   return Array.from({ length: totalSlots }, (_, i) => {
-    const day = new Date(date);
+    const day = parseApiDate(date);
     const base = new Date(day.getFullYear(), day.getMonth(), day.getDate(), startHour, 0);
     const slotStart = addMinutes(base, i * intervalMinutes);
     const slotEnd = addMinutes(slotStart, intervalMinutes);

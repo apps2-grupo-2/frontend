@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ENV } from '@/constants';
+import { ENV, ROUTES } from '@/constants';
 import { useAuthStore } from '@/stores/auth.store';
 
 /**
@@ -33,3 +33,24 @@ axios.interceptors.request.use(config => {
   }
   return config;
 });
+
+/**
+ * Manejo de sesión vencida: si el backend propio responde 401 (JWT vencido o
+ * inválido), limpiamos la sesión y mandamos al login. Se scopea a ENV.BASE_URL
+ * para no interferir con los 401 de auth del core (login fallido, ticket SSO
+ * inválido), que se manejan localmente en sus pantallas.
+ */
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    const status = error?.response?.status;
+    const url: string | undefined = error?.config?.url;
+    if (status === 401 && isOwnBackend(url)) {
+      useAuthStore.getState().resetStore();
+      if (window.location.pathname !== ROUTES.LOGIN) {
+        window.location.assign(ROUTES.LOGIN);
+      }
+    }
+    return Promise.reject(error);
+  }
+);

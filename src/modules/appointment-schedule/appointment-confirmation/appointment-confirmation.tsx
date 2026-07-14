@@ -6,6 +6,7 @@ import type { StepProps } from '@/typings/modules/appointment-confirmation';
 import { Card, CardContent } from '@/components/ui/card';
 import { StepNavigation } from '@/components/ui/step-navigation';
 import { APPOINTMENTS_STEPS } from '@/constants';
+import { parseApiDate } from '@/helpers/dates';
 import { useCreateAppointment } from '@/hooks/use-appointments-data';
 import { useGetProfessionals } from '@/hooks/use-professionals-data';
 import { useAuthStore } from '@/stores/auth.store';
@@ -28,7 +29,7 @@ export const Appointment_Confirmation = (props: StepProps) => {
     e.preventDefault();
     setSubmitError(null);
     const { payload } = metadata;
-    const ends_at_with_30_minutes = addMinutes(new Date(payload.starts_at), 30);
+    const ends_at_with_30_minutes = addMinutes(parseApiDate(payload.starts_at), 30);
     const ends_at = format(ends_at_with_30_minutes, 'yyyy-MM-dd HH:mm:ss');
     const professional = professionals?.find(a => a.value === payload.professional_id);
 

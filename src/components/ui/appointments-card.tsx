@@ -6,6 +6,7 @@ import type { AppointmentCardProps, EmptyStateProps } from '@/typings/components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { APPOINTMENT_STATUSES } from '@/constants';
+import { parseApiDate } from '@/helpers/dates';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from './confirm-dialog';
 
@@ -24,9 +25,8 @@ const statusConfig: Record<
 };
 
 export const formatDate = (d: string) => {
-  const date = format(d, 'dd/MM/yyyy');
-  const time = format(d, 'HH:mm');
-  return `${date} a las ${time} hs`;
+  const date = parseApiDate(d);
+  return `${format(date, 'dd/MM/yyyy')} a las ${format(date, 'HH:mm')} hs`;
 };
 
 // El turno puede confirmarse desde que se creó hasta 24hs antes del starts_at.
@@ -34,8 +34,8 @@ const CONFIRM_DEADLINE_HOURS = 24;
 export const canConfirmAppointment = (appointment: AppointmentCardProps['appointment']) => {
   if (appointment.status !== APPOINTMENT_STATUSES.PENDING_CONFIRMATION) return false;
   const now = new Date();
-  const createdAt = new Date(appointment.created_at);
-  const deadline = new Date(new Date(appointment.starts_at).getTime() - CONFIRM_DEADLINE_HOURS * 60 * 60 * 1000);
+  const createdAt = parseApiDate(appointment.created_at);
+  const deadline = new Date(parseApiDate(appointment.starts_at).getTime() - CONFIRM_DEADLINE_HOURS * 60 * 60 * 1000);
   return now >= createdAt && now <= deadline;
 };
 
@@ -100,7 +100,7 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
                 <Button
                   size="sm"
                   className="text-xs"
-                  //disabled={!canConfirm || isLoading}
+                  disabled={!canConfirm}
                   title={canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'}
                   onClick={() => setIsConfirmTurnDialogOpen(true)}
                 >

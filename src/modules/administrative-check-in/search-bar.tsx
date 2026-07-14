@@ -13,7 +13,7 @@ export const SearchBar = (props: SearchBarProps) => {
       name="patientId"
       control={form.control}
       options={patients || []}
-      placeholder="Buscar por nombre del paciente, médico o N° de turno..."
+      placeholder="Buscar paciente por nombre o email..."
       onValueChange={setSearch}
       search={search}
       isFetching={isLoading}

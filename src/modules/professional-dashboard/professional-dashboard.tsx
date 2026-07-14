@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { APPOINTMENT_STATUSES } from '@/constants';
+import { parseApiDate } from '@/helpers/dates';
 import { useFinishAppointment, useGetAppointments, useStartAppointment } from '@/hooks/use-appointments-data';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth.store';
@@ -116,7 +117,7 @@ const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
     return (
       <div className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs bg-success/10 border-success/20 text-success">
         <Clock className="h-3 w-3 shrink-0" />
-        <span className="font-medium">{format(slot.starts_at, 'HH:mm')}</span>
+        <span className="font-medium">{format(parseApiDate(slot.starts_at), 'HH:mm')}</span>
         <span className="text-success/70">Disponible</span>
       </div>
     );
@@ -125,7 +126,7 @@ const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
   const colorClass = statusConfig[slot.status].className;
   const isCheckedIn = slot.status === APPOINTMENT_STATUSES.CHECKED_IN;
   const isInProgress = slot.status === APPOINTMENT_STATUSES.IN_PROGRESS;
-  const isSlotInFuture = isBefore(new Date(), new Date(slot.starts_at));
+  const isSlotInFuture = isBefore(new Date(), parseApiDate(slot.starts_at));
 
   return (
     <div className={cn('flex justify-between rounded-lg border px-3 py-2 text-xs', colorClass)}>
@@ -133,7 +134,7 @@ const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
         <div className="flex items-center gap-2">
           <Clock className="h-3 w-3 shrink-0" />
           <span className="font-semibold">
-            {format(slot.starts_at, 'HH:mm')} - {statusConfig[slot.status].label}
+            {format(parseApiDate(slot.starts_at), 'HH:mm')} - {statusConfig[slot.status].label}
           </span>
         </div>
         <div className="flex items-center gap-1.5 pl-5">

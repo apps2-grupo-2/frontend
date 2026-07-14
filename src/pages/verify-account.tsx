@@ -6,8 +6,7 @@ import { Activity, AlertTriangle, Eye, EyeOff, Lock } from 'lucide-react';
 import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ROUTES, USER_TYPE } from '@/constants';
-import { MOCK_LATITUDES } from '@/mocks/auth-mock';
+import { DEFAULT_GEO, ROUTES, USER_TYPE } from '@/constants';
 import { verifyAccount } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -31,8 +30,7 @@ const getGeolocation = (): Promise<{ lat: string; lng: string } | null> =>
     );
   });
 
-const getMockLocation = (loc: { lat: string; lng: string } | null) =>
-  loc ?? MOCK_LATITUDES[Math.floor(Math.random() * MOCK_LATITUDES.length)];
+const resolveLocation = (loc: { lat: string; lng: string } | null) => loc ?? DEFAULT_GEO;
 
 export default function Page() {
   const navigate = useNavigate();
@@ -65,7 +63,7 @@ export default function Page() {
     try {
       const res = await verifyAccount({ token, password });
       const autoLocation = await getGeolocation();
-      const location = getMockLocation(autoLocation);
+      const location = resolveLocation(autoLocation);
       authStore.setAuth({
         id: res.id,
         accessToken: res.access_token,

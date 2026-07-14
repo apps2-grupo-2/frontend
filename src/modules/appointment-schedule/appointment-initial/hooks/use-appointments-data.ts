@@ -4,12 +4,14 @@ import { format } from 'date-fns';
 
 import type { AppointmentInitialFormProps } from '@/typings/modules/appointment-initial';
 import type { GetAppointmentsRequest } from '@/typings/services';
+import { parseApiDate } from '@/helpers/dates';
 import { useGetAppointments } from '@/hooks/use-appointments-data';
 
 export const useGetAppointmentsData = (form: UseFormReturn<AppointmentInitialFormProps>) => {
   const watchedFields = useWatch({ control: form.control });
-  const since = watchedFields.date ? format(new Date(watchedFields.date), 'yyyy-MM-dd 09:00:00') : undefined;
-  const until = since ? format(since, 'yyyy-MM-dd 18:00:00') : undefined;
+  const baseDate = watchedFields.date ? parseApiDate(watchedFields.date) : undefined;
+  const since = baseDate ? format(baseDate, 'yyyy-MM-dd 09:00:00') : undefined;
+  const until = baseDate ? format(baseDate, 'yyyy-MM-dd 18:00:00') : undefined;
 
   const appointmentsDefaultParams: GetAppointmentsRequest = {
     since: since || '',

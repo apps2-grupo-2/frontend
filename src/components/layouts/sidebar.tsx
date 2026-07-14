@@ -96,7 +96,9 @@ const SidebarContent = () => {
     modules?.map(a => ({
       id: a.modulo,
       label: a.titulo,
-      icon: icons[Number(a.modulo) as keyof typeof icons],
+      // Fallback a un ícono genérico si el módulo no está en el mapa (evita
+      // que un id inesperado deje `icon` undefined y rompa el render).
+      icon: icons[Number(a.modulo) as keyof typeof icons] ?? Activity,
       url: a.url,
     })) ?? [];
 

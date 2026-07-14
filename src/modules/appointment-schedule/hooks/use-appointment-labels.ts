@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 
 import type { Payload } from '@/typings/hooks/use-appointments';
 import { PRIORITY_TYPES } from '@/constants';
+import { parseApiDate } from '@/helpers/dates';
 import { useMedicalCenterById } from '@/hooks/use-medical-centers-data';
 import { useGetProfessionals } from '@/hooks/use-professionals-data';
 import { useGetSpecialties } from '@/hooks/use-specialties-data';
@@ -28,8 +29,8 @@ export const useAppointmentLabels = (payload: Payload) => {
   const medicalCenterLabel = medicalCenter.data?.name || '';
 
   const priorityLabel = payload.priority === PRIORITY_TYPES.PROXIMITY ? 'Por cercanía' : 'Por primera disponibilidad';
-  const dateLabel = format(payload.starts_at, 'dd/MM/yyyy');
-  const rangeTimeLabel = format(payload.starts_at, 'HH:mm');
+  const dateLabel = payload.starts_at ? format(parseApiDate(payload.starts_at), 'dd/MM/yyyy') : '';
+  const rangeTimeLabel = payload.starts_at ? format(parseApiDate(payload.starts_at), 'HH:mm') : '';
 
   return { specialtyLabel, professionalLabel, medicalCenterLabel, priorityLabel, dateLabel, rangeTimeLabel };
 };

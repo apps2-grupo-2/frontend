@@ -5,12 +5,9 @@ import { Activity, AtSign, Eye, EyeOff, Lock, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ROUTES } from '@/constants';
-import { cn } from '@/lib/utils';
-import { MOCK_LATITUDES } from '@/mocks/auth-mock';
+import { DEFAULT_GEO, ROUTES } from '@/constants';
 import { authRegister } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
-import { useMockStore } from '@/stores/mock.store';
 
 const stats = [
   { value: '48k+', label: 'Pacientes activos' },
@@ -35,16 +32,11 @@ const getGeolocation = (): Promise<{ lat: string; lng: string } | null> =>
     );
   });
 
-const getMockLocation = (loc: { lat: string; lng: string } | null) => {
-  if (loc) return loc;
-  return MOCK_LATITUDES[Math.floor(Math.random() * MOCK_LATITUDES.length)];
-};
+const resolveLocation = (loc: { lat: string; lng: string } | null) => loc ?? DEFAULT_GEO;
 
 export default function Page() {
   const navigate = useNavigate();
   const authStore = useAuthStore();
-  const mockEnabled = useMockStore(s => s.enabled);
-  const toggleMock = useMockStore(s => s.toggle);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -80,8 +72,7 @@ export default function Page() {
         email: email.trim(),
         password,
       });
-      const autoLocation = await getGeolocation();
-      const location = getMockLocation(autoLocation);
+      const location = resolveLocation(await getGeolocation());
       authStore.setAuth({
         id: res.id,
         accessToken: res.access_token,
@@ -151,34 +142,6 @@ export default function Page() {
             <div className="mb-8">
               <h1 className="font-heading text-2xl font-bold text-foreground">Crear cuenta</h1>
               <p className="mt-1 text-sm text-muted-foreground">Registrate como paciente para reservar turnos.</p>
-            </div>
-
-            {/* Toggle modo mock (turnos/pacientes en memoria, sin backend) */}
-            <div className="mb-6 flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
-              <div>
-                <p className="text-xs font-semibold text-foreground">Modo mock</p>
-                <p className="text-xs text-muted-foreground">
-                  {mockEnabled ? 'Cuenta en memoria, sin backend' : 'Usando el backend real'}
-                </p>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={mockEnabled}
-                aria-label="Activar o desactivar el modo mock"
-                onClick={toggleMock}
-                className={cn(
-                  'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-                  mockEnabled ? 'bg-primary' : 'bg-input'
-                )}
-              >
-                <span
-                  className={cn(
-                    'inline-block h-5 w-5 transform rounded-full bg-background shadow transition-transform',
-                    mockEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                  )}
-                />
-              </button>
             </div>
 
             <form onSubmit={handleRegister} className="space-y-5">

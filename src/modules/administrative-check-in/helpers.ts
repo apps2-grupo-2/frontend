@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 
 import type { Appointment } from '@/typings/services';
 import { APPOINTMENT_STATUSES } from '@/constants';
+import { parseApiDate } from '@/helpers/dates';
 
 export const statusConfig: Record<
   (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES],
@@ -36,6 +37,6 @@ export const sortByCompletedLast = (appointments: Appointment[]) =>
   });
 
 export const formatDateTime = (dateTime: string) => {
-  const date = new Date(dateTime);
+  const date = parseApiDate(dateTime);
   return `${format(date, 'dd/MM/yyyy')} a las ${format(date, 'HH:mm')}`;
 };

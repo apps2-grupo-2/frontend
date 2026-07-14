@@ -1,7 +1,5 @@
 import type { OptionsResponse } from '@/typings/services';
-import { mockGetSpecialities } from '@/mocks/specialties.mock';
 import { getMedics } from '@/services/medics';
-import { isMockEnabled } from '@/stores/mock.store';
 
 /**
  * Especialidades derivadas del listado GET {BASE_URL}/medics, deduplicando por
@@ -10,8 +8,6 @@ import { isMockEnabled } from '@/stores/mock.store';
  * reservables y los ids coinciden exactos con los del POST /appointments.
  */
 export const getSpecialities = async (): Promise<OptionsResponse> => {
-  if (isMockEnabled()) return mockGetSpecialities();
-
   try {
     const medics = await getMedics();
     const byId = new Map<number, string>();

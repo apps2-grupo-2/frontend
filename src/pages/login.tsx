@@ -1,29 +1,20 @@
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, ClipboardList, Eye, EyeOff, Lock, Stethoscope, User } from 'lucide-react';
+import { Activity, Eye, EyeOff, Lock, User } from 'lucide-react';
 
 import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ROUTES, USER_TYPE } from '@/constants';
-import { cn } from '@/lib/utils';
-import { MOCK_LATITUDES, MOCK_USERS } from '@/mocks/auth-mock';
-import { authLogin, DEV_USERS } from '@/services/auth';
+import { DEFAULT_GEO, ROUTES, USER_TYPE } from '@/constants';
+import { authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
-import { useMockStore } from '@/stores/mock.store';
 
 const ROLE_HOME: Record<UserRole, string> = {
   [USER_TYPE.PATIENT]: ROUTES.TURNOS,
   [USER_TYPE.PROFESSIONAL]: ROUTES.AGENDA_PROFESIONAL,
   [USER_TYPE.ADMINISTRATIVE]: ROUTES.PRESENTISMO,
 };
-
-const ROLE_QUICK_ACCESS = [
-  { role: USER_TYPE.PATIENT, label: 'Paciente', icon: User, color: 'text-primary' },
-  { role: USER_TYPE.PROFESSIONAL, label: 'Profesional', icon: Stethoscope, color: 'text-success' },
-  { role: USER_TYPE.ADMINISTRATIVE, label: 'Administrativo', icon: ClipboardList, color: 'text-amber-600' },
-];
 
 const stats = [
   { value: '48k+', label: 'Pacientes activos' },
@@ -48,16 +39,11 @@ const getGeolocation = (): Promise<{ lat: string; lng: string } | null> =>
     );
   });
 
-const getMockLocation = (loc: { lat: string; lng: string } | null) => {
-  if (loc) return loc;
-  return MOCK_LATITUDES[Math.floor(Math.random() * MOCK_LATITUDES.length)];
-};
+const resolveLocation = (loc: { lat: string; lng: string } | null) => loc ?? DEFAULT_GEO;
 
 export default function Page() {
   const navigate = useNavigate();
   const authStore = useAuthStore();
-  const mockEnabled = useMockStore(s => s.enabled);
-  const toggleMock = useMockStore(s => s.toggle);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -79,8 +65,7 @@ export default function Page() {
     setLoading(true);
     try {
       const res = await authLogin({ identifier, password: pass });
-      const autoLocation = await getGeolocation();
-      const location = getMockLocation(autoLocation);
+      const location = resolveLocation(await getGeolocation());
       authStore.setAuth({
         id: res.id,
         accessToken: res.access_token,
@@ -98,25 +83,6 @@ export default function Page() {
       setError('Email o contraseña incorrectos.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleQuickAccess = (role: UserRole) => {
-    if (mockEnabled) {
-      // Modo mock: usar MOCK_USERS (en memoria, sin backend)
-      const user =
-        role === USER_TYPE.PATIENT
-          ? MOCK_USERS.find(u => u.role === USER_TYPE.PATIENT && u.id === '4')!
-          : MOCK_USERS.find(u => u.role === role)!;
-      setEmail(user.email);
-      setPassword(user.password);
-      doLogin(user.email, user.password);
-    } else {
-      // Modo real: usar DEV_USERS (IDs reales de la DB)
-      const user = DEV_USERS.find(u => u.role === role)!;
-      setEmail(user.email);
-      setPassword('1234');
-      doLogin(user.email, '1234');
     }
   };
 
@@ -169,61 +135,6 @@ export default function Page() {
             <div className="mb-5">
               <h1 className="font-heading text-2xl font-bold text-foreground">Iniciar sesión</h1>
               <p className="mt-1 text-sm text-muted-foreground">Accedé al portal con tu email.</p>
-            </div>
-
-            {/* Acceso rápido (solo en entorno de desarrollo/mock) */}
-            <div className="mb-4 rounded-lg border border-dashed border-border bg-muted/30 p-3">
-              <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Acceso rápido · Demo
-              </p>
-              <div className="flex gap-2">
-                {ROLE_QUICK_ACCESS.map(({ role, label, icon: Icon, color }) => (
-                  <button
-                    key={role}
-                    type="button"
-                    disabled={loading}
-                    onClick={() => handleQuickAccess(role)}
-                    className="flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2.5 text-xs transition-all hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm active:scale-[0.97] active:bg-primary/10 disabled:opacity-50"
-                  >
-                    <Icon className={`h-4 w-4 ${color}`} />
-                    <span className="font-medium text-foreground">{label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Toggle modo mock (turnos/pacientes en memoria, sin backend) */}
-            <div className="mb-4 flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
-              <div>
-                <p className="text-xs font-semibold text-foreground">Modo mock</p>
-                <p className="text-xs text-muted-foreground">
-                  {mockEnabled ? 'Turnos y pacientes en memoria' : 'Usando el backend real'}
-                </p>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={mockEnabled}
-                aria-label="Activar o desactivar el modo mock"
-                onClick={toggleMock}
-                className={cn(
-                  'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-                  mockEnabled ? 'bg-primary' : 'bg-input'
-                )}
-              >
-                <span
-                  className={cn(
-                    'inline-block h-5 w-5 transform rounded-full bg-background shadow transition-transform',
-                    mockEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                  )}
-                />
-              </button>
-            </div>
-
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">o ingresá con tus credenciales</span>
-              <div className="h-px flex-1 bg-border" />
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">

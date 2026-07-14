@@ -1,9 +1,16 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
+import { ErrorBoundary } from '@/components/error-boundary';
 import { BaseLayout } from '@/components/layouts/base-layout';
 import { ProtectedRoute } from '@/components/layouts/protected-route';
 import { ROUTES, USER_TYPE } from '@/constants';
+
+const SuspenseFallback = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+  </div>
+);
 
 const LoginPage = lazy(() => import('./pages/login'));
 const RegisterPage = lazy(() => import('./pages/register'));
@@ -18,8 +25,9 @@ const AdminAppointmentCreatePage = lazy(() => import('./pages/administrative/app
 
 export function App() {
   return (
-    <Suspense>
-      <Routes>
+    <ErrorBoundary>
+      <Suspense fallback={<SuspenseFallback />}>
+        <Routes>
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
@@ -75,7 +83,8 @@ export function App() {
         </Route>
 
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
-      </Routes>
-    </Suspense>
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
