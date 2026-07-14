@@ -49,6 +49,18 @@ const Appointments = () => {
   });
   const appointments = useGetAppointments(appointmentsParams, !!appointmentsParams.patient_id);
 
+  // Cuando se entra por SSO desde otro módulo, authStore.id puede hidratarse
+  // DESPUÉS del primer render. appointmentsParams.patient_id se fijó al montar,
+  // así que si quedó en NaN la consulta nunca se habilita y la pantalla queda en
+  // blanco. Acá lo resincronizamos apenas el id está disponible.
+  useEffect(() => {
+    const patientId = Number(authStore.id);
+    if (patientId && patientId !== appointmentsParams.patient_id) {
+      setAppointmentsParams(prev => ({ ...prev, patient_id: patientId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStore.id]);
+
   useEffect(() => {
     // Esto es para que se reconsulten los turnos
     // cuando vuelve a esta pantalla luego de crear un turno
@@ -99,10 +111,14 @@ const Appointments = () => {
         </Button>
       </div>
 
-      {appointments?.data?.appointments?.length === 0 ? (
+      {appointments.isLoading ? (
+        <div className="rounded-xl border border-dashed border-border px-6 py-12 text-center text-sm text-muted-foreground">
+          Cargando turnos…
+        </div>
+      ) : (appointments.data?.appointments?.length ?? 0) === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (
-        appointments?.data?.appointments?.map((appt, _idx) => (
+        appointments.data?.appointments?.map(appt => (
           <AppointmentCard
             key={appt.id}
             appointment={appt}
@@ -125,7 +141,9 @@ const Appointments = () => {
 
 const AppointmentsPagination = (props: AppointmentsPaginationProps) => {
   const { pagination, appointmentsParams, setAppointmentsParams } = props;
-  if (!pagination || !appointmentsParams?.page) return null;
+  // Sin resultados (total_pages = 0) o una sola página no hay nada que paginar:
+  // ocultamos el paginador para no dejar "Anterior"/"Siguiente" clickeables al pedo.
+  if (!pagination || !appointmentsParams?.page || pagination.total_pages <= 1) return null;
 
   const handlePageChange = (page: number) => {
     setAppointmentsParams({ ...appointmentsParams, page });
@@ -152,7 +170,7 @@ const AppointmentsPagination = (props: AppointmentsPaginationProps) => {
         <PaginationItem>
           <PaginationNext
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === pagination.total_pages}
+            disabled={currentPage >= pagination.total_pages}
           />
         </PaginationItem>
       </PaginationContent>

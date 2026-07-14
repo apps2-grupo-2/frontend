@@ -21,6 +21,7 @@ import type { Module, ModuleButtonProps } from '@/typings/components/layouts/sid
 import { ROUTES, USER_TYPE } from '@/constants';
 import { getUserInitials } from '@/helpers/helpers';
 import { useGetModules } from '@/hooks/use-others-data';
+import { requestSsoTicket } from '@/services/auth';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -160,7 +161,7 @@ const ModuleButton = (props: ModuleButtonProps) => {
   const navigate = useNavigate();
   const isActiveModule = mod.id === '2';
 
-  const goTo = (m: Module) => {
+  const goTo = async (m: Module) => {
     if (isActiveModule && role) {
       if (role === USER_TYPE.PATIENT) {
         navigate(ROUTES.TURNOS, { replace: true });
@@ -169,14 +170,23 @@ const ModuleButton = (props: ModuleButtonProps) => {
       } else {
         navigate(ROUTES.PRESENTISMO, { replace: true });
       }
-    } else {
-      window.location.href = m.url;
+      return;
     }
+
+    // Navegación a OTRO módulo con SSO: pedimos un ticket efímero al core y lo
+    // pasamos en la URL; el backend del módulo destino lo canjea en su /auth/sso
+    // y deja al usuario ya logueado. Si no hay ticket (mock/sin sesión/error),
+    // caemos al redirect directo (el usuario tendrá que loguearse allá).
+    const ticket = await requestSsoTicket();
+    const base = m.url.replace(/\/+$/, '');
+    window.location.href = ticket
+      ? `${base}/auth/sso?ticket=${encodeURIComponent(ticket)}&redirect=${encodeURIComponent('/')}`
+      : m.url;
   };
 
   return (
     <div
-      onClick={() => goTo(mod)}
+      onClick={() => void goTo(mod)}
       className={cn(
         'flex w-full items-center gap-3 rounded-lg px-3 py-3 cursor-pointer',
         isActiveModule

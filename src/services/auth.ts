@@ -11,8 +11,19 @@ import type {
 } from '@/typings/services/auth';
 import { ENV, USER_TYPE } from '@/constants';
 import { MOCK_USERS, MOCK_USERS_PATIENTS } from '@/mocks/auth-mock';
+import { useAuthStore } from '@/stores/auth.store';
 import { isMockEnabled } from '@/stores/mock.store';
 
+// Respuesta del core al emitir un ticket de SSO (POST /auth/sso-ticket).
+type SSOTicketResponse = { ticket: string; expires_in: number };
+
+type CoreRole = { id: number; name: string };
+type CoreUser = { id: number; roles?: CoreRole[] };
+
+// El login/registro/verify/sso-exchange devuelven AuthResponse = { token, user }.
+// El user YA trae roles[] (según el swagger del core), así que resolvemos el rol
+// desde acá y evitamos el GET /users/{id} aparte, que está gateado por el permiso
+// users:read (los pacientes/médicos vienen con permissions vacío y les daría 403).
 type CoreAuthResponse = {
   token: string;
   user: {
@@ -20,11 +31,9 @@ type CoreAuthResponse = {
     first_name: string;
     last_name: string;
     email: string;
+    roles?: CoreRole[];
   };
 };
-
-type CoreRole = { id: number; name: string };
-type CoreUser = { id: number; roles?: CoreRole[] };
 
 // Ids de rol del core (Francisco, 13/07/2026): el backend de turnos valida
 // medico = rol id 2 y paciente = rol id 10. Los usamos como señal primaria y
@@ -47,6 +56,9 @@ const ROLE_LABEL: Record<UserRole, string> = {
   [USER_TYPE.ADMINISTRATIVE]: 'Administración',
 };
 
+// Fallback: si por lo que sea el login no trajo roles, intentamos el GET
+// /users/{id} (best-effort; requiere users:read, así que suele fallar para
+// usuarios no-admin y cae a paciente).
 const fetchUserRole = async (userId: number, token: string): Promise<UserRole> => {
   try {
     const { data } = await axios.get<CoreUser>(`${ENV.CORE_BASE_URL}/users/${userId}`, {
@@ -57,6 +69,13 @@ const fetchUserRole = async (userId: number, token: string): Promise<UserRole> =
     console.warn('ERROR ON: fetchUserRole (se asume rol paciente)', err);
     return USER_TYPE.PATIENT;
   }
+};
+
+// Resuelve el rol priorizando los roles que ya vienen en la respuesta de auth;
+// sólo si no vinieran, cae al GET /users/{id}.
+const resolveRoleFromAuth = async (user: CoreAuthResponse['user'], token: string): Promise<UserRole> => {
+  if (user.roles && user.roles.length > 0) return resolveRole(user.roles);
+  return fetchUserRole(user.id, token);
 };
 
 const mockLogin = async (body: AuthLoginRequest): Promise<AuthLoginResponse> => {
@@ -134,7 +153,7 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
       password: body.password,
     });
 
-    const role = await fetchUserRole(data.user.id, data.token);
+    const role = await resolveRoleFromAuth(data.user, data.token);
     const name = `${data.user.first_name ?? ''} ${data.user.last_name ?? ''}`.trim();
 
     return {
@@ -292,7 +311,7 @@ export const verifyAccount = async (body: AuthVerifyAccountRequest): Promise<Aut
       password: body.password,
     });
 
-    const role = await fetchUserRole(data.user.id, data.token);
+    const role = await resolveRoleFromAuth(data.user, data.token);
     const name = `${data.user.first_name ?? ''} ${data.user.last_name ?? ''}`.trim();
 
     return {
@@ -328,7 +347,7 @@ export const establishSessionFromTicket = async (ticket: string): Promise<AuthLo
   }
   try {
     const { data } = await axios.post<CoreAuthResponse>(`${ENV.CORE_BASE_URL}/auth/sso-exchange`, { ticket });
-    const role = await fetchUserRole(data.user.id, data.token);
+    const role = await resolveRoleFromAuth(data.user, data.token);
     const name = `${data.user.first_name ?? ''} ${data.user.last_name ?? ''}`.trim();
     return {
       id: `${data.user.id}`,
@@ -348,5 +367,30 @@ export const establishSessionFromTicket = async (ticket: string): Promise<AuthLo
     }
     console.warn('ERROR ON: establishSessionFromTicket (core)', err);
     throw new Error('No se pudo completar el ingreso automático (SSO)');
+  }
+};
+
+// Lado EMISOR del SSO. Pide al core un ticket efímero (un solo uso, vive
+// segundos) para el usuario ya logueado, para poder redirigirlo YA autenticado
+// a otro módulo (que lo canjea en su backend vía /auth/sso-exchange).
+// POST {CORE}/auth/sso-ticket con el JWT del usuario -> { ticket, expires_in }.
+// Devuelve null en modo mock, sin sesión, o si el core falla (el sidebar cae
+// entonces al redirect directo sin SSO).
+export const requestSsoTicket = async (): Promise<string | null> => {
+  if (isMockEnabled()) return null;
+
+  const { accessToken } = useAuthStore.getState();
+  if (!accessToken) return null;
+
+  try {
+    const { data } = await axios.post<SSOTicketResponse>(
+      `${ENV.CORE_BASE_URL}/auth/sso-ticket`,
+      {},
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    return data.ticket ?? null;
+  } catch (err) {
+    console.warn('ERROR ON: requestSsoTicket (core)', err);
+    return null;
   }
 };
