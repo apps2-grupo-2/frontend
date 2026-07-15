@@ -1,7 +1,7 @@
 export const ENV = {
   // Backend propio (modulo 2 - turnos): turnos, especialidades, centros medicos, notificaciones.
   // Entrega final -> prod (app.). Alternativas: dev.solefrancisco.com / test.solefrancisco.com.
-  BASE_URL: 'https://app.solefrancisco.com/apps2/api/v1',
+  BASE_URL: 'https://dev.solefrancisco.com/apps2/api/v1',
   // Backend del grupo Core (modulo 10): autenticacion y gestion de usuarios.
   // Login por email + contrasena -> { token, user }. Server de produccion segun swagger del core.
   CORE_BASE_URL: 'https://api.healthcare.cantero.ar',
