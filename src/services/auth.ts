@@ -77,7 +77,7 @@ const resolveRoleFromAuth = async (user: CoreAuthResponse['user'], token: string
 
 export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginResponse> => {
   try {
-    const { data } = await axios.post<CoreAuthResponse>(`${ENV.CORE_BASE_URL}/auth/login`, {
+    const { data } = await axios.post<CoreAuthResponse>(`${ENV.BASE_URL}/auth/login`, {
       email: body.identifier,
       password: body.password,
     });
@@ -107,7 +107,7 @@ export const authLogin = async (body: AuthLoginRequest): Promise<AuthLoginRespon
 // los da de alta un admin (POST /users -> mail de verificacion).
 export const authRegister = async (body: AuthRegisterRequest): Promise<AuthLoginResponse> => {
   try {
-    const { data } = await axios.post<CoreAuthResponse>(`${ENV.CORE_BASE_URL}/auth/register`, {
+    const { data } = await axios.post<CoreAuthResponse>(`${ENV.BASE_URL}/auth/register`, {
       first_name: body.first_name,
       last_name: body.last_name,
       email: body.email,
@@ -143,7 +143,7 @@ export const authRegister = async (body: AuthRegisterRequest): Promise<AuthLogin
 // resolvemos igual, como si el código se hubiera enviado.
 export const requestPasswordReset = async (email: string): Promise<void> => {
   try {
-    await axios.post(`${ENV.CORE_BASE_URL}/auth/forgot-password`, { email });
+    await axios.post(`${ENV.BASE_URL}/auth/forgot-password`, { email });
   } catch (err) {
     if (axios.isAxiosError(err) && err.response?.status === 404) {
       return;
