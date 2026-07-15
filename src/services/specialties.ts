@@ -1,5 +1,5 @@
-import type { OptionsResponse } from '@/typings/services';
-import { getMedics } from '@/services/medics';
+import type { OptionsResponse } from "@/typings/services";
+import { getMedics } from "@/services/medics";
 
 /**
  * Especialidades derivadas del listado GET {BASE_URL}/medics, deduplicando por
@@ -11,14 +11,16 @@ export const getSpecialities = async (): Promise<OptionsResponse> => {
   try {
     const medics = await getMedics();
     const byId = new Map<number, string>();
-    medics.forEach(m => {
-      if (!byId.has(m.speciality_id)) byId.set(m.speciality_id, m.speciality_name);
+    medics.forEach((m) => {
+      if (!byId.has(m.speciality_id))
+        byId.set(m.speciality_id, m.speciality_name);
     });
-    return Array.from(byId, ([id, name]) => ({ value: `${id}`, label: name })).sort((a, b) =>
-      a.label.localeCompare(b.label)
-    );
+    return Array.from(byId, ([id, name]) => ({
+      value: `${id}`,
+      label: name,
+    })).sort((a, b) => a.label.localeCompare(b.label));
   } catch (err) {
-    console.warn('ERROR ON: getSpecialities');
+    console.warn("ERROR ON: getSpecialities");
     console.warn(err);
     return [] as OptionsResponse;
   }

@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
-import type { Medic, MedicsResponse } from '@/typings/services';
-import { ENV } from '@/constants';
+import type { MedicsResponse } from "@/typings/services";
+import { ENV } from "@/constants";
 
 /**
  * Fuente única de médicos del backend propio (modulo 2 - turnos).
@@ -13,7 +13,7 @@ import { ENV } from '@/constants';
  * POST /appointments, y el desplegable de especialidades sólo muestra las que
  * realmente tienen médicos para reservar.
  */
-export const getMedics = async (): Promise<Medic[]> => {
-  const { data } = await axios.get<MedicsResponse>(`${ENV.BASE_URL}/medics`);
-  return data.data ?? [];
+export const getMedics = async (): Promise<MedicsResponse> => {
+  const response = await axios.get<MedicsResponse>(`${ENV.BASE_URL}/medics`);
+  return response.data ?? [];
 };
