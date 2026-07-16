@@ -115,6 +115,21 @@ const Appointments = () => {
         <div className="rounded-xl border border-dashed border-border px-6 py-12 text-center text-sm text-muted-foreground">
           Cargando turnos…
         </div>
+      ) : appointments.isError ? (
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-6 py-12 text-center">
+          <p className="text-sm font-medium text-destructive">No se pudieron cargar tus turnos.</p>
+          <p className="text-xs text-muted-foreground">
+            Hubo un problema al obtener la información. Volvé a intentar en unos instantes.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => appointments.refetch()}
+            disabled={appointments.isFetching}
+          >
+            {appointments.isFetching ? 'Reintentando…' : 'Reintentar'}
+          </Button>
+        </div>
       ) : (appointments.data?.appointments?.length ?? 0) === 0 ? (
         <EmptyState onRequest={() => navigate(ROUTES.SOLICITAR_TURNOS)} />
       ) : (

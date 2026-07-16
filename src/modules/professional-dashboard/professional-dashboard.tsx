@@ -94,9 +94,24 @@ export const ProfessionalDashboard = () => {
           <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {selectedDay.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
-          {dayAppointments.map(slot => (
-            <SlotCard key={slot.id} slot={slot} onStart={handleStart} onFinish={handleFinish} />
-          ))}
+          {appointments.isError ? (
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-8 text-center">
+              <p className="text-sm font-medium text-destructive">No se pudieron cargar los turnos.</p>
+              <p className="text-xs text-muted-foreground">Hubo un problema al obtener la información. Reintentá en unos instantes.</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => appointments.refetch()}
+                disabled={appointments.isFetching}
+              >
+                {appointments.isFetching ? 'Reintentando…' : 'Reintentar'}
+              </Button>
+            </div>
+          ) : (
+            dayAppointments.map(slot => (
+              <SlotCard key={slot.id} slot={slot} onStart={handleStart} onFinish={handleFinish} />
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

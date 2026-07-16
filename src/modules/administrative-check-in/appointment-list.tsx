@@ -28,6 +28,25 @@ export const AppointmentList = (props: AppointmentListProps) => {
     );
   }
 
+  if (appointments.isError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 py-12 text-center">
+        <p className="text-sm font-medium text-destructive">No se pudieron cargar los turnos.</p>
+        <p className="text-xs text-muted-foreground">
+          Hubo un problema al obtener la información. Reintentá en unos instantes.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => appointments.refetch()}
+          disabled={appointments.isFetching}
+        >
+          {appointments.isFetching ? 'Reintentando…' : 'Reintentar'}
+        </Button>
+      </div>
+    );
+  }
+
   if (!appointments.data?.appointments.length) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-12 text-center">
