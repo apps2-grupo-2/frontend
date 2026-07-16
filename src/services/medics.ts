@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 
-import type { MedicsResponse } from "@/typings/services";
-import { ENV } from "@/constants";
+import type { MedicsResponse } from '@/typings/services';
+import { ENV } from '@/constants';
 
 /**
  * Fuente única de médicos del backend propio (modulo 2 - turnos).

@@ -28,61 +28,61 @@ export function App() {
     <ErrorBoundary>
       <Suspense fallback={<SuspenseFallback />}>
         <Routes>
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
-        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-        <Route path={ROUTES.VERIFY_ACCOUNT} element={<VerifyAccountPage />} />
-        <Route path={ROUTES.SSO} element={<SsoPage />} />
+          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+          <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+          <Route path={ROUTES.VERIFY_ACCOUNT} element={<VerifyAccountPage />} />
+          <Route path={ROUTES.SSO} element={<SsoPage />} />
 
-        <Route element={<BaseLayout />}>
-          {/* Solo pacientes */}
-          <Route
-            path={ROUTES.TURNOS}
-            element={
-              <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
-                <AppointmentsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.SOLICITAR_TURNOS}
-            element={
-              <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
-                <AppointmentSchedulePage />
-              </ProtectedRoute>
-            }
-          />
+          <Route element={<BaseLayout />}>
+            {/* Solo pacientes */}
+            <Route
+              path={ROUTES.TURNOS}
+              element={
+                <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
+                  <AppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={ROUTES.SOLICITAR_TURNOS}
+              element={
+                <ProtectedRoute allowedRoles={[USER_TYPE.PATIENT]}>
+                  <AppointmentSchedulePage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Profesionales */}
-          <Route
-            path={ROUTES.AGENDA_PROFESIONAL}
-            element={
-              <ProtectedRoute allowedRoles={[USER_TYPE.PROFESSIONAL]}>
-                <ProfessionalCalendarPage />
-              </ProtectedRoute>
-            }
-          />
+            {/* Profesionales */}
+            <Route
+              path={ROUTES.AGENDA_PROFESIONAL}
+              element={
+                <ProtectedRoute allowedRoles={[USER_TYPE.PROFESSIONAL]}>
+                  <ProfessionalCalendarPage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Solo administrativos */}
-          <Route
-            path={ROUTES.PRESENTISMO}
-            element={
-              <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
-                <CheckinPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.CREAR_TURNO_ADMIN}
-            element={
-              <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
-                <AdminAppointmentCreatePage />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
+            {/* Solo administrativos */}
+            <Route
+              path={ROUTES.PRESENTISMO}
+              element={
+                <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
+                  <CheckinPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={ROUTES.CREAR_TURNO_ADMIN}
+              element={
+                <ProtectedRoute allowedRoles={[USER_TYPE.ADMINISTRATIVE]}>
+                  <AdminAppointmentCreatePage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-        <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
+          <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
         </Routes>
       </Suspense>
     </ErrorBoundary>
