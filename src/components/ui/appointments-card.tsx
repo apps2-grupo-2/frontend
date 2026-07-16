@@ -29,14 +29,16 @@ export const formatDate = (d: string) => {
   return `${format(date, 'dd/MM/yyyy')} a las ${format(date, 'HH:mm')} hs`;
 };
 
-// El turno puede confirmarse desde que se creó hasta 24hs antes del starts_at.
+// El turno puede confirmarse hasta 24hs antes del starts_at.
+// (Antes también se exigía now >= created_at, pero created_at llega en UTC sin
+// offset y parseApiDate lo interpreta como hora local, lo que dejaba el botón
+// deshabilitado ~3hs tras crear el turno. Ese chequeo era redundante y se quitó.)
 const CONFIRM_DEADLINE_HOURS = 24;
 export const canConfirmAppointment = (appointment: AppointmentCardProps['appointment']) => {
   if (appointment.status !== APPOINTMENT_STATUSES.PENDING_CONFIRMATION) return false;
   const now = new Date();
-  const createdAt = parseApiDate(appointment.created_at);
   const deadline = new Date(parseApiDate(appointment.starts_at).getTime() - CONFIRM_DEADLINE_HOURS * 60 * 60 * 1000);
-  return now >= createdAt && now <= deadline;
+  return now <= deadline;
 };
 
 export const AppointmentCard = (props: AppointmentCardProps) => {
