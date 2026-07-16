@@ -6,7 +6,7 @@ import { Activity, Eye, EyeOff, Lock, User } from 'lucide-react';
 import type { UserRole } from '@/typings/services/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { DEFAULT_GEO, ROUTES, USER_TYPE } from '@/constants';
+import { APP_VERSION, DEFAULT_GEO, ROUTES, USER_TYPE } from '@/constants';
 import { authLogin } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -232,6 +232,8 @@ export default function Page() {
             </div>
           </CardContent>
         </Card>
+
+        <p className="mt-6 text-xs text-muted-foreground/50 tabular-nums">{APP_VERSION}</p>
       </div>
     </div>
   );

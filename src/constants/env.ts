@@ -14,3 +14,6 @@ export const ENV = {
 // Ubicación por defecto (Obelisco, CABA) para cuando el navegador no da permiso
 // de geolocalización. Se usa sólo para ordenar centros médicos por cercanía.
 export const DEFAULT_GEO = { lat: '-34.603722', lng: '-58.381592' } as const;
+
+// Código de versión de la app (solo numérico). Se muestra en el login.
+export const APP_VERSION = '3.2.1';
