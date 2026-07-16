@@ -156,7 +156,7 @@ export const requestPasswordReset = async (email: string): Promise<void> => {
 // Paso 2 de recuperar contraseña: validar el codigo y setear la nueva.
 export const resetPassword = async (body: AuthResetPasswordRequest): Promise<void> => {
   try {
-    await axios.post(`${ENV.CORE_BASE_URL}/auth/reset-password`, body);
+    await axios.post(`${ENV.BASE_URL}/auth/reset-password`, body);
   } catch (err) {
     if (axios.isAxiosError(err) && (err.response?.status === 400 || err.response?.status === 404)) {
       throw new Error('El código es inválido o expiró, o la contraseña no cumple los requisitos');
