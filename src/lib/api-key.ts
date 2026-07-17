@@ -22,9 +22,22 @@ import { useAuthStore } from '@/stores/auth.store';
  */
 const isOwnBackend = (url?: string): boolean => !!url && url.startsWith(ENV.BASE_URL);
 
+// Id de request para los logs del back (pedido de Francisco): así el back sabe
+// que la petición viene del front del módulo 2. Va prefijado `front-mod-2` para
+// atribuirlo, con un sufijo único por request para poder correlacionar cada
+// llamada individual en los logs (antes salían como "no-request-id").
+const newRequestId = (): string => {
+  const unique =
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return `front-mod-2-${unique}`;
+};
+
 axios.interceptors.request.use(config => {
   if (isOwnBackend(config.url)) {
     config.headers.set('x-api-key', ENV.API_KEY);
+    config.headers.set('x-request-id', newRequestId());
 
     const { accessToken } = useAuthStore.getState();
     if (accessToken) {

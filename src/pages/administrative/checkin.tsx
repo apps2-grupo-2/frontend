@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { addDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { CalendarPlus, RefreshCw } from 'lucide-react';
 
@@ -30,9 +30,10 @@ export default function Page() {
   const patientId = Number(form.watch('patientId'));
   const hasPatient = Number.isFinite(patientId) && patientId > 0;
 
+  // Presentismo es del DÍA: traemos solo los turnos de hoy (todos los pacientes).
   const appointmentsParams: GetAppointmentsRequest = {
     since: format(new Date(), 'yyyy-MM-dd 00:00:00'),
-    until: format(addDays(new Date(), 30), 'yyyy-MM-dd 00:00:00'),
+    until: format(new Date(), 'yyyy-MM-dd 23:59:59'),
     page: 1,
     ...(hasPatient ? { patient_id: patientId } : {}),
   };
@@ -76,7 +77,7 @@ export default function Page() {
           </div>
           <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs">
             <span className="font-semibold text-foreground">{appointmentsData.length}</span>
-            <span className="text-muted-foreground">en total</span>
+            <span className="text-muted-foreground">total del día</span>
           </div>
           <button
             type="button"
