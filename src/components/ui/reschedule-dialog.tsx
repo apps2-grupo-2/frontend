@@ -128,7 +128,7 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-h-[85dvh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Reprogramar turno</DialogTitle>
           <DialogDescription>
@@ -161,7 +161,7 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
               ) : slots.length === 0 ? (
                 <p className="text-xs text-muted-foreground">No hay horarios disponibles ese día. Probá con otro.</p>
               ) : (
-                <div className="grid max-h-40 grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                   {slots.map(slot => (
                     <button
                       key={slot.value}
