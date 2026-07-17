@@ -4,13 +4,16 @@ import type { Appointment, OptionsResponse } from '@/typings/services';
 import { parseApiDate } from '@/helpers/dates';
 
 export const getCalendarDays = (): Date[] => {
-  return Array.from({ length: 31 }, (_, i) => addDays(new Date(), i + 1)).filter(date => !isWeekend(date));
+  // Incluye HOY (i desde 0) para permitir sacar turno el mismo día. Los horarios
+  // ya pasados de hoy se descartan en getRangeTimeAvailability.
+  return Array.from({ length: 31 }, (_, i) => addDays(new Date(), i)).filter(date => !isWeekend(date));
 };
 
 export const getRangeTimeAvailability = (appointments: Appointment[], date: string): OptionsResponse => {
   const dateOnly = date.slice(0, 10);
   const appointmentsFiltered = appointments.filter(a => a.starts_at.startsWith(dateOnly));
   const occupiedSlots = appointmentsFiltered.map(a => a.starts_at);
+  const now = new Date();
 
   const startHour = 9;
   const endHour = 18;
@@ -24,6 +27,8 @@ export const getRangeTimeAvailability = (appointments: Appointment[], date: stri
     const slotEnd = addMinutes(slotStart, intervalMinutes);
     const label = `${format(slotStart, 'HH:mm')} - ${format(slotEnd, 'HH:mm')}`;
     const value = format(slotStart, 'yyyy-MM-dd HH:mm:ss');
-    return { label, value };
-  }).filter(a => !occupiedSlots.includes(a.value));
+    return { label, value, slotStart };
+  })
+    .filter(a => a.slotStart > now && !occupiedSlots.includes(a.value))
+    .map(({ label, value }) => ({ label, value }));
 };

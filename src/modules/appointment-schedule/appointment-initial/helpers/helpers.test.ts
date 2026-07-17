@@ -1,5 +1,5 @@
 import { addDays, isWeekend } from 'date-fns';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { Appointment } from '@/typings/services';
 import { APPOINTMENT_STATUSES } from '@/constants';
@@ -13,13 +13,14 @@ describe('getCalendarDays', () => {
     }
   });
 
-  it('should return dates within the next 31 days', () => {
+  it('should return dates within the next 31 days (including today)', () => {
     const days = getCalendarDays();
-    const today = new Date();
-    const limit = addDays(today, 32);
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const limit = addDays(new Date(), 32);
 
     for (const day of days) {
-      expect(day.getTime()).toBeGreaterThan(today.getTime());
+      expect(day.getTime()).toBeGreaterThanOrEqual(startOfToday.getTime());
       expect(day.getTime()).toBeLessThan(limit.getTime());
     }
   });
@@ -48,6 +49,16 @@ describe('getCalendarDays', () => {
 });
 
 describe('getRangeTimeAvailability', () => {
+  // Fijamos el reloj a una fecha ANTERIOR a las de prueba: así los slots de esas
+  // fechas cuentan como "futuros" y el filtro de horarios pasados no los descarta.
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-15T08:00:00'));
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const date = '2026-05-16';
 
   const makeAppointment = (starts_at: string): Appointment => ({
@@ -117,6 +128,18 @@ describe('getRangeTimeAvailability', () => {
   it('should return all slots when no appointments match', () => {
     const slots = getRangeTimeAvailability([], date);
     expect(slots).toHaveLength(18);
+  });
+
+  it('should exclude slots already in the past when the date is today', () => {
+    // "Hoy" a las 15:37 → solo quedan los horarios posteriores.
+    vi.setSystemTime(new Date('2026-05-16T15:37:00'));
+    const slots = getRangeTimeAvailability([], date);
+    expect(slots.map(s => s.value)).toEqual([
+      '2026-05-16 16:00:00',
+      '2026-05-16 16:30:00',
+      '2026-05-16 17:00:00',
+      '2026-05-16 17:30:00',
+    ]);
   });
 
   describe('with realistic endpoint data', () => {

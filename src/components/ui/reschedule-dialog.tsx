@@ -27,20 +27,22 @@ type RescheduleDialogProps = {
   onRescheduled: () => void;
 };
 
-// Días habilitados: próximos 31 días, sin fines de semana (igual que el alta de turno).
+// Días habilitados: HOY + próximos 30 días, sin fines de semana (permite reprogramar
+// para el mismo día; los horarios pasados de hoy se descartan en buildSlots).
 const getEnabledDates = (): Date[] =>
-  Array.from({ length: 31 }, (_, i) => addDays(new Date(), i + 1)).filter(d => !isWeekend(d));
+  Array.from({ length: 31 }, (_, i) => addDays(new Date(), i)).filter(d => !isWeekend(d));
 
 // Slots de 30' entre 09:00 y 18:00 para el día elegido, descartando los horarios
-// que el médico ya tiene ocupados.
+// que el médico ya tiene ocupados y los que ya pasaron (si el día es hoy).
 const buildSlots = (date: Date, occupied: string[]): { label: string; value: string }[] => {
+  const now = new Date();
   const slots: { label: string; value: string }[] = [];
   for (let hour = 9; hour < 18; hour++) {
     for (const minutes of [0, 30]) {
       const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minutes);
       const end = addMinutes(start, 30);
       const value = format(start, 'yyyy-MM-dd HH:mm:ss');
-      if (occupied.includes(value)) continue;
+      if (start <= now || occupied.includes(value)) continue;
       slots.push({ label: `${format(start, 'HH:mm')} - ${format(end, 'HH:mm')}`, value });
     }
   }
