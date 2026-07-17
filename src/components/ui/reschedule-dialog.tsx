@@ -14,8 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { APPOINTMENT_STATUSES } from '@/constants';
 import { parseApiDate } from '@/helpers/dates';
-import { useRescheduleAppointment } from '@/hooks/use-appointments-data';
+import { useConfirmAppointment, useGetAppointments, useRescheduleAppointment } from '@/hooks/use-appointments-data';
 import { cn } from '@/lib/utils';
 
 type RescheduleDialogProps = {
@@ -30,18 +31,17 @@ type RescheduleDialogProps = {
 const getEnabledDates = (): Date[] =>
   Array.from({ length: 31 }, (_, i) => addDays(new Date(), i + 1)).filter(d => !isWeekend(d));
 
-// Slots de 30' entre 09:00 y 18:00 para el día elegido. El back valida si el
-// horario está ocupado; acá los mostramos todos.
-const buildSlots = (date: Date): { label: string; value: string }[] => {
+// Slots de 30' entre 09:00 y 18:00 para el día elegido, descartando los horarios
+// que el médico ya tiene ocupados.
+const buildSlots = (date: Date, occupied: string[]): { label: string; value: string }[] => {
   const slots: { label: string; value: string }[] = [];
   for (let hour = 9; hour < 18; hour++) {
     for (const minutes of [0, 30]) {
       const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minutes);
       const end = addMinutes(start, 30);
-      slots.push({
-        label: `${format(start, 'HH:mm')} - ${format(end, 'HH:mm')}`,
-        value: format(start, 'yyyy-MM-dd HH:mm:ss'),
-      });
+      const value = format(start, 'yyyy-MM-dd HH:mm:ss');
+      if (occupied.includes(value)) continue;
+      slots.push({ label: `${format(start, 'HH:mm')} - ${format(end, 'HH:mm')}`, value });
     }
   }
   return slots;
@@ -50,10 +50,22 @@ const buildSlots = (date: Date): { label: string; value: string }[] => {
 export const RescheduleDialog = (props: RescheduleDialogProps) => {
   const { appointment, open, onOpenChange, onRescheduled } = props;
   const reschedule = useRescheduleAppointment();
+  const confirm = useConfirmAppointment();
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Turnos del médico en el día elegido → para no ofrecer horarios ya ocupados.
+  const dayAppointments = useGetAppointments(
+    {
+      medic_id: appointment.medic.id,
+      since: selectedDate ? format(selectedDate, 'yyyy-MM-dd 09:00:00') : '',
+      until: selectedDate ? format(selectedDate, 'yyyy-MM-dd 18:00:00') : '',
+    },
+    open && !!selectedDate
+  );
+  const occupied = (dayAppointments.data?.appointments ?? []).map(a => a.starts_at);
 
   const enabledDates = getEnabledDates();
   const isDateDisabled = (date: Date) =>
@@ -61,7 +73,9 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
       d => d.getFullYear() === date.getFullYear() && d.getMonth() === date.getMonth() && d.getDate() === date.getDate()
     );
 
-  const slots = selectedDate ? buildSlots(selectedDate) : [];
+  const slots = selectedDate ? buildSlots(selectedDate, occupied) : [];
+  const loadingSlots = dayAppointments.isFetching;
+  const isBusy = reschedule.isPending || confirm.isPending;
 
   const reset = () => {
     setSelectedDate(undefined);
@@ -87,7 +101,16 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
     reschedule.mutate(
       { id: appointment.id, body: { starts_at: selectedSlot, ends_at } },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          // El back deja el turno en Pendiente tras reprogramar. Si venía
+          // Confirmado, lo re-confirmamos para que siga confirmado.
+          if (appointment.status === APPOINTMENT_STATUSES.CONFIRMED) {
+            try {
+              await confirm.mutateAsync(appointment.id);
+            } catch {
+              // Si el re-confirm falla, queda pendiente y el paciente lo confirma.
+            }
+          }
           onRescheduled();
           handleOpenChange(false);
         },
@@ -130,23 +153,32 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
           {selectedDate && (
             <div className="flex flex-col gap-2">
               <p className="text-xs font-medium text-muted-foreground">Horario</p>
-              <div className="grid max-h-40 grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
-                {slots.map(slot => (
-                  <button
-                    key={slot.value}
-                    type="button"
-                    onClick={() => setSelectedSlot(slot.value)}
-                    className={cn(
-                      'rounded-lg border px-2 py-1.5 text-xs transition-colors',
-                      selectedSlot === slot.value
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-border text-foreground hover:border-primary/40 hover:bg-muted'
-                    )}
-                  >
-                    {format(parseApiDate(slot.value), 'HH:mm')}
-                  </button>
-                ))}
-              </div>
+              {loadingSlots ? (
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Cargando horarios disponibles...
+                </p>
+              ) : slots.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No hay horarios disponibles ese día. Probá con otro.</p>
+              ) : (
+                <div className="grid max-h-40 grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
+                  {slots.map(slot => (
+                    <button
+                      key={slot.value}
+                      type="button"
+                      onClick={() => setSelectedSlot(slot.value)}
+                      className={cn(
+                        'rounded-lg border px-2 py-1.5 text-xs transition-colors',
+                        selectedSlot === slot.value
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border text-foreground hover:border-primary/40 hover:bg-muted'
+                      )}
+                    >
+                      {format(parseApiDate(slot.value), 'HH:mm')}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -159,11 +191,11 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={reschedule.isPending}>
+          <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={isBusy}>
             Cancelar
           </Button>
-          <Button onClick={handleConfirm} disabled={!selectedSlot || reschedule.isPending}>
-            {reschedule.isPending ? (
+          <Button onClick={handleConfirm} disabled={!selectedSlot || isBusy}>
+            {isBusy ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 Reprogramando...

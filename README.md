@@ -165,7 +165,7 @@ PENDING_CONFIRMATION → CONFIRMED → CHECKED_IN → IN_PROGRESS → COMPLETED
 
 También puede pasar a `CANCELLED`, `ABSENT` o `EXPIRED`. Reglas relevantes en la UI:
 
-- El paciente puede **confirmar** hasta 24hs antes del horario del turno.
+- El paciente puede **confirmar** el turno mientras esté Pendiente y no haya pasado su horario.
 - Los turnos que **agenda el administrativo** quedan confirmados directamente (no requieren la confirmación del paciente).
 - Un turno **Pendiente o Confirmado** se puede **reprogramar** (nueva fecha/horario, mismo médico) o **cancelar**.
 - El **check-in** (admin) solo se permite si el turno está **CONFIRMED**.

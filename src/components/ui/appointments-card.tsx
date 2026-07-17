@@ -30,16 +30,12 @@ export const formatDate = (d: string) => {
   return `${format(date, 'dd/MM/yyyy')} a las ${format(date, 'HH:mm')} hs`;
 };
 
-// El turno puede confirmarse hasta 24hs antes del starts_at.
-// (Antes también se exigía now >= created_at, pero created_at llega en UTC sin
-// offset y parseApiDate lo interpreta como hora local, lo que dejaba el botón
-// deshabilitado ~3hs tras crear el turno. Ese chequeo era redundante y se quitó.)
-const CONFIRM_DEADLINE_HOURS = 24;
+// El turno se puede confirmar mientras esté Pendiente y no haya pasado su horario.
+// (Antes había un límite de "hasta 24hs antes", que dejaba sin poder confirmar los
+// turnos sacados para hoy/mañana. El back no impone ese límite, así que se quitó.)
 export const canConfirmAppointment = (appointment: AppointmentCardProps['appointment']) => {
   if (appointment.status !== APPOINTMENT_STATUSES.PENDING_CONFIRMATION) return false;
-  const now = new Date();
-  const deadline = new Date(parseApiDate(appointment.starts_at).getTime() - CONFIRM_DEADLINE_HOURS * 60 * 60 * 1000);
-  return now <= deadline;
+  return new Date() <= parseApiDate(appointment.starts_at);
 };
 
 export const AppointmentCard = (props: AppointmentCardProps) => {
@@ -111,7 +107,7 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
                     size="sm"
                     className="text-xs"
                     disabled={!canConfirm}
-                    title={canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'}
+                    title={canConfirm ? undefined : 'El turno ya pasó y no se puede confirmar.'}
                     onClick={() => setIsConfirmTurnDialogOpen(true)}
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
