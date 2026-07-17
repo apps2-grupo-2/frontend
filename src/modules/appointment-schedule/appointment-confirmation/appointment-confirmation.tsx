@@ -5,9 +5,9 @@ import { AlertCircle, Calendar, Clock, MapPin, Stethoscope, User } from 'lucide-
 import type { StepProps } from '@/typings/modules/appointment-confirmation';
 import { Card, CardContent } from '@/components/ui/card';
 import { StepNavigation } from '@/components/ui/step-navigation';
-import { APPOINTMENTS_STEPS } from '@/constants';
+import { APPOINTMENTS_STEPS, USER_TYPE } from '@/constants';
 import { parseApiDate } from '@/helpers/dates';
-import { useCreateAppointment } from '@/hooks/use-appointments-data';
+import { useConfirmAppointment, useCreateAppointment } from '@/hooks/use-appointments-data';
 import { useGetProfessionals } from '@/hooks/use-professionals-data';
 import { useAuthStore } from '@/stores/auth.store';
 import { useAppointmentLabels } from '../hooks/use-appointment-labels';
@@ -17,6 +17,9 @@ export const Appointment_Confirmation = (props: StepProps) => {
   const authStore = useAuthStore();
   const professionals = useGetProfessionals(metadata.payload.speciality_id || '0').data || [];
   const { mutateAsync, isPending } = useCreateAppointment();
+  const confirmAppointmentMutation = useConfirmAppointment();
+  // Los turnos que agenda administración quedan confirmados directamente.
+  const isAdmin = authStore.role === USER_TYPE.ADMINISTRATIVE;
   const { specialtyLabel, professionalLabel, medicalCenterLabel, priorityLabel, dateLabel, rangeTimeLabel } =
     useAppointmentLabels(metadata.payload);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -54,6 +57,19 @@ export const Appointment_Confirmation = (props: StepProps) => {
         },
         patient: patientInfo,
       });
+
+      // Si lo agenda administración, lo confirmamos en el acto: el paciente no
+      // necesita confirmarlo y así el admin puede registrar la llegada sin
+      // depender de que el paciente entre (además de esquivar el límite de 24hs
+      // de confirmación del paciente). Best-effort: si el confirm falla, igual
+      // mostramos el turno creado (queda pendiente).
+      if (isAdmin) {
+        try {
+          await confirmAppointmentMutation.mutateAsync(appointment_id);
+        } catch (confirmError) {
+          console.warn('> auto-confirmación (admin) falló, el turno queda pendiente', confirmError);
+        }
+      }
 
       metadata.setPayload({ ...metadata.payload, appointment_id: `${appointment_id}` });
       metadata.navigateTo(APPOINTMENTS_STEPS.APPOINTMENT_SUCCESS);
@@ -132,7 +148,10 @@ export const Appointment_Confirmation = (props: StepProps) => {
                 </div>
               </CardContent>
             </Card>
-            <StepNavigation backBtn={{ onClick: backHandler }} nextBtn={{ disabled: isPending }} />
+            <StepNavigation
+              backBtn={{ onClick: backHandler }}
+              nextBtn={{ disabled: isPending || confirmAppointmentMutation.isPending }}
+            />
           </div>
         </div>
       </form>

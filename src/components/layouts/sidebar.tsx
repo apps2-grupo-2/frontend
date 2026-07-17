@@ -158,6 +158,32 @@ const SidebarContent = () => {
   );
 };
 
+// ── SSO hacia otros módulos ──────────────────────────────────────────────────
+// Cada módulo canjea el ticket efímero en su `/auth/sso`, pero SIEMPRE en la RAÍZ
+// del dominio (no bajo un path como `/facturacion`), y algunos esperan un
+// `redirect` propio adonde ir después de loguear (según el sheet de SSO
+// compartido entre módulos). Construimos la URL en base a eso:
+//   - origin del dominio → ignora cualquier path que traiga la config.
+//   - redirect solo para los módulos que lo piden (el resto va sin ese param).
+const SSO_REDIRECT_BY_MODULE: Record<string, string> = {
+  '5': '/MENU', // Diagnóstico por Imágenes
+  '9': '/login', // Monitoreo
+};
+
+const buildSsoUrl = (m: Module, ticket: string): string => {
+  let origin: string;
+  try {
+    origin = new URL(m.url).origin;
+  } catch {
+    origin = m.url.replace(/\/+$/, '');
+  }
+  // El redirect va crudo (ej: /MENU, /login) como en el sheet de SSO: un `/` es
+  // válido en el query y así lo lee bien un módulo que no decodifique %2F.
+  const redirect = SSO_REDIRECT_BY_MODULE[m.id];
+  const redirectParam = redirect ? `&redirect=${redirect}` : '';
+  return `${origin}/auth/sso?ticket=${encodeURIComponent(ticket)}${redirectParam}`;
+};
+
 const ModuleButton = (props: ModuleButtonProps) => {
   const { mod, role } = props;
   const navigate = useNavigate();
@@ -180,10 +206,7 @@ const ModuleButton = (props: ModuleButtonProps) => {
     // y deja al usuario ya logueado. Si no hay ticket (mock/sin sesión/error),
     // caemos al redirect directo (el usuario tendrá que loguearse allá).
     const ticket = await requestSsoTicket();
-    const base = m.url.replace(/\/+$/, '');
-    window.location.href = ticket
-      ? `${base}/auth/sso?ticket=${encodeURIComponent(ticket)}&redirect=${encodeURIComponent('/')}`
-      : m.url;
+    window.location.href = ticket ? buildSsoUrl(m, ticket) : m.url;
   };
 
   return (
