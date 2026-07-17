@@ -25,8 +25,10 @@ export const getTodayRange = () => {
 
 export const extractTime = (dateTimeStr: string) => dateTimeStr.split(' ')[1]?.slice(0, 5) ?? '';
 
+// El check-in solo es válido desde CONFIRMED: el back rechaza el cambio de
+// estado desde PENDING_CONFIRMATION (el paciente debe confirmar primero).
 export const canCheckIn = (status: Appointment['status']) =>
-  status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION || status === APPOINTMENT_STATUSES.CONFIRMED;
+  status === APPOINTMENT_STATUSES.CONFIRMED;
 
 // Ordena los turnos dejando los "Finalizados" (COMPLETED) al final del listado.
 export const sortByCompletedLast = (appointments: Appointment[]) =>
