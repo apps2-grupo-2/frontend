@@ -9,6 +9,7 @@ import { APPOINTMENT_STATUSES } from '@/constants';
 import { parseApiDate } from '@/helpers/dates';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from './confirm-dialog';
+import { RescheduleDialog } from './reschedule-dialog';
 
 const statusConfig: Record<
   (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES],
@@ -45,6 +46,7 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
   const { appointment, onCancel, onConfirm, onReschedule } = props;
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isConfirmTurnDialogOpen, setIsConfirmTurnDialogOpen] = useState(false);
+  const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
 
   const isPending = appointment.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION;
   // Se puede cancelar mientras el turno no haya arrancado ni cerrado: Pendiente o
@@ -105,26 +107,27 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
             {canCancel && (
               <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
                 {isPending && (
-                  <>
-                    <Button
-                      size="sm"
-                      className="text-xs"
-                      disabled={!canConfirm}
-                      title={
-                        canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'
-                      }
-                      onClick={() => setIsConfirmTurnDialogOpen(true)}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Confirmar turno
-                    </Button>
-
-                    <Button disabled size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
-                      <RefreshCw className="h-3.5 w-3.5" />
-                      Reprogramar
-                    </Button>
-                  </>
+                  <Button
+                    size="sm"
+                    className="text-xs"
+                    disabled={!canConfirm}
+                    title={canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'}
+                    onClick={() => setIsConfirmTurnDialogOpen(true)}
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Confirmar turno
+                  </Button>
                 )}
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-xs"
+                  onClick={() => setIsRescheduleOpen(true)}
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Reprogramar
+                </Button>
 
                 <Button
                   size="sm"
@@ -158,6 +161,12 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
         open={isConfirmTurnDialogOpen}
         onOpenChange={setIsConfirmTurnDialogOpen}
         onConfirm={() => onConfirm(appointment.id)}
+      />
+      <RescheduleDialog
+        appointment={appointment}
+        open={isRescheduleOpen}
+        onOpenChange={setIsRescheduleOpen}
+        onRescheduled={onReschedule}
       />
     </>
   );

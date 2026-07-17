@@ -93,3 +93,12 @@ export type StartAppointmentResponse = {
 export type FinishAppointmentResponse = {
   message: string;
 };
+
+export type RescheduleAppointmentRequest = {
+  starts_at: string;
+  ends_at: string;
+};
+
+export type RescheduleAppointmentResponse = {
+  message: string;
+};

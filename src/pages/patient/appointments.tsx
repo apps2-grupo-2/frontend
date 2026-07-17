@@ -140,7 +140,7 @@ const Appointments = () => {
             isLoading={false}
             onCancel={handleCancel}
             onConfirm={handleConfirm}
-            onReschedule={() => {}}
+            onReschedule={() => appointments.refetch()}
           />
         ))
       )}

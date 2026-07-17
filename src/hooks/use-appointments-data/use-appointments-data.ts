@@ -1,7 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-import type { CheckInAppointmentResponse, CreateAppointmentRequest, GetAppointmentsRequest } from '@/typings/services';
+import type {
+  CheckInAppointmentResponse,
+  CreateAppointmentRequest,
+  GetAppointmentsRequest,
+  RescheduleAppointmentRequest,
+} from '@/typings/services';
 import {
   cancelAppointment,
   checkInAppointment,
@@ -9,6 +14,7 @@ import {
   createAppointment,
   finishAppointment,
   getAppointments,
+  rescheduleAppointment,
   startAppointment,
 } from '@/services/appointments';
 
@@ -60,4 +66,9 @@ export const useStartAppointment = () =>
 export const useFinishAppointment = () =>
   useMutation({
     mutationFn: (id: number) => finishAppointment(id),
+  });
+
+export const useRescheduleAppointment = () =>
+  useMutation({
+    mutationFn: ({ id, body }: { id: number; body: RescheduleAppointmentRequest }) => rescheduleAppointment(id, body),
   });

@@ -9,6 +9,8 @@ import type {
   FinishAppointmentResponse,
   GetAppointmentsRequest,
   GetAppointmentsResponse,
+  RescheduleAppointmentRequest,
+  RescheduleAppointmentResponse,
   StartAppointmentResponse,
 } from '@/typings/services';
 import { ENV } from '@/constants';
@@ -61,5 +63,16 @@ export const startAppointment = async (id: number): Promise<StartAppointmentResp
 
 export const finishAppointment = async (id: number): Promise<FinishAppointmentResponse> => {
   const response = await axios.patch<FinishAppointmentResponse>(`${ENV.BASE_URL}/appointments/${id}/finish`);
+  return response.data;
+};
+
+export const rescheduleAppointment = async (
+  id: number,
+  body: RescheduleAppointmentRequest
+): Promise<RescheduleAppointmentResponse> => {
+  const response = await axios.patch<RescheduleAppointmentResponse>(
+    `${ENV.BASE_URL}/appointments/${id}/reschedule`,
+    body
+  );
   return response.data;
 };
