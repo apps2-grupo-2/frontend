@@ -23,8 +23,11 @@ export const Appointment_Success = (props: StepProps) => {
                 <CheckCircle className="animate-in zoom-in-75 fill-mode-both delay-150 duration-300 h-12 w-12 text-green-700" />
               </div>
               <div className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both delay-200 duration-300">
-                <h2 className="text-lg font-bold text-foreground">¡Turno confirmado!</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Recibirás un recordatorio 24 hs antes de tu turno.</p>
+                <h2 className="text-lg font-bold text-foreground">¡Turno solicitado!</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Queda <span className="font-medium text-amber-600">pendiente de confirmación</span>. Confirmalo desde
+                  "Mis turnos". Te enviaremos un recordatorio 24 hs antes.
+                </p>
               </div>
               <span className="animate-in fade-in fill-mode-both delay-300 duration-300 rounded-full bg-muted px-3 py-1 text-xs font-mono font-semibold text-muted-foreground">
                 TUR-{metadata.payload.appointment_id}

@@ -36,6 +36,7 @@ export const getDayAppointments = (appointments: Appointment[] = [], date: Date)
       if (appointment) {
         slots.push({
           id: id++,
+          appointmentId: appointment.id,
           starts_at: slotDateTime,
           status: appointment.status,
           patient: {
@@ -47,6 +48,7 @@ export const getDayAppointments = (appointments: Appointment[] = [], date: Date)
       } else {
         slots.push({
           id: id++,
+          appointmentId: null,
           starts_at: slotDateTime,
           status: 'available',
           patient: { id: 0, fullname: '', dni: '' },

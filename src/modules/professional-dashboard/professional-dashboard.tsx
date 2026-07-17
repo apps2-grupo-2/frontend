@@ -158,7 +158,7 @@ const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
         </div>
       </div>
       <div className="flex flex-col justify-between gap-0.5">
-        <span className="ml-auto font-mono opacity-80">TUR-{slot.id}</span>
+        <span className="ml-auto font-mono opacity-80">TUR-{slot.appointmentId}</span>
         {isCheckedIn && (
           <Button
             size="sm"
@@ -182,7 +182,7 @@ const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
         ctaTitle="Iniciar"
         open={isStartDialogOpen}
         onOpenChange={setIsStartDialogOpen}
-        onConfirm={() => onStart(slot.id)}
+        onConfirm={() => slot.appointmentId != null && onStart(slot.appointmentId)}
       />
       <ConfirmDialog
         title="Finalizar consulta"
@@ -190,7 +190,7 @@ const SlotCard = ({ slot, onStart, onFinish }: SlotCardLocalProps) => {
         ctaTitle="Finalizar"
         open={isFinishDialogOpen}
         onOpenChange={setIsFinishDialogOpen}
-        onConfirm={() => onFinish(slot.id)}
+        onConfirm={() => slot.appointmentId != null && onFinish(slot.appointmentId)}
       />
     </div>
   );

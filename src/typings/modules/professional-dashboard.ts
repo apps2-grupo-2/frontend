@@ -7,6 +7,9 @@ export type WeekdaySelectorProps = {
 
 export type GetDayAppointmentsResponse = {
   id: number;
+  // Id real del turno (appointment.id) para las acciones y el label TUR-.
+  // Es null en los slots libres. NO confundir con `id`, que es el índice del slot.
+  appointmentId: number | null;
   starts_at: string;
   status: (typeof APPOINTMENT_STATUSES)[keyof typeof APPOINTMENT_STATUSES] | 'available';
   patient: {

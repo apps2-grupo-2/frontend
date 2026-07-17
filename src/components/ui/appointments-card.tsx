@@ -46,7 +46,12 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isConfirmTurnDialogOpen, setIsConfirmTurnDialogOpen] = useState(false);
 
-  const isEditable = appointment.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION;
+  const isPending = appointment.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION;
+  // Se puede cancelar mientras el turno no haya arrancado ni cerrado: Pendiente o
+  // Confirmado. (El back acepta el DELETE desde ambos estados.)
+  const canCancel =
+    appointment.status === APPOINTMENT_STATUSES.PENDING_CONFIRMATION ||
+    appointment.status === APPOINTMENT_STATUSES.CONFIRMED;
   const canConfirm = canConfirmAppointment(appointment);
 
   return (
@@ -97,23 +102,29 @@ export const AppointmentCard = (props: AppointmentCardProps) => {
               </div>
             </div>
 
-            {isEditable && (
+            {canCancel && (
               <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-                <Button
-                  size="sm"
-                  className="text-xs"
-                  disabled={!canConfirm}
-                  title={canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'}
-                  onClick={() => setIsConfirmTurnDialogOpen(true)}
-                >
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  Confirmar turno
-                </Button>
+                {isPending && (
+                  <>
+                    <Button
+                      size="sm"
+                      className="text-xs"
+                      disabled={!canConfirm}
+                      title={
+                        canConfirm ? undefined : 'El turno se puede confirmar hasta 24hs antes del horario agendado.'
+                      }
+                      onClick={() => setIsConfirmTurnDialogOpen(true)}
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Confirmar turno
+                    </Button>
 
-                <Button disabled size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  Reprogramar
-                </Button>
+                    <Button disabled size="sm" variant="outline" className="text-xs" onClick={onReschedule}>
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      Reprogramar
+                    </Button>
+                  </>
+                )}
 
                 <Button
                   size="sm"

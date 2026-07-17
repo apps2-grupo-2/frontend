@@ -15,6 +15,15 @@ export const WeekdaySelector = (props: WeekdaySelectorProps) => {
 
   const days = getWeekdaysByOffset(weekNumber);
 
+  // Al cambiar de semana movemos también el día seleccionado al primer día
+  // (lunes) de la nueva semana. Si no, el contenido y el label de fecha quedan
+  // clavados en la semana anterior hasta que el usuario clickee una pestaña.
+  const goToWeek = (delta: number) => {
+    const next = Math.min(3, Math.max(0, weekNumber + delta));
+    setWeekNumber(next);
+    onSelectDay(getWeekdaysByOffset(next)[0]);
+  };
+
   return (
     <>
       {/* Navegación de semana */}
@@ -23,10 +32,10 @@ export const WeekdaySelector = (props: WeekdaySelectorProps) => {
           {getFormattedDate(selectedDay)} - (Semana {getWeekNumber() + weekNumber})
         </span>
         <div className="flex gap-1">
-          <Button variant="outline" size="sm" disabled={weekNumber === 0} onClick={() => setWeekNumber(a => a - 1)}>
+          <Button variant="outline" size="sm" disabled={weekNumber === 0} onClick={() => goToWeek(-1)}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" disabled={weekNumber === 3} onClick={() => setWeekNumber(a => a + 1)}>
+          <Button variant="outline" size="sm" disabled={weekNumber === 3} onClick={() => goToWeek(1)}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
