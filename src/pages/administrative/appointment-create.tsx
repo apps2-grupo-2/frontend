@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CalendarPlus, CheckCircle, Clock, MapPin, Search, User } from 'lucide-react';
 
 import type { UseAppointmentsData } from '@/typings/hooks/use-appointments';
+import type { GetPatientsResponse } from '@/typings/services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { APPOINTMENTS_STEPS, ROUTES } from '@/constants';
@@ -75,36 +76,67 @@ export default function Page() {
   );
 }
 
-// ─── Form de búsqueda por DNI ────────────────────────────────────────────────
+// ─── Búsqueda y selección del paciente ───────────────────────────────────────
+
+type PatientOption = GetPatientsResponse[number];
+
+const MAX_RESULTS = 8;
+
+// Ordena por cercanía a lo tipeado (email exacto → empieza-con email → empieza-con
+// nombre → contiene) y recorta a los MAX_RESULTS más parecidos, para mostrar solo
+// los candidatos relevantes en el dropdown en vez de todo el padrón.
+const rankPatients = (results: PatientOption[], query: string): PatientOption[] => {
+  const q = query.trim().toLowerCase();
+  const score = (r: PatientOption) => {
+    const email = (r.subtitle || r.email || '').toLowerCase();
+    const name = (r.label || '').toLowerCase();
+    if (email === q) return 0;
+    if (email.startsWith(q)) return 1;
+    if (name.startsWith(q)) return 2;
+    if (email.includes(q)) return 3;
+    return 4;
+  };
+  return [...results].sort((a, b) => score(a) - score(b)).slice(0, MAX_RESULTS);
+};
 
 type PatientFormProps = {
   onConfirm: (patient: PatientInfo) => void;
 };
 
 const PatientForm = ({ onConfirm }: PatientFormProps) => {
-  const [emailSearch, setEmailSearch] = useState('');
-  const { data: results = [], isFetching } = useGetPatientsSearch(emailSearch);
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<PatientInfo | null>(null);
+  const { data: results = [], isFetching } = useGetPatientsSearch(query);
 
-  const match =
-    results.find(r => r.subtitle.toLowerCase().startsWith(emailSearch.toLowerCase())) ??
-    (results.length === 1 ? results[0] : null);
+  const options = useMemo(() => rankPatients(results, query), [results, query]);
+  const showResults = !selected && query.trim().length >= 2;
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    if (selected) setSelected(null);
+  };
+
+  const handleSelect = (option: PatientOption) => {
+    setSelected({ id: Number(option.value), fullname: option.label, email: option.email });
+  };
 
   return (
     <div className="flex flex-col gap-5">
       <Card className="border-border shadow-none">
         <CardContent className="flex flex-col gap-4 pt-2">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="email-search" className="text-sm font-medium text-foreground">
-              Email del paciente
+            <label htmlFor="patient-search" className="text-sm font-medium text-foreground">
+              Buscar paciente
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
-                id="email-search"
-                type="email"
-                placeholder="Ej: paciente@mail.com"
-                value={emailSearch}
-                onChange={e => setEmailSearch(e.target.value)}
+                id="patient-search"
+                type="text"
+                autoComplete="off"
+                placeholder="Email o nombre del paciente"
+                value={query}
+                onChange={e => handleQueryChange(e.target.value)}
                 className="h-10 w-full rounded-lg border border-input bg-transparent pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
               />
             </div>
@@ -112,30 +144,54 @@ const PatientForm = ({ onConfirm }: PatientFormProps) => {
 
           {isFetching && <p className="text-xs text-muted-foreground animate-pulse">Buscando paciente...</p>}
 
-          {!isFetching && emailSearch.length >= 2 && !match && (
-            <p className="text-xs text-destructive">No se encontró ningún paciente con ese email.</p>
+          {showResults && !isFetching && options.length === 0 && (
+            <p className="text-xs text-destructive">No se encontró ningún paciente con ese dato.</p>
           )}
 
-          {match && (
-            <div className="flex items-center gap-3 rounded-lg bg-muted/50 px-4 py-3 border border-border">
+          {showResults && options.length > 0 && (
+            <ul className="flex max-h-64 flex-col divide-y divide-border overflow-y-auto rounded-lg border border-border">
+              {options.map(option => (
+                <li key={option.value}>
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(option)}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-muted/60"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">{option.label}</p>
+                      <p className="truncate text-xs text-muted-foreground">{option.subtitle}</p>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {selected && (
+            <div className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
                 <User className="h-4 w-4 text-primary" />
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{match.label}</p>
-                <p className="text-xs text-muted-foreground truncate">{match.subtitle}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-foreground">{selected.fullname}</p>
+                <p className="truncate text-xs text-muted-foreground">{selected.email}</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="shrink-0 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Cambiar
+              </button>
             </div>
           )}
         </CardContent>
       </Card>
 
-      <Button
-        size="lg"
-        className="self-start"
-        disabled={!match}
-        onClick={() => match && onConfirm({ id: Number(match.value), fullname: match.label, email: match.email })}
-      >
+      <Button size="lg" className="self-start" disabled={!selected} onClick={() => selected && onConfirm(selected)}>
         Continuar con el turno
       </Button>
     </div>
