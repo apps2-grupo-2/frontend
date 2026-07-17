@@ -22,7 +22,7 @@ export const getWeekdaysByOffset = (weekOffset: number) => {
 export const getDayAppointments = (appointments: Appointment[] = [], date: Date): GetDayAppointmentsResponse[] => {
   const slots: GetDayAppointmentsResponse[] = [];
   const startHour = 9;
-  const endHour = 18;
+  const endHour = 24; // franja 09:00–23:30 (alineado con el alta de turnos)
   let id = 0;
 
   for (let hour = startHour; hour < endHour; hour++) {

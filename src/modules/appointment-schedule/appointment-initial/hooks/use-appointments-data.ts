@@ -10,8 +10,8 @@ import { useGetAppointments } from '@/hooks/use-appointments-data';
 export const useGetAppointmentsData = (form: UseFormReturn<AppointmentInitialFormProps>) => {
   const watchedFields = useWatch({ control: form.control });
   const baseDate = watchedFields.date ? parseApiDate(watchedFields.date) : undefined;
-  const since = baseDate ? format(baseDate, 'yyyy-MM-dd 09:00:00') : undefined;
-  const until = baseDate ? format(baseDate, 'yyyy-MM-dd 18:00:00') : undefined;
+  const since = baseDate ? format(baseDate, 'yyyy-MM-dd 00:00:00') : undefined;
+  const until = baseDate ? format(baseDate, 'yyyy-MM-dd 23:59:59') : undefined;
 
   const appointmentsDefaultParams: GetAppointmentsRequest = {
     since: since || '',

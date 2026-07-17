@@ -141,9 +141,9 @@ describe('getWeekdaysByOffset', () => {
 describe('getDayAppointments', () => {
   const date = new Date('2026-05-18T00:00:00');
 
-  it('should return 18 slots (9:00 to 17:30 in 30min intervals)', () => {
+  it('should return 30 slots (9:00 to 23:30 in 30min intervals)', () => {
     const slots = getDayAppointments([], date);
-    expect(slots).toHaveLength(18);
+    expect(slots).toHaveLength(30);
   });
 
   it('should have incremental ids starting from 0', () => {
@@ -206,7 +206,7 @@ describe('getDayAppointments', () => {
 
   it('should handle undefined appointments defaulting to empty array', () => {
     const slots = getDayAppointments(undefined, date);
-    expect(slots).toHaveLength(18);
+    expect(slots).toHaveLength(30);
     slots.forEach(slot => {
       expect(slot.status).toBe('available');
     });

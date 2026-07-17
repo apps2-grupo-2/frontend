@@ -37,7 +37,7 @@ const getEnabledDates = (): Date[] =>
 const buildSlots = (date: Date, occupied: string[]): { label: string; value: string }[] => {
   const now = new Date();
   const slots: { label: string; value: string }[] = [];
-  for (let hour = 9; hour < 18; hour++) {
+  for (let hour = 9; hour < 24; hour++) {
     for (const minutes of [0, 30]) {
       const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minutes);
       const end = addMinutes(start, 30);
@@ -62,8 +62,8 @@ export const RescheduleDialog = (props: RescheduleDialogProps) => {
   const dayAppointments = useGetAppointments(
     {
       medic_id: appointment.medic.id,
-      since: selectedDate ? format(selectedDate, 'yyyy-MM-dd 09:00:00') : '',
-      until: selectedDate ? format(selectedDate, 'yyyy-MM-dd 18:00:00') : '',
+      since: selectedDate ? format(selectedDate, 'yyyy-MM-dd 00:00:00') : '',
+      until: selectedDate ? format(selectedDate, 'yyyy-MM-dd 23:59:59') : '',
     },
     open && !!selectedDate
   );

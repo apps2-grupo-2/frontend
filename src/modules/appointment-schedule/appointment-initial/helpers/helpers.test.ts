@@ -95,9 +95,9 @@ describe('getRangeTimeAvailability', () => {
     },
   });
 
-  it('should return 18 slots from 9:00 to 18:00', () => {
+  it('should return 30 slots from 9:00 to 23:30', () => {
     const slots = getRangeTimeAvailability([], date);
-    expect(slots).toHaveLength(18);
+    expect(slots).toHaveLength(30);
   });
 
   it('should start at 09:00 - 09:30', () => {
@@ -105,9 +105,9 @@ describe('getRangeTimeAvailability', () => {
     expect(slots[0].label).toBe('09:00 - 09:30');
   });
 
-  it('should end at 17:30 - 18:00', () => {
+  it('should end at 23:30 - 00:00', () => {
     const slots = getRangeTimeAvailability([], date);
-    expect(slots[slots.length - 1].label).toBe('17:30 - 18:00');
+    expect(slots[slots.length - 1].label).toBe('23:30 - 00:00');
   });
 
   it('should have value in yyyy-MM-dd HH:mm:ss format', () => {
@@ -120,26 +120,23 @@ describe('getRangeTimeAvailability', () => {
     const appointments = [makeAppointment('2026-05-16 09:00:00'), makeAppointment('2026-05-16 15:30:00')];
     const slots = getRangeTimeAvailability(appointments, date);
 
-    expect(slots).toHaveLength(16);
+    expect(slots).toHaveLength(28);
     expect(slots.find(s => s.value === '2026-05-16 09:00:00')).toBeUndefined();
     expect(slots.find(s => s.value === '2026-05-16 15:30:00')).toBeUndefined();
   });
 
   it('should return all slots when no appointments match', () => {
     const slots = getRangeTimeAvailability([], date);
-    expect(slots).toHaveLength(18);
+    expect(slots).toHaveLength(30);
   });
 
   it('should exclude slots already in the past when the date is today', () => {
-    // "Hoy" a las 15:37 → solo quedan los horarios posteriores.
+    // "Hoy" a las 15:37 → solo quedan los horarios posteriores (16:00 … 23:30).
     vi.setSystemTime(new Date('2026-05-16T15:37:00'));
     const slots = getRangeTimeAvailability([], date);
-    expect(slots.map(s => s.value)).toEqual([
-      '2026-05-16 16:00:00',
-      '2026-05-16 16:30:00',
-      '2026-05-16 17:00:00',
-      '2026-05-16 17:30:00',
-    ]);
+    expect(slots).toHaveLength(16);
+    expect(slots[0].value).toBe('2026-05-16 16:00:00');
+    expect(slots[slots.length - 1].value).toBe('2026-05-16 23:30:00');
   });
 
   describe('with realistic endpoint data', () => {
@@ -511,14 +508,14 @@ describe('getRangeTimeAvailability', () => {
 
     it('should exclude 2 slots on 2026-05-18', () => {
       const slots = getRangeTimeAvailability(realAppointments, '2026-05-18');
-      expect(slots).toHaveLength(16);
+      expect(slots).toHaveLength(28);
       expect(slots.find(s => s.value === '2026-05-18 15:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-18 17:30:00')).toBeUndefined();
     });
 
     it('should exclude 3 slots on 2026-05-19', () => {
       const slots = getRangeTimeAvailability(realAppointments, '2026-05-19');
-      expect(slots).toHaveLength(15);
+      expect(slots).toHaveLength(27);
       expect(slots.find(s => s.value === '2026-05-19 12:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-19 17:00:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-19 17:30:00')).toBeUndefined();
@@ -528,7 +525,7 @@ describe('getRangeTimeAvailability', () => {
       const slots = getRangeTimeAvailability(realAppointments, '2026-05-20');
 
       // 5 appointments on 2026-05-20: 12:30, 15:00, 16:00, 17:00, 17:30
-      expect(slots).toHaveLength(13);
+      expect(slots).toHaveLength(25);
       expect(slots.find(s => s.value === '2026-05-20 12:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-20 15:00:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-20 16:00:00')).toBeUndefined();
@@ -539,18 +536,18 @@ describe('getRangeTimeAvailability', () => {
     it('should not exclude slots from other dates', () => {
       const slots = getRangeTimeAvailability(realAppointments, '2026-05-21');
       // 1 appointment on 2026-05-21 (id: 55 at 12:30)
-      expect(slots).toHaveLength(17);
+      expect(slots).toHaveLength(29);
       expect(slots.find(s => s.value === '2026-05-21 12:30:00')).toBeUndefined();
     });
 
     it('should return all slots for a date with no appointments', () => {
       const slots = getRangeTimeAvailability(realAppointments, '2026-05-22');
-      expect(slots).toHaveLength(18);
+      expect(slots).toHaveLength(30);
     });
 
     it('should exclude slots when date includes time component', () => {
       const slots = getRangeTimeAvailability(realAppointments, '2026-05-18 00:00:00');
-      expect(slots).toHaveLength(16);
+      expect(slots).toHaveLength(28);
       expect(slots.find(s => s.value === '2026-05-18 15:30:00')).toBeUndefined();
       expect(slots.find(s => s.value === '2026-05-18 17:30:00')).toBeUndefined();
     });

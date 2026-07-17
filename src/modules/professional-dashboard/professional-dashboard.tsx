@@ -45,8 +45,8 @@ export const ProfessionalDashboard = () => {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const appointmentsParams: GetAppointmentsRequest = {
-    since: format(selectedDay, 'yyyy-MM-dd 09:00:00'),
-    until: format(selectedDay, 'yyyy-MM-dd 18:00:00'),
+    since: format(selectedDay, 'yyyy-MM-dd 00:00:00'),
+    until: format(selectedDay, 'yyyy-MM-dd 23:59:59'),
     medic_id: authStore.id ? Number(authStore.id) : undefined,
   };
   const isGetAppointmentsEnabled = !!appointmentsParams.medic_id;
@@ -79,7 +79,7 @@ export const ProfessionalDashboard = () => {
   return (
     <div className="flex flex-col gap-5">
       <WeekdaySelector selectedDay={selectedDay} onSelectDay={setSelectedDay} />
-      <DayStatus totalAppointments={totalAppointments} totalAvailable={18 - totalAppointments} />
+      <DayStatus totalAppointments={totalAppointments} totalAvailable={30 - totalAppointments} />
 
       {actionError && (
         <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">

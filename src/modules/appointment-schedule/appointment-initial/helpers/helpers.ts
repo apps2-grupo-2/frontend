@@ -16,7 +16,7 @@ export const getRangeTimeAvailability = (appointments: Appointment[], date: stri
   const now = new Date();
 
   const startHour = 9;
-  const endHour = 18;
+  const endHour = 24; // franja 09:00–23:30 (último turno arranca 23:30)
   const intervalMinutes = 30;
   const totalSlots = ((endHour - startHour) * 60) / intervalMinutes;
 
