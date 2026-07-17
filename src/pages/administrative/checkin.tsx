@@ -24,13 +24,19 @@ export default function Page() {
     },
   });
 
+  // El buscador es OPCIONAL: si no hay paciente seleccionado mostramos todos los
+  // turnos del rango (todos los pacientes). Ojo: el back rechaza patient_id=0/NaN
+  // ("must be greater than 0"), por eso solo lo mandamos cuando hay uno válido.
+  const patientId = Number(form.watch('patientId'));
+  const hasPatient = Number.isFinite(patientId) && patientId > 0;
+
   const appointmentsParams: GetAppointmentsRequest = {
     since: format(new Date(), 'yyyy-MM-dd 00:00:00'),
     until: format(addDays(new Date(), 30), 'yyyy-MM-dd 00:00:00'),
-    patient_id: Number(form.watch('patientId')),
     page: 1,
+    ...(hasPatient ? { patient_id: patientId } : {}),
   };
-  const appointments = useGetAppointments(appointmentsParams, !!appointmentsParams.patient_id);
+  const appointments = useGetAppointments(appointmentsParams, true);
   const appointmentsData = appointments.data?.appointments || [];
 
   const pendingCount = appointmentsData.filter(a => canCheckIn(a.status)).length;
@@ -70,7 +76,7 @@ export default function Page() {
           </div>
           <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs">
             <span className="font-semibold text-foreground">{appointmentsData.length}</span>
-            <span className="text-muted-foreground">total del día</span>
+            <span className="text-muted-foreground">en total</span>
           </div>
           <button
             type="button"
