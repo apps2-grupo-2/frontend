@@ -84,8 +84,6 @@ API_KEY        // appointments-secret-key
 DEFAULT_GEO    // Obelisco (CABA) — fallback si el navegador no da geolocalización
 ```
 
-> Para la **entrega/demo**, apuntar `BASE_URL` a **prod (`app.`)** una vez que el back esté propagado a ese entorno.
-
 ---
 
 ## Roles y ruteo
@@ -148,7 +146,7 @@ src/
 ### Servicios principales (`src/services/`)
 
 - **`auth.ts`** — login, registro, recuperar/resetear contraseña, verificar cuenta, SSO (emisor y exchange), resolución de rol.
-- **`appointments.ts`** — crear, listar, confirmar, cancelar, check-in, iniciar y finalizar turnos.
+- **`appointments.ts`** — crear, listar, confirmar, reprogramar, cancelar, check-in, iniciar y finalizar turnos.
 - **`medics.ts`** — `GET /medics`: **fuente única** de médicos. De acá derivan:
   - **`specialties.ts`** — especialidades (dedup por `speciality_id`).
   - **`professionals.ts`** — profesionales filtrados por especialidad.
@@ -168,13 +166,13 @@ PENDING_CONFIRMATION → CONFIRMED → CHECKED_IN → IN_PROGRESS → COMPLETED
 También puede pasar a `CANCELLED`, `ABSENT` o `EXPIRED`. Reglas relevantes en la UI:
 
 - El paciente puede **confirmar** hasta 24hs antes del horario del turno.
+- Los turnos que **agenda el administrativo** quedan confirmados directamente (no requieren la confirmación del paciente).
+- Un turno **Pendiente o Confirmado** se puede **reprogramar** (nueva fecha/horario, mismo médico) o **cancelar**.
 - El **check-in** (admin) solo se permite si el turno está **CONFIRMED**.
 - El médico solo puede **iniciar** la consulta a partir del horario del turno.
 
 ---
 
-## Notas / pendientes conocidos
+## Notas técnicas
 
 - **Fechas sin zona horaria:** el back devuelve fechas en formato `"YYYY-MM-DD HH:mm:ss"` (UTC) **sin** marcador de zona. `helpers/dates.ts` (`parseApiDate`) las interpreta como hora local. Tenerlo presente al comparar contra `new Date()`.
-- **Administrativo:** para que el presentismo funcione end-to-end, el rol administrativo (id 13) necesita el permiso `users:read` en el Core (para poder buscar pacientes). Depende del equipo del Core.
-- **Entrega:** apuntar `BASE_URL` a prod (`app.`) cuando el back esté propagado.
